@@ -2,18 +2,16 @@
 div{border: 1px solid green}*/
 body{
 	margin:0;
-	padding:10px;
-	font-size: larger;
+	padding:0px;
 }
-input[type=button]{
-	font-family: monospace;
-}
+
 .mainRight{
 	position:absolute;
 	top:0;
 	right:0;
 	width:200px;
 	height:100%;
+	padding: 10px;
 }
 @media screen{
 	body>div.mainRight{
@@ -29,11 +27,11 @@ input[type=button]{
 	overflow:auto;
 	left: 0px;
 	right:220px;
+	padding:10px;
 }
 #display{
     border-left: 2px solid green;
     background-color:#DFD;
-    padding: 10px;
 }
 #display div{
     margin: 12px
@@ -56,12 +54,7 @@ input[type=button]{
 	color:black;
 	font-style:normal;
 }
-#header{
-	position: fixed;
-	bottom: 5px;
-	right: 10px;
-	z-index: 1000;
-}
+
 #header input[type='text']{
 	width: 60px
 }
@@ -72,9 +65,10 @@ p{
 }
 .help{
 	display: none;
+	border: 1px solid grey;
+	background-color: #EEE
 }
 .asgnInfo{
-	font-size: medium;
 	line-height: normal;
 	background-color: #f3f3f3;
 	border: solid 1px #a1a1a1;
@@ -92,9 +86,9 @@ div.column{
 }
 div.cell{
 	padding-bottom: 6px;
-	height:1em;
+	height:1.2em;
+	font-size: 1.2em;
     font-family:monospace;
-    font-size:24px;
 }
 div.equi,div.introElim{
 	border: 1px dotted black;
@@ -147,10 +141,13 @@ div.sp.dead .cell:only-child{
 #conclusion:before{
     content: "/ therefore, "
 }
+#conclusion{
+	font-size:1em;
+	width: 300px;
+}
 #attribution{
     margin-left: 10px;
 }
-
 
 
 /*End proof display stuff*/
@@ -160,7 +157,8 @@ div.sp.dead .cell:only-child{
 .formula{
     letter-spacing:2px;
     font-family:monospace;
-    font-size:24px;
+    font-size:1.2em;
+	letter-spacing: 5px;
 }
 
 #opSelect,#opSelectLabel,#temp,#displayCancel,.htmlTextarea{
@@ -171,7 +169,7 @@ div.sp.dead .cell:only-child{
     background-color: #DDDDDD;
     padding: 3px 5px;
     margin: 5px 0px!important;
-    font-size: 22px;
+    font-size: .8em;
 }
 .operations .operation:hover{
     background-color: #EEEEEE;
@@ -212,7 +210,10 @@ div.sp.dead .cell:only-child{
     color:#fff6f6!important;    
 }
 .cited{
-    important;background-color:yellow!important;
+    background-color:yellow!important;
     color:black!important;
-    
+}
+/*Other*/
+#checkProblems{
+	padding: 10px;
 }

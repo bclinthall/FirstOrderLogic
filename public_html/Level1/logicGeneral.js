@@ -248,7 +248,6 @@ function verifyAndName(e) {
                 continue
             }
             if (e.hasClass('x') && x(cs, ['subs', 'oper', 'subs'])) {  //check for grammatical whole sentence &, |, or > w/o parenths.
-                y(e, 'topOper');
                 var op = cs.eq(1).text();
                 var typeObj = {
                     "&": "conj",
@@ -266,21 +265,20 @@ function verifyAndName(e) {
             //Check for what's ungrammatical to taylor message.
             bad = true
             var c = e.children(".oper")
-            if (c.length() > 1){
+            if (c.length > 1){
                 reject(e, "Ungrammatical Sentence.  Multiple operators in one subsentence.  Delete Sentence and try again.", e.children(".oper")) 
+                break
             }
             var lp =e.children(".lparen")
             var rp =e.children(".rparen")
-            if (lp!=rp){
+            if (lp.length!=rp.length){
                 reject(e, "Ungrammatical Sentence.  Unbalanced Parentheses.  Delete Sentence and try again.", e.children(".lparen,.rparen"))
+                break
             }
-            if(e.children("[name='lit']")).next("[name='lit']").length()>0){
-                
+            if(e.children(".subs").next(".subs").length>0){
+                reject(e, "Ungrammatical Sentence.  Subsentence immediately following another subsentence.  Delete Sentence and try again.", e.children(".subs").next(".subs"))
+                break
             }
-        
-            
-            
-            reject(e)
             break
         }
         if (bad) {

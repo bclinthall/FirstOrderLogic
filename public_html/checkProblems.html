@@ -69,21 +69,23 @@
         </script>
     </head>
     <body onload="bodyLoad()">
-        <div id="SeeProofsControls">
-            <input type='button' value='See Problems worked in Class' onClick='showSubmitted("Class")'>
-            <br><br><br>
-            <select id="selBox">
-                <option></option>
-                <option>For Clint Only</option>
-                <option>06-07</option>
-                <option>06-11</option>
-                <option>06-12</option>
-                <option>06-14</option>
-                <option>07-03</option>
-            </select>
-            <label for="pwInput">password: </label><input id="pwInput" type="password"><input type=button value="go" onClick="selChange()">
-            <br><br><br>
+        <div id="checkProblems">
+            <div id="SeeProofsControls">
+                <input type='button' value='See Problems worked in Class' onClick='showSubmitted("Class")'>
+                <br><br><br>
+                <select id="selBox">
+                    <option></option>
+                    <option>For Clint Only</option>
+                    <option>06-07</option>
+                    <option>06-11</option>
+                    <option>06-12</option>
+                    <option>06-14</option>
+                    <option>07-03</option>
+                </select>
+                <label for="pwInput">password: </label><input id="pwInput" type="password"><input type=button value="go" onClick="selChange()">
+                <br><br><br>
+            </div>
+            <div id="submitted"></div>
         </div>
-        <div id="submitted"></div>
     </body>
 </html>
