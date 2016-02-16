@@ -5,14 +5,18 @@
     <link rel="stylesheet" href="logic.css"></link>
 </head>
 <body>
-    <input type="button" value="run" onClick="run()"></input>
-    <input type="text" id="formula"></input>
     <div id="readout"></div>
     <div id="level"></div>
     <div id="display">
         <div id="subsent"></div>
         <div id="subsentType"></div>
-        <div id="sentId"></div>
+        <div id="subsentId"></div>
+        <div id="operations"></div>
     </div>
+    <div id="message"></div>
+    <table id="folTable"></table>
+    <input type="button" value="add" onClick="run()"></input>
+    <input type="text" id="formula" onkeydown="return formulaInput(event)"></input>
+    <div id="temp"></div>
 </body>
 </html>    

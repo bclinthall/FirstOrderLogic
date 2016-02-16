@@ -1,16 +1,61 @@
 .fol{
-    letter-spacing: 3px;
+    letter-spacing: 5px;
+    font-family:monospace;
+}
+#formula{
+    letter-spacing:2px;
+    font-family:monospace;
+    font-size:medium;
+}
+#folTable{
+    margin-bottom:12px;
+}
+.lineNo{
+}
+.operation{
+    border: 1px solid #555555;
+    background-color: #DDDDDD;
+    padding: 3px 5px;
+    margin: 5px;
 }
 .mouseOn{
     border:1px solid #00ff00!
-    important;background-color:#e6ffe6!
-    important;
+    important;background-color:#e6ffe6!important;
+    color:black!important;
+}
+.msgTarget{
+    border:1px solid red!
+    important;background-color:#fff6f6!important;
     color:black!important;
 }
 #display{
     border: 2px solid red;
-    position: absolute;
+    position: fixed;
     top: 20px;
-    left: 300px;
+    left: 66%;
     background-color:white;
+    padding: 10px;
+    opacity: .1;
+}
+#display:hover{
+    opacity: 1!important;
+}
+#message{
+    border: 2px solid green;
+    position: fixed;
+    top: 20px;
+    left: 66%;
+    background-color:white;
+    padding: 10px;
+    display:none;
+}
+.instructions{
+    color:#777;
+    font-style:italic;
+}
+.cited{
+    border:1px solid yellow!
+    important;background-color:#ffffe0!important;
+    color:black!important;
+    
 }
