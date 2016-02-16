@@ -149,7 +149,7 @@ div.sp.dead .cell:only-child{
     font-size:medium;
 }
 
-#opSelect,#opSelectLabel,#temp,#displayCancel,.htmlTextarea{
+#opSelect,#opSelectLabel,#temp,#displayCancel,.addAsConc,.htmlTextarea{
     display:none;
 }
 .operations .operation{
