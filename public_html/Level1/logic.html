@@ -12,7 +12,14 @@
     </head>
     <body onload="bodyLoaded()">
         <div class="mainLeft">
-            <input id='showHelp' type='button' value="Show Help" onClick="showHelp()">
+            <div id='header'>
+                <form method='post' action="../mailProof.php" onSubmit="return confirmSubmit()">
+                    name:<input type='text' id='studentName' name='studentName'>
+                    <input id='showHelp' type='button' value="Show Help" onClick="showHelp()">
+                    <textarea id='htmlTextarea' name='htmlTextarea'></textarea><br>
+                    <input type='submit' value ="Submit Proof">
+                </form>
+            </div>
             <div id='help'>
                 <input id='hideHelp' type='button' value="Hide Help" onClick="hideHelp()">
                 <p class='instructions general'>1. Begin by entering some premises, and then a conclusion.</p>
@@ -24,7 +31,7 @@
             <p class='instructions special'></p>
             <div id="readout"></div>
             <div id="level"></div>
-            <div>
+            <div id="proof">
                 <div class="column" id="lineNo"></div>
                 <div class="column" id="folTable"></div>
                 <div class="column" id="attribution"></div>
@@ -43,6 +50,7 @@
             <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
             <input type="button" id='editLine' value='Edit Line' onClick="editLine()">
             <div id="temp" class="fol"></div>
+            
         </div>
         
         <div>

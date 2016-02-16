@@ -294,8 +294,8 @@ var ops = {
     },
     condIntro: function($sp){
         $sp=$sp.children()
-        var a = $sp.first().children(".x").clone()
-        var b= $sp.last().children(".x").clone()
+        var a = wrap($sp.first().children(".x").clone())
+        var b= wrap($sp.last().children(".x").clone())
         r = operate("cond",a,b)
         r.addClass("x")
         $("#temp").append(r)
@@ -303,7 +303,7 @@ var ops = {
     },
     negIntro: function($sp){
         $sp=$sp.children()
-        var a = $sp.first().children(".x").clone()
+        var a = wrap($sp.first().children(".x").clone())
         r = negate(a)
         r.addClass("x")
         $("#temp").append(r)
@@ -423,7 +423,7 @@ var test1 = {
         return e.attr("name") == "cond"
     },
     conjElim: function (e) {
-        return e.attr("name") == "conj"
+        return e.attr("name") == "conj"&&e.hasClass("x")
     },
     conjIntro: function (e) {
         return e.hasClass("x")

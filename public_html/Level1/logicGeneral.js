@@ -14,6 +14,48 @@ var spId = 0
 activeSp = null
 var premise = true
 
+function setCookie(c_name,value,exdays){
+    var exdate=new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+    document.cookie=c_name + "=" + c_value;
+}
+function getCookie(c_name)
+{
+var i,x,y,ARRcookies=document.cookie.split(";");
+for (i=0;i<ARRcookies.length;i++)
+{
+  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+  x=x.replace(/^\s+|\s+$/g,"");
+  if (x==c_name)
+    {
+    return unescape(y);
+    }
+  }
+}
+function checkCookie(){
+var username=getCookie("username");
+    if (username!=null && username!=""){
+        $("#studentName").val(username);
+    }else{
+        username=prompt("Please enter your name:","");
+        if (username!=null && username!="")    {
+            setCookie("username",username,365);
+            $("#studentName").val(username);
+        }
+    }
+}
+function confirmSubmit(){
+    var proofHtml = $("#proof").html()
+    //console.log(proofHtml)
+    proofHtml = escape(proofHtml)
+    $("#htmlTextarea").show()
+    $("#htmlTextarea").val(proofHtml)
+    var r = confirm("Submit your proof to Clint now?")
+    return r
+}
+
 function showHelp(){
     $("#help").show()
     $("#showHelp").hide()
@@ -43,6 +85,11 @@ function bodyLoaded() {
     n=0
     $("#formula").text("")
     activeSp = $("#folTable")
+    checkCookie()
+    $("#studentName").on("input",function(){
+        setCookie("username",$("#studentName").val(),365);
+        //console.log($("#studentName").val())
+    })
 }
 
 function folStringToHtml(s, div) {
@@ -531,6 +578,7 @@ function lineDone(){
         var div = $('#s' + n + 'x')
         div.text("")
         div = folStringToHtml(s, div)
+        levelStates.L1.awaitingE1()
     }
     
 }
@@ -554,7 +602,6 @@ function formulaLineKeydown(event){
 
 //line management functions
 function deleteLast(){
-    console.log(added)
     var last = added.pop()
 
     if(last.hasClass("closed")){
@@ -569,7 +616,7 @@ function deleteLast(){
         levelStates.L1.awaitingE1()
     } else if(last[0].id=="conclusion"){
         premise=true
-        $("#addLine").hide()
+        $("#addLine,.spButton").hide()
         $("#addPremise,#addConclusion").show()
         levelStates.L1.premises()
         last.remove()
@@ -655,8 +702,8 @@ function editCancel(event){
     $(".toEdit").removeClass('toEdit')
 }
 function formulaEditKeydown(event){
-    console.log("edit keydown")
-    console.log(event.keyCode)
+    //console.log("edit keydown")
+    //console.log(event.keyCode)
     if (event.keyCode == 13) {
         editDone(event)
     }
@@ -680,7 +727,6 @@ function newSubProof(){
     $("#done").show()
     $("#done").on('click',lineDone)                             //end varies by level
     $(".spButton").hide()
-    levelStates.L1.awaitingE1()
 }
 function endSp(){
     if(activeSp.hasClass("sp")){

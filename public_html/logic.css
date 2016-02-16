@@ -52,11 +52,14 @@ body{
 	color:black;
 	font-style:normal;
 }
-#showHelp{
+#header{
 	position: fixed;
 	bottom: 5px;
 	right: 10px;
 	z-index: 1000;
+}
+#header input[type='text']{
+	width: 60px
 }
 
 p{
@@ -66,38 +69,47 @@ p{
 #help{
 	display: none;
 }
+/*input[type='submit']{
+	display:none;
+}*/
 
+
+/*For displaying Proofs*/
 div.column{
 	display: inline-block;
 	margin-left: 5px;
     vertical-align: top;
 }
-div.sp{
-	border-left: 2px solid purple;
-	padding-left: 4px;
-}
 div.cell{
-padding-bottom: 6px;
-height:1em;
+	padding-bottom: 6px;
+	height:1em;
+    font-family:monospace;
+    font-size:medium;
+}
+#folTable{
+    margin-bottom:12px;
+}
+.x{
+    letter-spacing: 5px;
+    line-height:100%;
+    padding-left:2px;
 }
 
 div.sp{
 	border-top: 1px dotted purple;
 	margin-top: -1px;
-
+	border-left: 2px solid purple;
+	padding-left: 4px;
 }
 div.sp .cell:first-child{
 	padding-bottom:0px;
 	border-bottom:1px dashed grey;
 	margin-bottom:5px;
 }
-
 div.sp.closed{
 	border-bottom: 1px dotted purple;
-	margin-bottom: 5px;
-	
+	margin-bottom: 5px;	
 }
-
 div.sp.closed .cell:last-child{
 	padding-bottom: 0px;
 }
@@ -108,10 +120,8 @@ div.sp.closed .cell:only-child{
 }
 div.sp.dead{
 	border-bottom: 1px dotted purple;
-	margin-bottom: 5px;
-	
+	margin-bottom: 5px;	
 }
-
 div.sp.dead .cell:last-child{
 	padding-bottom: 0px;
 }
@@ -120,39 +130,27 @@ div.sp.dead .cell:only-child{
     border-bottom:0px;
     margin-bottom: 0px;
 }
-
-
 #conclusion:before{
     content: "/ therefore, "
 }
-
 #attribution{
     margin-left: 10px;
 }
 
 
-#opSelect,#opSelectLabel,#temp,#displayCancel{
-    display:none;
-}
-.x{
-    letter-spacing: 5px;
-    line-height:100%;
-    padding-left:2px;
-}
-.cell{
-    font-family:monospace;
-    font-size:medium;
-    height: 1em;
-}
+
+/*End proof display stuff*/
+
+
+
 .formula{
     letter-spacing:2px;
     font-family:monospace;
     font-size:medium;
 }
-#folTable{
-    margin-bottom:12px;
-}
-.lineNo{
+
+#opSelect,#opSelectLabel,#temp,#displayCancel,#htmlTextarea{
+    display:none;
 }
 .operations .operation{
     border: 1px solid #555555;

@@ -266,8 +266,8 @@ levelStates.opts = {
 function levelChange(event) {
     $(event.target).attr("disabled", true)
     $("input").attr("disabled", false)
-    console.log("levelChange")
-    console.log(event.target.selectedIndex)
+    //console.log("levelChange")
+    //console.log(event.target.selectedIndex)
     level = event.target.selectedIndex
     var test = {1: 0, 2: 1, 3: 1, 4: 1}
     if (test[level]) {  //Setup the dropdown box for L2-4.  Show and hide it by level states.
@@ -278,7 +278,7 @@ function levelChange(event) {
         $("#opSelect").change(function (event) {
             $("#displayCancel").show()
             $("#displayCancel").click(displayCancel)
-            console.log(this.selectedIndex)
+            //console.log(this.selectedIndex)
             var title = $("#opSelect").children("option").eq(this.selectedIndex).text()
             ruleSelectedL24(title,level)
         })
@@ -329,7 +329,7 @@ function displayCancel() {
 function myMsg() {
     var msg = "<div>Select an Element for my message</div>"
     seekingE2setupL14(msg, $(".fol").find('.subs'), function (elem) {
-        console.log(elem)
+        //console.log(elem)
     })
 }
 /////////////////////////End functions for mouseMove

@@ -100,7 +100,7 @@ function seekingE1L24(event) {   //fires on mousemove.  setup by
 
 function e1PickedL24(event) {
     var e = $(this)
-    console.log(e)
+    //console.log(e)
     var title = event.data.title
     var opLevel = event.data.opLevel
     if (test1[title](e)) {
@@ -191,7 +191,7 @@ function seekingE2setupL14(e,opLevel,title)  {
     $("#message").prepend(test2msg[title])
     if ($("#msgRespEnter").length > 0) {
         if(title=="disjIntro"){
-            $("#msgRespInput").val(e.text())
+            $("#msgRespInput").val(wrap(e).text())
         }
         $("#msgRespEnter").on("click", {'e': e,'opLevel':opLevel,'title':title}, e2L14Click) //add a listener to the e2responseL14 button (if one was added in msg).
         $("#msgRespInput").on("keydown", function (event) { //add a listener to click #msgRespEnter when the enter key is pressed in #msgRespEnter (if #msgRespEnter and #msgRespEnter were added in msg)
@@ -247,6 +247,7 @@ function e2L14Click (event){
                     finish(e,opLevel,title)
                 }
             } else {
+                alert(e2Alert[title])
                 $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
             }
         } else {
@@ -351,7 +352,7 @@ function finishL34(e, title) {
     $("#commutation,#association,#removeDblNeg").show()
     $(".sentInfo").text("")
     var cite = $(".l" + citeForLine + " .attribution")
-    console.log(cite.data())
+    //console.log(cite.data())
 }
 
 
