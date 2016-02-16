@@ -1,9 +1,40 @@
+/*span{border: 1px solid blue}
+div{border: 1px solid green}*/
+.sp div{
+    width: 5px
+}
+.sp div{
+    display: inline-block;
+    position: relative;
+}
+.sp * div{
+    display: inline-block;
+    position: absolute;
+    left: 0px;
+    width: 2px;
+}
+.spT{
+    top: -1.75em;
+    background-color: purple;
+    height: 2em;
+}
+.spM{
+    top:-.85em;
+    background-color:purple;
+    height: 1.2em;
+}
+
 #opSelect,#opSelectLabel,#temp,#displayCancel{
     display:none;
 }
-.fol{
+.x{
     letter-spacing: 5px;
+    line-height:100%;
+    padding-left:2px;
+}
+#folTable{
     font-family:monospace;
+    font-size:medium;
 }
 .formula{
     letter-spacing:2px;
@@ -28,12 +59,12 @@
 .operations{
     vertical-align:top;
 }
-.mouseOn{
+.E1Resp{
     border:1px solid #00ff00!
     important;background-color:#e6ffe6!important;
     color:black!important;
 }
-.msgTarget{
+.E2Resp{
     border:1px solid red!
     important;background-color:#fff6f6!important;
     color:black!important;
@@ -54,7 +85,7 @@
 #display div{
     margin: 12px
 }
-#message{
+#messageBox{
     border: 2px solid green;
     position: fixed;
     top: 20px;
@@ -79,4 +110,10 @@
 }
 #commutation,#association,#removeDblNeg{
     display:none;
+}
+.subProofHighlight{
+    background-color: #0FF;
+}
+.line:last-of-type * .x{
+    color: #AAAAAA
 }

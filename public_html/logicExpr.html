@@ -3,14 +3,10 @@
     <head>
         <title>Propositional Logic</title>
         <meta charset="UTF-8">
-        <script type="text/javascript" src="realLogic.js"></script>
-        <script type="text/javascript" src="logicGeneral.js"></script>
-        <script type="text/javascript" src="logic.js"></script>
-        <script type="text/javascript" src="logicWorkflow.js"></script>
         <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
         <link rel="stylesheet" href="logic.css">
     </head>
-    <body onload="bodyLoaded()">
+    <body>
         <div>
             <label for='levelSelect'>Level: </label>
             <select id='levelSelect' onchange='levelChange(event)'>
@@ -22,19 +18,43 @@
             </select>
         </div>
         <input type="button" value="test" id="testButton" onClick="test()">
-        <div id="readout"></div>
+        <div id="readout"></div> 
         <div id="level"></div>
         <table id="folTable">
-            <tr class='line l1'><td class='edit'><td class='lineNo'>1.</td><td class = 'fol'><span class='sp'></span><span id='s1x' class='x subs'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>
+            <tr class='line l1'><td class='lineNo'>1.</td><td class = 'fol'>
+                <span class='sp'></span>
+                <span id='s1x' class='x subs'>A</span>
+            </tr>
+            <tr class='line l2'><td class='lineNo'>2.</td><td class = 'fol'>
+                <span class='sp'>
+                    <div class='spW'><div class='spM'></div></div>
+                </span>
+                <span id='s2x' class='x subs'>A>B</span>
+            </tr>
+            <tr class='line l3'><td class='lineNo'>3.</td><td class = 'fol'>
+                <span class='sp'>
+                    <div class='spW'><div class='spT'></div><div class='spM'></div></div>
+                    <div class='spW'><div class='spM'></div></div>
+                </span>
+                <span id='s3x' class='x subs'>(B|D)&E</span>
+            </tr>
+            <tr class='line l4'><td class='lineNo'>4.</td><td class = 'fol'>
+                <span class='sp'>
+                    <div class='spW'><div class='spT'></div><div class='spM'></div></div>
+                    <div class='spW'><div class='spT'></div><div class='spM'></div></div>
+                </span>
+                <span id='s4x' class='x subs'>W</span>
+            </tr>
+            <tr class='line l5'><td class='lineNo'>5.</td><td class = 'fol'>
+                <span class='sp'>
+                    <div class='spW'><div class='spT'></div><div class='spM'></div></div>
+                </span>
+                <span id='s5x' class='x subs'>Q</span>
+            </tr>
         </table>
-        <input type="text" id="formula" class="formula" onkeydown="return formulaKeyDown(event)" oninput="formulaInput(event)">
-        <br>
-        <input type="button" value="Add as Premise" onClick="addPremise()">
-        <input type="button" value="Add as Line" onClick="addLine()">
-        <input type="button" value="Add as Conclusion" onClick="addConc()">
-        <br>
+        <input type="button" value="add" onClick="run()">
+        <input type="text" id="formula" class="formula" onkeydown="return formulaInput(event)">
         <input type="button" value="newSubProof" onClick="newSubProof()">
-        <input type="button" value="End SubProof" onClick="endSp()">
         <div id="temp" class="fol"></div>
         
         
