@@ -12,7 +12,7 @@
                     font-family:monospace;
                     font-size:medium;
                 }
-                #folTable{
+                .folTable{
                     margin-bottom:12px;
                 }
                 .x{
@@ -56,10 +56,10 @@
                     border-bottom:0px;
                     margin-bottom: 0px;
                 }
-                #conclusion:before{
+                .conclusion:before{
                     content: "/ therefore, "
                 }
-                #attribution{
+                [title='attribution']{
                     margin-left: 10px;
                 }
             </style>

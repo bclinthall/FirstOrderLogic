@@ -12,6 +12,7 @@ body{
 	width:200px;
 	height:100%;
 	padding: 10px;
+    overflow: scroll;
 }
 @media screen{
 	body>div.mainRight{
@@ -33,7 +34,7 @@ body{
     border-left: 2px solid green;
     background-color:#DFD;
 }
-#display div{
+#header,#display2 div{
     margin: 12px
 }
 #messageBox{
@@ -94,7 +95,7 @@ div.equi,div.introElim{
 	border: 1px dotted black;
 	padding: 5px;
 }
-#folTable{
+.folTable{
     margin-bottom:12px;
 }
 .x{
@@ -138,14 +139,14 @@ div.sp.dead .cell:only-child{
     border-bottom:0px;
     margin-bottom: 0px;
 }
-#conclusion:before{
+div.cell.conclusion:before{
     content: "/ therefore, "
 }
-#conclusion{
-	font-size:1em;
+div.cell.conclusion{
+	font-size: 1em;
 	width: 300px;
 }
-#attribution{
+[title='attribution']{
     margin-left: 10px;
 }
 

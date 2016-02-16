@@ -3,8 +3,9 @@
     <head>
         <title>Propositional Logic</title>
         <meta charset="UTF-8">
-        <script type="text/javascript" src="../realLogic.js"></script>
-        <script type="text/javascript" src="logicGeneral.js"></script>
+        <script type="text/javascript" src="../operations.js"></script>
+        <script type="text/javascript" src="../parser.js"></script>
+        <script type="text/javascript" src="lineAndSubp.js"></script>
         <script type="text/javascript" src="../logic.js"></script>
         <script type="text/javascript" src="logicWorkflow.js"></script>
         <script type="text/javascript" src="../jquery-1.7.2.min.js"></script>
@@ -24,9 +25,9 @@
             <div id="readout"></div>
             <div id="level"></div>
             <div id="proof">
-                <div class="column" id="lineNo"></div>
-                <div class="column" id="folTable"></div>
-                <div class="column" id="attribution"></div>
+                <div class="column lineNo"></div>
+                <div class="column folTable"></div>
+                <div class="column" title= "attribution"></div>
             </div>
             <input type="text" id="formula" class="formula">
             <input type="button" class='done' value='Done'">
@@ -40,23 +41,22 @@
             <input type="button" id="endSp" class="spButton" value="End SubProof" onClick="endSp()">
             <br>
             <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
-            <input type="button" id='editLine' value='Edit Line' onClick="editLine()">
+            <!--<input type="button" id='editLine' value='Edit Line' onClick="editLine()">-->
             <div id="temp" class="fol"></div>
             <div id="submitted"></div>
         </div>
-        
-        <div>
-            <div id="display" class="mainRight">
-                <div id='header'>
-                    <form method='post' action="../proofSubmitted.php" onSubmit="return confirmSubmit()">
-                        name:<input type='text' id='studentName' name='studentName'>
-                        <input class='showHelp' type='button' value="Help" onClick="showHelp()">
-                        <textarea class='htmlTextarea' name='htmlTextarea'></textarea>
-                        <input type='submit' value ="Submit Proof">
-                        
-                        <input type ="button" value = "Show Submitted" onClick="showSubmitted()">
-                    </form>
-                </div>
+        <div id="display" class="mainRight">
+            <div id='header'>
+                <form method='post' action="../proofSubmitted.php" onSubmit="return confirmSubmit()">
+                    name:<input type='text' id='studentName' name='studentName'>
+                    <input class='showHelp' type='button' value="Help" onClick="showHelp()">
+                    <textarea class='htmlTextarea' name='htmlTextarea'></textarea>
+                    <input type='submit' value ="Submit Proof">
+                    
+                    <input type ="button" value = "Show Submitted" onClick="showSubmitted()">
+                </form>
+            </div>
+            <div id="display2">
                 <div id="dispInstructions" class="instructions"></div>
                 <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
                 <div class="operations easy">
@@ -71,18 +71,18 @@
                 </div>
                 <div class="operations equi"></div><div class="operations introElim"></div>
                 <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
-            </div>
-            <div id="messageBox" class="mainRight">
-                <div id="message"></div>
-                <div id="msgTemp" class="fol">
-                    <span id="sx0" class = "x subs"></span>
+                <div id="messageBox">
+                    <div id="message"></div>
+                    <div id="msgTemp" class="fol">
+                        <span id="sx0" class = "x subs"></span>
+                    </div>
+                    <div>
+                        <span class="sentInfo subsent"></span><br/>
+                        <span class="sentInfo subsentType"></span><br/>
+                        <span class="sentInfo subsentId"></span>
+                    </div>
+                    <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
                 </div>
-                <div>
-                    <span class="sentInfo subsent"></span><br/>
-                    <span class="sentInfo subsentType"></span><br/>
-                    <span class="sentInfo subsentId"></span>
-                </div>
-                <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
             </div>
         </div>
     </body>

@@ -25,6 +25,15 @@
             case "07-03":
                 if ($password=="0703Thales"){$ok=true;}
                 break;
+            case "07-05":
+                if ($password=="0705Heraclitus"){$ok=true;}
+                break;
+            case "All Homework":
+                if ($password=="Theaetetus"){
+                    $ok=true;
+                    $asgnDate=null;
+                }
+                break;
         }
     }else{
         $ok=true;

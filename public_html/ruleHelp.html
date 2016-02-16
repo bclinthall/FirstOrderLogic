@@ -11,17 +11,17 @@
         <div>
             <h2>Conjunction Elimination (simplification)</h2>
             <p>From a conjunction, you may infer either of its conjuncts.</p>
-            <div class="folTable fol">
-                <div class="column" id="lineNo">
+            <div class="fol">
+                <div class="column lineNo">
                     <div class=cell>1.</div>
                     <div class=cell>2.</div>
                 </div>
-                <div class="column" id="folTable">
+                <div class="column folTable">
                     <div class=cell>A&B</div>
                     <div class=cell>A</div>
                 </div>
                     
-                <div class="column" id="attribution">
+                <div class="column" title="attribution">
                     <div class=cell></div>
                     <div class=cell>conjElim 1</div>
                 </div>
@@ -31,17 +31,17 @@
             <h2>Conjunction Introduction (conjunction)</h2>
             <p>From any two sentences, you may infer the conjunction of them.</p>
             <div class='fol'>
-                    <div class="column" id="lineNo">
+                    <div class="column lineNo">
                         <div class=cell>1.</div>
                         <div class=cell>2.</div>
                         <div class=cell>3.</div>
                     </div>
-                    <div class="column" id="folTable">
+                    <div class="column folTable">
                         <div class=cell>A</div>
                         <div class=cell>B</div>
                         <div class=cell>A&B</div>
                     </div>
-                    <div class="column" id="attribution">
+                    <div class="column" title="attribution">
                         <div class=cell></div>
                         <div class=cell></div>
                         <div class=cell>conjIntro 1,2</div>
@@ -52,7 +52,7 @@
             <h2>Disjunction Elimination (proof by cases)</h2>
             <p>When you have a disjunction, a subproof that proves some sentence from the first disjunct, and a subproof that proves the same sentence from the second disjunct, you may infer that sentence.</p>
             <div class='fol'>
-                <div id="lineNo" class="column">
+                <div class="column lineNo">
                     <div class="line l1 cell">
                         1.
                     </div>
@@ -78,13 +78,13 @@
                         8.
                     </div>
                 </div>
-                <div id="folTable" class="column">
+                <div class="column folTable">
                     <div class="line l1 cell fol">
                         A|B
                     </div>
                     <div id="spId1" class="sp closed">
                         <div class="line l2 cell fol">
-                            <span class="x" name="lit" id="s2x">A</span>
+                            <span class="x" data-substype="lit" id="s2x">A</span>
                         </div>
                         <div class="line l3 cell fol">
                             --other stuff--
@@ -95,7 +95,7 @@
                     </div>
                     <div id="spId2" class="sp closed">
                         <div class="line l4 cell fol">
-                            <span class="x" name="lit" id="s4x">B</span>
+                            <span class="x" data-substype="lit" id="s4x">B</span>
                         </div>
                         <div class="line l5 cell fol">
                             --other stuff--
@@ -108,7 +108,7 @@
                         C
                     </div>
                 </div>
-                <div id="attribution" class="column">
+                <div class="column" title="attribution">
                     <div class="line l1 cell">
                         <span class="attribution">
                         <div class="line l1 cell fol">
@@ -142,17 +142,17 @@
         <div>
             <h2>Disjunction Introduction (addition)</h2>
             <p>You may take a sentence and disjoin it to any sentence you like.</p>
-            <div class="folTable fol">
-                <div class="column" id="lineNo">
+            <div class="fol">
+                <div class="column lineNo">
                     <div class=cell>1.</div>
                     <div class=cell>2.</div>
                 </div>
-                <div class="column" id="folTable">
+                <div class="column folTable">
                     <div class=cell>A</div>
                     <div class=cell>A|B</div>
                 </div>
                     
-                <div class="column" id="attribution">
+                <div class="column" title="attribution">
                     <div class=cell></div>
                     <div class=cell>disjIntro 1</div>
                 </div>
@@ -161,19 +161,19 @@
         <div>
             <h2>Conditional Elimination (modus ponens)</h2>
             <p>When you have a disjunction, and a complete sentence that is the same as the antecedent of the conditional, you may infer the consequent of the conditional.</p>
-            <div class="folTable fol">
-                <div class="column" id="lineNo">
+            <div class="fol">
+                <div class="column lineNo">
                     <div class=cell>1.</div>
                     <div class=cell>2.</div>
                     <div class=cell>3.</div>
                 </div>
-                <div class="column" id="folTable">
+                <div class="column folTable">
                     <div class=cell>A>B</div>
                     <div class=cell>A</div>
                     <div class=cell>B</div>
                 </div>
                     
-                <div class="column" id="attribution">
+                <div class="column" title="attribution">
                     <div class=cell></div>
                     <div class=cell></div>
                     <div class=cell>condElim 1,2</div>
@@ -183,7 +183,7 @@
         <div>
             <h2>Conditional Introduction (conditional proof)</h2>
             <p>When you have a subproof that proves <span class='fol'><i>q</i></span> from the assumption that <span class='fol'><i>p</i></span>, you may infer <span class='fol'><i>q</i>><i>p</i></span>.</p>
-            <div class="folTable fol">
+            <div class="fol">
                 <div class="column">
                     <div class="line l1 cell">1.</div>
                     <div class="line l2 cell">2.</div>
@@ -192,11 +192,11 @@
                 </div>
                 <div class="column">
                     <div id="spId1" class="sp closed">
-                        <div class="line l3 cell fol"><span class="x" name="lit" id="s3x">A</span></div>
+                        <div class="line l3 cell fol"><span class="x" data-substype="lit" id="s3x">A</span></div>
                         <div><span>--other stuff--</span></div>
-                        <div class="line l4 cell fol"><span class="x" name="lit" id="s4x">B</span></div>
+                        <div class="line l4 cell fol"><span class="x" data-substype="lit" id="s4x">B</span></div>
                     </div>
-                    <div class="line l5 cell fol"><span name="cond" class="subs x" id="s5x"><span class="lparen">(</span><span class="a subs" name="lit" id="s5xa">A</span><span class="oper">&gt;</span><span class="b subs" name="lit" id="s5xb">B</span><span class="rparen">)</span></span></div>
+                    <div class="line l5 cell fol"><span data-substype="cond" class="subs x" id="s5x"><span class="lparen">(</span><span class="a subs" data-substype="lit" id="s5xa">A</span><span class="oper">&gt;</span><span class="b subs" data-substype="lit" id="s5xb">B</span><span class="rparen">)</span></span></div>
                 </div>
                 <div class="column">
                     <div class="line l3 cell"><span class="attribution"></span></div>
@@ -207,17 +207,17 @@
         </div>
                 <div>
             <h2>Negation Elimination (Double Negation)</h2>
-                        <div class="folTable fol">
-                <div class="column" id="lineNo">
+                        <div class="fol">
+                <div class="column lineNo">
                     <div class=cell>1.</div>
                     <div class=cell>2.</div>
                 </div>
-                <div class="column" id="folTable">
+                <div class="column folTable">
                     <div class=cell>~~A</div>
                     <div class=cell>A</div>
                 </div>
                     
-                <div class="column" id="attribution">
+                <div class="column" title="attribution">
                     <div class=cell></div>
                     <div class=cell>negElim 1</div>
                 </div>
@@ -225,7 +225,7 @@
         </div>
         <div>
             <h2>Negation Introduction (reductio ad absurdum)</h2>
-            <div class="folTable fol">
+            <div class="fol">
                 <div class="column">
                     <div class="line l1 cell">1.</div>
                     <div class="line l2 cell">2.</div>
@@ -234,9 +234,9 @@
                 </div>
                 <div class="column">
                     <div id="spId1" class="sp closed">
-                        <div class="line l3 cell fol"><span class="x" name="lit" id="s3x">A</span></div>
+                        <div class="line l3 cell fol"><span class="x" data-substype="lit" id="s3x">A</span></div>
                         <div><span>--other stuff--</span></div>
-                        <div class="line l4 cell fol"><span class="x" name="lit" id="s4x">*</span></div>
+                        <div class="line l4 cell fol"><span class="x" data-substype="lit" id="s4x">*</span></div>
                     </div>
                     <div class="line l5 cell fol">~A</div>
                 </div>
@@ -249,17 +249,17 @@
         </div>
         <h2>Contradiction Elimination (Anything goes in a crazy world)</h2>
             <p>From the contradiction symbol, you may infer anything you like.</p>
-            <div class="folTable fol">
-                <div class="column" id="lineNo">
+            <div class="fol">
+                <div class="column lineNo">
                     <div class=cell>1.</div>
                     <div class=cell>2.</div>
                 </div>
-                <div class="column" id="folTable">
+                <div class="column folTable">
                     <div class=cell>*</div>
                     <div class=cell>A</div>
                 </div>
                     
-                <div class="column" id="attribution">
+                <div class="column" title="attribution">
                     <div class=cell></div>
                     <div class=cell>contElim 1</div>
                 </div>
@@ -268,19 +268,19 @@
         </div>
         <h2>Contradiction Introduction</h2>
             <p>From a sentence and its negation, you may infer the contradiction symbol.</p>
-            <div class="folTable fol">
-                <div class="column" id="lineNo">
+            <div class="fol">
+                <div class="column lineNo">
                     <div class=cell>1.</div>
                     <div class=cell>2.</div>
                     <div class=cell>3.</div>
                 </div>
-                <div class="column" id="folTable">
+                <div class="column folTable">
                     <div class=cell>A</div>
                     <div class=cell>~A</div>
                     <div class=cell>*</div>
                 </div>
                     
-                <div class="column" id="attribution">
+                <div class="column" title="attribution">
                     <div class=cell></div>
                     <div class=cell></div>
                     <div class=cell>contIntro 1</div>

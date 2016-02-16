@@ -33,8 +33,9 @@ var username=getCookie("username");
 function confirmSubmit(){
     var proofHtml = $("#proof").html()
     ////console.log(proofHtml)
+    proofHtml = proofHtml.replace(/id/g,"title")
+    console.log(proofHtml)
     proofHtml = escape(proofHtml)
-    //console.log(proofHtml)
     var r = confirm("Submit your proof to Clint now?")
     if(r){
         var myAsgn = prompt("Enter the assgnment date in dd-mm format.","06-01")
@@ -105,18 +106,7 @@ function hideHelp(){
 
 
 
-function bodyLoaded() {
-    $(".help").hide()
-    $("#formula,.done,.cancelAdd,#addLine,.spButton,#deleteLast,#editLine").hide()
-    n=0
-    $("#formula").text("")
-    activeSp = $("#folTable")
-    checkCookie()
-    $("#studentName").on("input",function(){
-        setCookie("username",$("#studentName").val(),365);
-        ////console.log($("#studentName").val())
-    })
-}
+
 ///////////////////////////////////////////////
 
 var levelStates = {
@@ -260,11 +250,11 @@ levelStates.opts = {
     },
     display: function(b){
         if(b){
-            $("#display").show()
+            $("#display2").show()
         } else {
-            $("#display").hide()
+            $("#display2").hide()
             $("#dispInstructions").text("")
-            $("#display * .sentInfo").text("")
+            $("#display2 * .sentInfo").text("")
             $(".equi,.introElim").html("")
         }
     },
@@ -352,7 +342,7 @@ levelStates.opts = {
         if(!b){
             $("#msgTemp").html("<span id='sx0' class = 'x subs'></span>")
         }
-    },
+    }
 }
 
 /*

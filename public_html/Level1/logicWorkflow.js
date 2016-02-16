@@ -307,8 +307,8 @@ function finish(e,opLevel,title){
 function infer(e) {
     n++
     activeSp.append("<div class='line l" + n + " cell fol'><span id='s" + n + "x' class='x subs'></span></div>")
-    $("#lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
-    $("#attribution").append("<div class='line l" + n + " cell'><span class='attribution'></span></div>")
+    $(".lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
+    $("[title='attribution']").append("<div class='line l" + n + " cell'><span class='attribution'></span></div>")
     $(".l"+n).find(".x").addClass("working")
     var newSentId = "s" + n + "x"
     var nl = $("#"+newSentId)
@@ -329,11 +329,11 @@ function infer(e) {
     $(".cancelAdd").hide()
     $(".cancelAdd").off()
     levelStates.L1.awaitingE1()
-    if(console.log){
-        console.log(wrap(s).text())
-        console.log(wrap($("#conclusion")).text())
-    }
-    if(s.parents('.sp').length==0&&wrap(s).text()==wrap($("#conclusion .x")).text()){
+    //if(console.log){
+    //    console.log(wrap(s).text())
+    //    console.log(wrap($(".conclusion")).text())
+    //}
+    if(s.parents('.sp').length==0&&wrap(s).text()==wrap($(".conclusion .x")).text()){
         alert("Congratulation! You proved the conclusion!")
     }
 }

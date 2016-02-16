@@ -3,68 +3,88 @@
     <head>
         <title>Propositional Logic</title>
         <meta charset="UTF-8">
-        <script type="text/javascript" src="../realLogic.js"></script>
-        <script type="text/javascript" src="logicGeneral.js"></script>
+        <script type="text/javascript" src="../operations.js"></script>
+        <script type="text/javascript" src="../parser.js"></script>
+        <script type="text/javascript" src="lineAndSubp.js"></script>
         <script type="text/javascript" src="../logic.js"></script>
         <script type="text/javascript" src="logicWorkflow.js"></script>
         <script type="text/javascript" src="../jquery-1.7.2.min.js"></script>
         <link rel="stylesheet" href="../logic.css">
     </head>
     <body onload="bodyLoaded()">
-        <div>
-            <label for='levelSelect'>Level: </label>
-            <select id='levelSelect' onchange='levelChange(event)'>
-                <option>--Select a Level--</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-            </select>
+        <div class="mainLeft">
+            <div class='help'>
+                <input class='hideHelp' type='button' value="Hide Help" onClick="hideHelp()">
+                <p class='instructions general'>1. Begin by entering some premises, and then a conclusion.  Use <span class='fol'>&</span> for conjunction, <span class='fol'>|</span> for disjunction, <span class='fol'>></span> for conditional, <span class='fol'>~</span> for negation, and <span class='fol'>*</span> for the contradiction symbol.</p>
+                <p class='instructions general'>2. Then, hold the shift key and move your mouse over your sentences and subsentences. The rules you may use on those sentences will appear to the right.</p>
+                <p class='instructions general'>3. Click the rule, and follow further instructions.</p>
+                <p class='instructions general'><a href="../sentenceHelp.html">Help</a> for writing sentences.</p>
+                <p class='instructions general'><a href="../ruleHelp.html">Help</a> with the rules.</p>
+            </div>
+            <p class='instructions special'></p>
+            <div id="readout"></div>
+            <div id="level"></div>
+            <div id="proof">
+                <div class="column lineNo"></div>
+                <div class="column folTable"></div>
+                <div class="column" title= "attribution"></div>
+            </div>
+            <input type="text" id="formula" class="formula">
+            <input type="button" class='done' value='Done'">
+            <input type="button" class='cancelAdd' value='Cancel'">
+            <br>
+            <input type="button" id="addPremise" value="Add Premise" onClick="addPremise()">
+            <input type="button" id="addConclusion" value="Add Conclusion" onClick="addConclusion()">
+            <input type="button" id="addLine" value="Add Line" onClick="addLine()">
+            <input type="button" id="citeLast" value="Cite Last Line" onClick="citeLast()">
+            <br>
+            <input type="button" id="newSubProof" class="spButton" value="newSubProof" onClick="newSubProof()">
+            <input type="button" id="endSp" class="spButton" value="End SubProof" onClick="endSp()">
+            <br>
+            <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
+            <!--<input type="button" id='editLine' value='Edit Line' onClick="editLine()">-->
+            <div id="temp" class="fol"></div>
+            <div id="submitted"></div>
         </div>
-        <input type="button" value="test" id="testButton" onClick="test()">
-        <div id="readout"></div>
-        <div id="level"></div>
-        <table id="folTable">
-            <tr class='line l1'><td class='edit'><td class='lineNo'>1.</td><td class = 'fol'><span class='sp'></span><span id='s1x' class='x subs'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>
-        </table>
-        <input type="text" id="formula" class="formula" onkeydown="return formulaKeyDown(event)" oninput="formulaInput(event)">
-        <br>
-        <input type="button" value="Add as Premise" onClick="addPremise()">
-        <input type="button" value="Add as Line" onClick="addLine()">
-        <input type="button" value="Add as Conclusion" onClick="addConc()">
-        <br>
-        <input type="button" value="newSubProof" onClick="newSubProof()">
-        <input type="button" value="End SubProof" onClick="endSp()">
-        <div id="temp" class="fol"></div>
-        
-        
-        <div id="display">
-            <div id="dispInstructions" class="instructions"></div>
-            <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
-            <div class="operations easy">
-                <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation',1)">commutation</div>
-                <div class="operation" id="association" onclick="ruleSelectedL2('association',1)">association</div>
-                <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation',1)">removeDblNegation</div>
+        <div id="display" class="mainRight">
+            <div id='header'>
+                <form method='post' action="../proofSubmitted.php" onSubmit="return confirmSubmit()">
+                    name:<input type='text' id='studentName' name='studentName'>
+                    <input class='showHelp' type='button' value="Help" onClick="showHelp()">
+                    <textarea class='htmlTextarea' name='htmlTextarea'></textarea>
+                    <input type='submit' value ="Submit Proof">
+                    
+                    <input type ="button" value = "Show Submitted" onClick="showSubmitted()">
+                </form>
             </div>
-            <div>
-                <span class="sentInfo subsent"></span><br/>
-                <span class="sentInfo subsentType"></span><br/>
-                <span class="sentInfo subsentId"></span>
+            <div id="display2">
+                <div id="dispInstructions" class="instructions"></div>
+                <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
+                <div class="operations easy">
+                    <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation',1)">commutation</div>
+                    <div class="operation" id="association" onclick="ruleSelectedL2('association',1)">association</div>
+                    <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation',1)">removeDblNegation</div>
+                </div>
+                <div>
+                    <span class="sentInfo subsent"></span><br/>
+                    <span class="sentInfo subsentType"></span><br/>
+                    <span class="sentInfo subsentId"></span>
+                </div>
+                <div class="operations equi"></div><div class="operations introElim"></div>
+                <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
+                <div id="messageBox">
+                    <div id="message"></div>
+                    <div id="msgTemp" class="fol">
+                        <span id="sx0" class = "x subs"></span>
+                    </div>
+                    <div>
+                        <span class="sentInfo subsent"></span><br/>
+                        <span class="sentInfo subsentType"></span><br/>
+                        <span class="sentInfo subsentId"></span>
+                    </div>
+                    <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
+                </div>
             </div>
-            <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
-            <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
-        </div>
-        <div id="messageBox">
-            <div id="message"></div>
-            <div id="msgTemp" class="fol">
-                <span id="sx0" class = "x subs"></span>
-            </div>
-            <div>
-                <span class="sentInfo subsent"></span><br/>
-                <span class="sentInfo subsentType"></span><br/>
-                <span class="sentInfo subsentId"></span>
-            </div>
-            <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
         </div>
     </body>
 </html>    
