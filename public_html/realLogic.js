@@ -296,24 +296,23 @@ var ops = {
         $("#temp").append(r)
         return r
     },
-    condIntro: function(e){
-        var thisSp = liveSps[liveSps.length-1]
-        var a = $(".spId"+thisSp).first().children(".x").clone()
-        var b= $(".spId"+thisSp).eq(-2).children(".x").clone()
+    condIntro: function($sp){
+        var a = $sp.first().children(".x").clone()
+        var b= $sp.eq(-2).children(".x").clone()
         r = operate("cond",a,b)
         r.addClass("x")
         $("#temp").append(r)
-        endSp();
         return r
     },
-    negIntro: function(e){
-        var thisSp = liveSps.length-1
-        var a = $(".spId"+thisSp).first().children(".x").clone()
+    negIntro: function($sp){
+        var a = $sp.first().children(".x").clone()
         r = negate(a)
         r.addClass("x")
         $("#temp").append(r)
-        endSp();
         return r
+    },
+    disjElim: function(e,sp1,sp2){
+        
     }
 }
 var ruleType = {
@@ -417,12 +416,6 @@ var test1 = {
     contElim: function (e) {
         return e.attr("name") == "cont"
     },
-    condIntro: function(e){
-        return liveSps.length
-    },
-    negIntro: function(e){
-        return liveSps.length&&e.attr("name")=="cont"
-    }
 }
 var test2msg = {
     conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",

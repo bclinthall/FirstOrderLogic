@@ -7,6 +7,7 @@ div{border: 1px solid green}*/
     display: inline-block;
     position: relative;
 }
+
 .sp * div{
     display: inline-block;
     position: absolute;
@@ -23,6 +24,15 @@ div{border: 1px solid green}*/
     background-color:purple;
     height: 1.2em;
 }
+#conclusion:before{
+    content: "therefore, "
+}
+#conclusion{
+    border-left: 3px double black;
+    margin-left: 10px;
+}
+
+
 
 #opSelect,#opSelectLabel,#temp,#displayCancel{
     display:none;
@@ -59,21 +69,8 @@ div{border: 1px solid green}*/
 .operations{
     vertical-align:top;
 }
-.E1Resp{
-    border:1px solid #00ff00!
-    important;background-color:#e6ffe6!important;
-    color:black!important;
-}
-.E2Resp{
-    border:1px solid red!
-    important;background-color:#fff6f6!important;
-    color:black!important;
-}
-.error{
-    border:1px solid red!important;
-    background-color:#fff6f6!important;
-    color:black!important;    
-}
+
+
 #display{
     border: 2px solid red;
     position: fixed;
@@ -102,18 +99,39 @@ div{border: 1px solid green}*/
     color:#777;
     font-style:italic;
 }
+
+#commutation,#association,#removeDblNeg{
+    display:none;
+}
+
+.working{
+    color: #AAAAAA
+}
+
+
+
+/*Subsentence highlighting*/
+.toEdit{
+    background-color: #DDAAFF
+}
+.E1Resp{
+    background-color:#e6ffe6!important;
+    color:black!important;
+}
+.E2Resp{
+    background-color:#e6e6ff!important;
+    color:black!important;
+}
+.subProofHighlight{
+    background-color: #0FF;
+}
+.error{
+    background-color:#fff6f6!important;
+    color:black!important;    
+}
 .cited{
     border:1px solid yellow!
     important;background-color:#ffffe0!important;
     color:black!important;
     
-}
-#commutation,#association,#removeDblNeg{
-    display:none;
-}
-.subProofHighlight{
-    background-color: #0FF;
-}
-.line:last-of-type * .x{
-    color: #AAAAAA
 }

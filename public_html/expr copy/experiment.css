@@ -1,0 +1,37 @@
+
+div.sp{
+	border-left: 2px solid purple;
+	padding-left: 4px;
+}
+
+
+
+div.cell{
+	margin-bottom: 6px;
+}
+
+div.sp{
+	border-top: 1px dotted purple;
+	margin-top: -1px;
+
+}
+div.sp .cell:first-child{
+	border-bottom:1px dashed grey;
+	margin-bottom:5px;
+}
+
+div.sp.closed{
+	border-bottom: 1px dotted purple;
+	margin-bottom: 5px;
+	
+}
+.attribution{
+	float:right;
+}
+.lineNum{
+	float:left;
+}
+
+.column{
+	vertical-align:top;
+}

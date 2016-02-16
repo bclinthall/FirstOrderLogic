@@ -1,14 +1,19 @@
-var citeData = {
-    a:null,
-    b:null,
-    rule:null
-}
-var level = "0"
-var supporting = []
 
 
 var levelStates = {
     L1: {
+        premises: function(){
+            levelStates.opts.display         (false)
+            levelStates.opts.dispInstructions(false)
+            levelStates.opts.mmE1L1          (false)
+            levelStates.opts.mmE1class       (false)
+            levelStates.opts.mmE2            (false)
+            levelStates.opts.mmE2class       (false)
+            levelStates.opts.message         (false)
+            levelStates.opts.citeData        (false)
+            levelStates.opts.temp            (false)
+            levelStates.opts.msgTemp         (false)    
+        },
         awaitingE1: function(){
             levelStates.opts.display         (true)
             levelStates.opts.dispInstructions(true)
@@ -151,9 +156,11 @@ levelStates.opts = {
     mmE1L1: function(b){
         if(b){
             $("#folTable").off("mousemove", seekingE1L1)
-            $("#folTable").on("mousemove", ".subs", seekingE1L1)            
-        } else {
             $("#folTable").on("mousemove", ".subs", seekingE1L1)
+            $("#folTable").on("mouseenter",",closed",seekingE1spL1)
+        } else {
+            $("#folTable").off("mousemove", seekingE1L1)
+            $("#folTable").off("mouseenter",seekingE1spL1)
         }
     },
     mmE1L24: function(b){

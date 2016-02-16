@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Propositional Logic</title>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="../realLogic.js"></script>
+        <script type="text/javascript" src="logicGeneral.js"></script>
+        <script type="text/javascript" src="../logic.js"></script>
+        <script type="text/javascript" src="logicWorkflow.js"></script>
+        <script type="text/javascript" src="../jquery-1.7.2.min.js"></script>
+        <link rel="stylesheet" href="../logic.css">
+    </head>
+    <body onload="bodyLoaded()">
+        <div>
+            <p class='instructions general'></p>
+            <p class='instructions special'></p>
+        </div>
+        <div id="readout"></div>
+        <div id="level"></div>
+        <table id="folTable"></table>
+        <input type="text" id="formula" class="formula">
+        <input type="button" id='done' value='Done'">
+        <input type="button" id='cancelAdd' value='Cancel'">
+        <br>
+        <input type="button" id="addPremise" value="Add Premise" onClick="addPremise()">
+        <input type="button" id="addConclusion" value="Add Conclusion" onClick="addConclusion()">
+        <input type="button" id="addLine" value="Add Line" onClick="addLine()">
+        <br>
+        <input type="button" id="newSubProof" class="spButton" value="newSubProof" onClick="newSubProof()">
+        <input type="button" id="endSp" class="spButton" value="End SubProof" onClick="endSp()">
+        <br>
+        <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
+        <input type="button" id='editLine' value='Edit Line' onClick="editLine()">
+        <div id="temp" class="fol"></div>
+        
+        
+        <div id="display">
+            <div id="dispInstructions" class="instructions"></div>
+            <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
+            <div class="operations easy">
+                <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation',1)">commutation</div>
+                <div class="operation" id="association" onclick="ruleSelectedL2('association',1)">association</div>
+                <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation',1)">removeDblNegation</div>
+            </div>
+            <div>
+                <span class="sentInfo subsent"></span><br/>
+                <span class="sentInfo subsentType"></span><br/>
+                <span class="sentInfo subsentId"></span>
+            </div>
+            <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
+            <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
+        </div>
+        <div id="messageBox">
+            <div id="message"></div>
+            <div id="msgTemp" class="fol">
+                <span id="sx0" class = "x subs"></span>
+            </div>
+            <div>
+                <span class="sentInfo subsent"></span><br/>
+                <span class="sentInfo subsentType"></span><br/>
+                <span class="sentInfo subsentId"></span>
+            </div>
+            <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
+        </div>
+    </body>
+</html>    

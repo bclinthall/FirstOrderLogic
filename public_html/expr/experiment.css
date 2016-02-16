@@ -1,0 +1,33 @@
+div.column{
+	display: inline-block;
+	margin-left: 5px
+}
+div.sp{
+	border-left: 2px solid purple;
+	padding-left: 4px;
+}
+div.cell{
+padding-bottom: 6px;
+height: 1em;
+}
+
+div.sp{
+	border-top: 1px dotted purple;
+	margin-top: -1px;
+
+}
+div.sp .cell:first-child{
+	padding-bottom:0px;
+	border-bottom:1px dashed grey;
+	margin-bottom:5px;
+}
+
+div.sp.closed{
+	border-bottom: 1px dotted purple;
+	margin-bottom: 5px;
+	
+}
+
+div.sp.closed .cell:last-child{
+	padding-bottom: 0px;
+}
