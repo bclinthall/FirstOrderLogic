@@ -12,11 +12,7 @@ and repeats.
 I need a validator function that puts things in standard form.
 */
 function test(){
-      document.getElementById("formula").value="A&(B|C)"
-      var s="~(A&~~(B|~C))"
-      s = newFixNegations(s,0)
-      console.log(s)
-      $("body").append("<div class='fol'>"+s+"</div>")
+      document.getElementById("formula").value="~~A&~(B|~C)"
 }
 String.prototype.replaceAt=function(index, x) {
       return this.substr(0, index) + x + this.substr(index+x.length);
@@ -24,15 +20,19 @@ String.prototype.replaceAt=function(index, x) {
 
 
 function folStringToHtml(s,div){
+      div=$(div)
       s=folStand(s)
+      if(illegalCharacters(s,div)){return}
       s=newFixNegations(s,0)
       s=newFixParens(s)
       s=newFixLiterals(s)
       s=fixOperators(s)
       s=restoreSymbols(s)
-      $(div).append(s)      
-      addIds(div,div.id)
+      div.append(s)      
+      //addIds(div,div.id)
       //addNames(div)
+      verifyAndName(div)
+      
 }
 function folStand(s){
       s = s.replace(/\s/g,"")
@@ -40,7 +40,26 @@ function folStand(s){
       s = s.toUpperCase()
       return s
 }
-
+function illegalCharacters(s,div){
+      s=s.replace(/[0-9]/g,"#")
+      var m = s.match(/[^A-Z\~\&\%\(\)]/g)
+      if(m){
+            for(var i=0;i<m.length;i++){
+                  s=s.replace(m[i],"<span class='error'>"+fromChar(m[i])+"</span>")
+            }
+            m = s.match(/[0-9]+/g)
+            if(m){
+                  for(var i=0;i<m.length;i++){
+                        s=s.replace(m[i],toChar(m[i]))
+                  }
+            }
+            s=s.replace(/\%/g,">")
+            div.append(s)
+            alert("Illegal characters found.")
+            return true
+      }
+      return false
+}
 function newFixNegations(s,i){
       if(s[i]=="~"){    //see what comes after the negation
                         //If it's another connector, keep looking (let the loop playthrough).
@@ -50,7 +69,7 @@ function newFixNegations(s,i){
             if(s[i+1]){
                   for(var j=i+1;j<s.length;j++){
                         if(/[A-Z]/.test(s[j])) {      //we've hit a literal.  Wrap it and seek next ~
-                              s = s.slice(0,i)+"<span name='neg'>@"+s.slice(i+1,j+1)+"</span>"+s.slice(j+1);
+                              s = s.slice(0,i)+"<span name='neg' class='subs'>@"+s.slice(i+1,j+1)+"</span>"+s.slice(j+1);
                               break;
                         }
                         if(s[j]=="("){                //we've hit a parenth.  Look for it's mate.
@@ -59,7 +78,7 @@ function newFixNegations(s,i){
                                     if(s[k]=="("){n--}
                                     if(s[k]==")"){n++}
                                     if(n=="0"){       //we've fount the mate.  Wrap it and seek next ~
-                                          s = s.slice(0,i)+"<span name='neg'>@"+s.slice(i+1,k+1)+"</span>"+s.slice(k+1);
+                                          s = s.slice(0,i)+"<span name='neg' class='subs'>@"+s.slice(i+1,k+1)+"</span>"+s.slice(k+1);
                                           break;
                                     }
                               }
@@ -74,15 +93,25 @@ function newFixNegations(s,i){
       return s
 }
 function newFixParens(s){
-      s=s.replace(/\(/g,"<span><span class='lparen'>(</span>")
+      s=s.replace(/\(/g,"<span class='subs'><span class='lparen'>(</span>")
       s=s.replace(/\)/g,"<span class='rparen'>)</span></span>")
       return s
+}
+var toChar=String.fromCharCode
+function fromChar(str){
+      return str.charCodeAt()
 }
 function newFixLiterals(s){
       var m = s.match(/[A-Z]/g)
       if(m){
             for(var i=0;i<m.length;i++){
-                  s=s.replace(m[i],"<span class='lit'>"+m[i]+"</span>")
+                  s=s.replace(m[i],"<span name='lit' class='subs'>"+fromChar(m[i])+"</span>")
+            }
+            m = s.match(/[0-9]+/g)
+            if(m){
+                  for(var i=0;i<m.length;i++){
+                        s=s.replace(m[i],toChar(m[i]))
+                  }
             }
       }
       return s
@@ -91,176 +120,30 @@ function fixOperators(s){
       var m = s.match(/[\&\|\%]/g)
       if(m){
             for(var i=0;i<m.length;i++){
-                  s=s.replace(m[i],"<span class='oper'>"+m[i]+"</span>")
+                  s=s.replace(m[i],"<span class='oper'>"+fromChar(m[i])+"</span>")
             }
-      }
-      m = s.match(/\~/g)
-      if(m){
-            for(var i=0;i<m.length;i++){
-                  s=s.replace(m[i],"<span class='neg'>"+m[i]+"</span>")
+            m = s.match(/[0-9]+/g)
+            if(m){
+                  for(var i=0;i<m.length;i++){
+                        s=s.replace(m[i],toChar(m[i]))
+                  }
             }
       }
       return s
 }
 function restoreSymbols(s){
       s=s.replace(/\%/g,">")
-      s=s.replace(/\@/g,"~")
+      s=s.replace(/\@/g,"<span class='neg'>~</span>")
       return s
 }
-/*
-function fixNegations(s){
-      var p=""
-      for(var i=0;l<s.length;i++){
-            if(s[i]=="~"&&s[i+1]=="("){
-                  //If the next thing is a parenth, it's
-                  //going to belong to its own operation, so it will get its own
-                  //span later.  We need to encase it and its mate with a span
-                  //for the negation.  We open the span here, and change its mate
-                  //to a }, so that we know it needs special treatment later.
-                  var n = 0
-                  for(var j=(i+1);j<s.length;j++){ //we look for its mate and change it to a }
-                        switch(s[j]){
-                              case "(":
-                                    n--;
-                                    break;
-                              case ")":
-                                    n++;
-                                    break;
-                        }
-                        if (n==0){
-                            s=s.replaceAt(j,"}")
-                            break;
-                        }
-                  }
-            }
-            p+="<span name='neg'>@"
-      }      
-      
-      //works w/o parens
-      s = "(~A&(B|~~C)"
-      while(s.match(/~[A-Z~]+/g)){
-            var m = s.match(/~[A-Z~]+/g)
-            for(var i=0;i<m.length;i++){
-                var n = "<span class='neg'>"+m[i].replace("~","@")+"</span>"
-                s = s.replace(m[i],n)
-            }
-      }
-console.log(s)
-}
-
-//////////////////functions for turning fol string into html
-function toChr(num){
-    return String.fromCharCode(num+913)
-}
-function frmChr(str){
-    return str.charCodeAt()-913
-}
-
-
-function dealWithParenths(s){
-      var html = ""
-      //deal with parenths
-      for (var i=0;i<s.length;i++){
-            switch(s[i]){
-                  case "(":
-                        html+="<span>("
-                        break;
-                  case ")":
-                        html+=")</span>"
-                        break;
-                  default:
-                        if (/[A-Z]/.test(s[i])){
-                              html+="<span name='lit'>"+s[i]+"</span>"
-                        }else{
-                              html+=s[i]
-                        }
-                        break
-            }
-      }
-      return html
-}
-function dealWithNegations(div){
-      var lit = div.find("[name='lit']")
+function addNames(div){
+      var lit=div.find("[name='lit']")
       console.log(lit)
-      lit.each(function(){
-            var e = $(this)
-            console.log(e)
-            while(!e.hasClass("fol")){
-                  if(e.html().indexOf("~")!=-1){
-                        dealWithNegation(e)
-                  }
-                  e=e.parent()
-            }
-      })
-
-}
-function dealWithNegation(e){
-      e.html(e.html().replace("~","<span name='neg'>@"))
-      e.append("</span>")
-      if(e.html().indexOf("~")!=-1){
-            dealWithNegation(e)
-      }
+      console.log(div)
 }
 
-
-        for (var i=0;i<s.length;i++){
-            switch(s[i]){
-                case "~":
-                  //say you run into a ~.   
-                  if(s[i+1]=="("){
-                        //If the next thing is a parenth, it's
-                        //going to belong to its own operation, so it will get its own
-                        //span later.  We need to encase it and its mate with a span
-                        //for the negation.  We open the span here, and change its mate
-                        //to a }, so that we know it needs special treatment later.
-                        var n = 0
-                        for(var j=(i+1);j<s.length;j++){ //we look for its mate and change it to a }
-                              switch(s[j]){
-                                    case "(":
-                                          n--;
-                                          break;
-                                    case ")":
-                                          n++;
-                                          break;
-                              }
-                              if (n==0){
-                                  s=s.replaceAt(j,"}")
-                                  break;
-                              }
-                        }
-                  }
-                  if(s[i+1]=="~"){//say the next thing you run into is another negation.
-                                    
-                        
-                  }
-                  html+="<span name='neg'>~"
-                  break;
-            //////////////////////////
-                case "(":
-                  var n = 0 
-
-                        html+= "<span>("
-                    break;
-                case ")":
-                    html+="</span>)";
-                    break;
-                case "}":
-                    html+="</span>)</span>"
-                    break;
-                default:
-                    if (/[A-Z]/.test(s[i])){
-                        html+="<span name='lit'>"+s[i]+"</span>"
-                    }else if(/[a-z]/.test(s[i])){
-                        html+="<span name='lit'>"+s[i].toUpperCase()+"</span></span>"
-                    }else{
-                        html+=s[i]
-                    }
-            }
-        }
-        return html
-    }
-*/
-function addNames(html) {  
+/*
+function addNamesOld(html) {  
   $(html).contents().each(function(){
     if(this.nodeType==3){
         var a = this.textContent
@@ -275,7 +158,7 @@ function addNames(html) {
                 $(this).parent().attr("name","cond")
                 break;
             default:
-/*                  if($(this).parent().attr("name")!="neg"&& !$(this).parent().hasClass('.fol')){  //remove senseless paren's
+                 if($(this).parent().attr("name")!="neg"&& !$(this).parent().hasClass('.fol')){  //remove senseless paren's
                         var e = $(this)
                         var p = e.parent()
                         var gp = e.parent().parent()
@@ -283,7 +166,7 @@ function addNames(html) {
                         p.remove()
                         gp.append(e)
                         
-                  }*/
+                  }
         }
     }
     if($(this).contents()){
@@ -291,6 +174,7 @@ function addNames(html) {
     }
   })
 };
+*/
 function addIds(e,n) {  
     var a=$(e).children()[0]
     var b=$(e).children()[1]
@@ -306,55 +190,54 @@ function addIds(e,n) {
         addIds(b,n+"b")
     }
 }
- function checkParenths(e){
-      function reject(type,e){
-            console.log(e.children().length)
+
+function verifyAndName(e){
+      var bad = false
+      var lit = e.find("[name='lit']")
+      function reject(e){
             console.log(e)
             e.addClass("error")
             alert("bad subsentence. \n Delete the sentence and try again.")
       }
-      var bad = false
-      var lit = e.find("[name='lit']")
-      lit.each(function(){
-            if(!bad){
-                  console.log("======new lit")
-                  var e = $(this)
-                  while(!e.hasClass("fol")){
-                        console.log(e)
-                        var type = e.attr("name")
-                        switch(type){
-                              case "lit":
-                                    break;
-                              case "conj":
-                                    if(e.children().length!=2){
-                                          reject(type,e)
-                                          bad = true
-                                          break
-                                    }
-                                    break;
-                              case "disj":
-                                    if(e.children().length!=2){
-                                          reject(type,e)
-                                          bad = true
-                                          break
-                                    }
-                                    break;
-                              case "neg":
-                                    if(e.children().length!=1){
-                                          reject(type,e)
-                                          bad = true
-                                          break
-                                    }
-                                    break;
-                        }
-                        if (bad){
-                              break
-                        }
-                        e=e.parent()
+      function x(cs,ary){
+            if (cs.length!=ary.length){return false}
+            for(var i=0;i<ary.length;i++){
+                  if(!(cs.eq(i).hasClass(ary[i]))){
+                        return false
                   }
             }
-      })
-      if(bad){return false}else{return true}
+            return true
+      }
+      function y(e,type){
+            console.log(e.text()+", "+type)
+      }
+      for(var i=0;i<lit.length;i++){
+            console.log("======new lit")
+            e = lit.eq(i)
+            while(!(e.hasClass("fol"))){
+                  var cs = e.children()
+                  var type = ""
+                  //There are five good subsentence forms: p|q (whole sentence only), p, (p),~p,(p|q),
+                  //If it has one of those forms, check the parent.
+                  if(cs.length==0&&e.attr('name')=='lit'){y(e,'lit');e=e.parent();continue}
+                  if(x(cs,['subs'])){y(e,'one subs');e=e.parent();continue}
+                  if(x(cs,['lparen','subs','rparen'])){y(e,'useless parens');e=e.parent();continue}
+                  if(x(cs,['neg','subs'])){y(e,'neg');e=e.parent();continue}
+                  if(x(cs,['lparen','subs','oper','subs','rparen'])){y(e,'oper');e=e.parent();continue}
+                  if(e.hasClass('x')&&x(cs,['subs','oper','subs'])){y(e,'top oper');e=e.parent();continue}
+                  bad = true
+                  reject(e)
+                  break
+            }
+            if(bad){
+                  break
+            }
+      }
+      if(bad){
+            return false
+      }else{
+            return true
+      }
 }
 
 //////////////////////End functions for turning fol string to html
@@ -430,9 +313,8 @@ var sym={
 
 ///////////////////////functions for UI management
 function newLine(){
-      $("#folTable").append("<tr class='line l"+n+"'><td class='edit'><td class='lineNo'>"+n+".</td><td class = 'fol'><span id='s"+n+"x' ></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>")
+      $("#folTable").append("<tr class='line l"+n+"'><td class='edit'><td class='lineNo'>"+n+".</td><td class = 'fol'><span id='s"+n+"x' class='x'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>")
       var el = $("#s"+n+"x")[0]
-      var myTop = $(el).offset().top
       addDelete(n)
       if(n>1){removeDelete(n-1)}
       n++
@@ -491,7 +373,7 @@ var mouseOnObj = {
 }
 var mouseOnFunc = function(event){
       if(event.shiftKey==1){
-            mouseOnObj.n = event.target
+            mouseOnObj.n = this
             if(mouseOnObj.n!=mouseOnObj.o){
                   mouseOnObj.n.classList.add('mouseOn')
                   if(mouseOnObj.o){mouseOnObj.o.classList.remove('mouseOn')}
@@ -506,13 +388,14 @@ var mouseOnFunc = function(event){
                   setupOperations(mouseOnObj.n,type)
             }
       }
+      event.stopPropagation()
 }
 
 function addListeners(div){
     subsent = document.getElementById("subsent")
     subsentType = document.getElementById("subsentType")
     sentId = document.getElementById("sentId")
-    $(div).on("mousemove",mouseOnFunc)
+    $(div).find('.subs').on("mousemove",mouseOnFunc)
 }
 function messageOn($elems,func){
       $("#display").hide()
