@@ -28,6 +28,11 @@
     important;background-color:#fff6f6!important;
     color:black!important;
 }
+.error{
+    border:1px solid red!important;
+    background-color:#fff6f6!important;
+    color:black!important;    
+}
 #display{
     border: 2px solid red;
     position: fixed;
@@ -35,7 +40,7 @@
     left: 66%;
     background-color:white;
     padding: 10px;
-    opacity: .1;
+    opacity: .25;
 }
 #display:hover{
     opacity: 1!important;

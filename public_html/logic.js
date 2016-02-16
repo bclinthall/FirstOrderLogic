@@ -11,13 +11,142 @@ and repeats.
 
 I need a validator function that puts things in standard form.
 */
+function test(){
+      document.getElementById("formula").value="A&(B|C)"
+      var s="~(A&~~(B|~C))"
+      s = newFixNegations(s,0)
+      console.log(s)
+      $("body").append("<div class='fol'>"+s+"</div>")
+}
 String.prototype.replaceAt=function(index, x) {
       return this.substr(0, index) + x + this.substr(index+x.length);
 }
 
 
+function folStringToHtml(s,div){
+      s=folStand(s)
+      s=newFixNegations(s,0)
+      s=newFixParens(s)
+      s=newFixLiterals(s)
+      s=fixOperators(s)
+      s=restoreSymbols(s)
+      $(div).append(s)      
+      addIds(div,div.id)
+      //addNames(div)
+}
+function folStand(s){
+      s = s.replace(/\s/g,"")
+      s = s.replace(/>/g,"%")
+      s = s.toUpperCase()
+      return s
+}
 
-
+function newFixNegations(s,i){
+      if(s[i]=="~"){    //see what comes after the negation
+                        //If it's another connector, keep looking (let the loop playthrough).
+                        //If you come to a literal, wrap it, and look for the next ~
+                        //If you come to a (, look for its mate, and wrap the 
+                        //    whole thing.Then look for the next ~.
+            if(s[i+1]){
+                  for(var j=i+1;j<s.length;j++){
+                        if(/[A-Z]/.test(s[j])) {      //we've hit a literal.  Wrap it and seek next ~
+                              s = s.slice(0,i)+"<span name='neg'>@"+s.slice(i+1,j+1)+"</span>"+s.slice(j+1);
+                              break;
+                        }
+                        if(s[j]=="("){                //we've hit a parenth.  Look for it's mate.
+                              var n = -1
+                              for(var k=j+1;k<s.length;k++){
+                                    if(s[k]=="("){n--}
+                                    if(s[k]==")"){n++}
+                                    if(n=="0"){       //we've fount the mate.  Wrap it and seek next ~
+                                          s = s.slice(0,i)+"<span name='neg'>@"+s.slice(i+1,k+1)+"</span>"+s.slice(k+1);
+                                          break;
+                                    }
+                              }
+                              break;
+                        }
+                  }
+            }
+      }
+      if(s[i+1]){
+            s = newFixNegations(s,i+1)
+      }
+      return s
+}
+function newFixParens(s){
+      s=s.replace(/\(/g,"<span><span class='lparen'>(</span>")
+      s=s.replace(/\)/g,"<span class='rparen'>)</span></span>")
+      return s
+}
+function newFixLiterals(s){
+      var m = s.match(/[A-Z]/g)
+      if(m){
+            for(var i=0;i<m.length;i++){
+                  s=s.replace(m[i],"<span class='lit'>"+m[i]+"</span>")
+            }
+      }
+      return s
+}
+function fixOperators(s){
+      var m = s.match(/[\&\|\%]/g)
+      if(m){
+            for(var i=0;i<m.length;i++){
+                  s=s.replace(m[i],"<span class='oper'>"+m[i]+"</span>")
+            }
+      }
+      m = s.match(/\~/g)
+      if(m){
+            for(var i=0;i<m.length;i++){
+                  s=s.replace(m[i],"<span class='neg'>"+m[i]+"</span>")
+            }
+      }
+      return s
+}
+function restoreSymbols(s){
+      s=s.replace(/\%/g,">")
+      s=s.replace(/\@/g,"~")
+      return s
+}
+/*
+function fixNegations(s){
+      var p=""
+      for(var i=0;l<s.length;i++){
+            if(s[i]=="~"&&s[i+1]=="("){
+                  //If the next thing is a parenth, it's
+                  //going to belong to its own operation, so it will get its own
+                  //span later.  We need to encase it and its mate with a span
+                  //for the negation.  We open the span here, and change its mate
+                  //to a }, so that we know it needs special treatment later.
+                  var n = 0
+                  for(var j=(i+1);j<s.length;j++){ //we look for its mate and change it to a }
+                        switch(s[j]){
+                              case "(":
+                                    n--;
+                                    break;
+                              case ")":
+                                    n++;
+                                    break;
+                        }
+                        if (n==0){
+                            s=s.replaceAt(j,"}")
+                            break;
+                        }
+                  }
+            }
+            p+="<span name='neg'>@"
+      }      
+      
+      //works w/o parens
+      s = "(~A&(B|~~C)"
+      while(s.match(/~[A-Z~]+/g)){
+            var m = s.match(/~[A-Z~]+/g)
+            for(var i=0;i<m.length;i++){
+                var n = "<span class='neg'>"+m[i].replace("~","@")+"</span>"
+                s = s.replace(m[i],n)
+            }
+      }
+console.log(s)
+}
 
 //////////////////functions for turning fol string into html
 function toChr(num){
@@ -26,60 +155,91 @@ function toChr(num){
 function frmChr(str){
     return str.charCodeAt()-913
 }
-function folStringToHtml(s,div){
-    s=folStand(s)
-    var htmlString = folStringToHtmlString(s)
-    $(div).html(htmlString)
-    addNames(div)
-    addIds(div,div.id)
-}
-    function folStand(s){
-    s = s.replace(/\s/g,"")
-    s = s.toUpperCase()
-    var p=""
-    for (var i=0;i<s.length;i++){  //remove parenth's around literals
-        if(s[i]=="("){ 
-            if(s[i+1]&&/[A-Z]/.test(s[i+1])&&s[i+2]&&s[i+2]==")"){
-                p+=s[i+1]
-                i=i+2
-            }else{
-                p+=s[i]
+
+
+function dealWithParenths(s){
+      var html = ""
+      //deal with parenths
+      for (var i=0;i<s.length;i++){
+            switch(s[i]){
+                  case "(":
+                        html+="<span>("
+                        break;
+                  case ")":
+                        html+=")</span>"
+                        break;
+                  default:
+                        if (/[A-Z]/.test(s[i])){
+                              html+="<span name='lit'>"+s[i]+"</span>"
+                        }else{
+                              html+=s[i]
+                        }
+                        break
             }
-        }else{
-            p+=s[i]
-        }
-    }
-    return p  
+      }
+      return html
 }
-    function folStringToHtmlString(s){
-        var html = ""
+function dealWithNegations(div){
+      var lit = div.find("[name='lit']")
+      console.log(lit)
+      lit.each(function(){
+            var e = $(this)
+            console.log(e)
+            while(!e.hasClass("fol")){
+                  if(e.html().indexOf("~")!=-1){
+                        dealWithNegation(e)
+                  }
+                  e=e.parent()
+            }
+      })
+
+}
+function dealWithNegation(e){
+      e.html(e.html().replace("~","<span name='neg'>@"))
+      e.append("</span>")
+      if(e.html().indexOf("~")!=-1){
+            dealWithNegation(e)
+      }
+}
+
+
         for (var i=0;i<s.length;i++){
             switch(s[i]){
                 case "~":
-                    if(/[A-Z]/.test(s[i+1])){
-                        s=s.replaceAt(i+1,s[i+1].toLowerCase())
-                    }
-                    if(s[i+1]=="("){
-                        var n = 0 
-                        for(var j=(i+1);j<s.length;j++){
-                            switch(s[j]){
-                                case "(":
-                                    n--;
-                                    break;
-                                case ")":
-                                    n++;
-                                    break;
-                            }
-                            if (n==0){
-                                s=s.replaceAt(j,"}")
-                                break;
-                            }
-                        }   
-                    }
-                    html+="<span name='neg'>~"
-                    break;
+                  //say you run into a ~.   
+                  if(s[i+1]=="("){
+                        //If the next thing is a parenth, it's
+                        //going to belong to its own operation, so it will get its own
+                        //span later.  We need to encase it and its mate with a span
+                        //for the negation.  We open the span here, and change its mate
+                        //to a }, so that we know it needs special treatment later.
+                        var n = 0
+                        for(var j=(i+1);j<s.length;j++){ //we look for its mate and change it to a }
+                              switch(s[j]){
+                                    case "(":
+                                          n--;
+                                          break;
+                                    case ")":
+                                          n++;
+                                          break;
+                              }
+                              if (n==0){
+                                  s=s.replaceAt(j,"}")
+                                  break;
+                              }
+                        }
+                  }
+                  if(s[i+1]=="~"){//say the next thing you run into is another negation.
+                                    
+                        
+                  }
+                  html+="<span name='neg'>~"
+                  break;
+            //////////////////////////
                 case "(":
-                    html+="(<span>";
+                  var n = 0 
+
+                        html+= "<span>("
                     break;
                 case ")":
                     html+="</span>)";
@@ -99,6 +259,7 @@ function folStringToHtml(s,div){
         }
         return html
     }
+*/
 function addNames(html) {  
   $(html).contents().each(function(){
     if(this.nodeType==3){
@@ -145,7 +306,56 @@ function addIds(e,n) {
         addIds(b,n+"b")
     }
 }
- 
+ function checkParenths(e){
+      function reject(type,e){
+            console.log(e.children().length)
+            console.log(e)
+            e.addClass("error")
+            alert("bad subsentence. \n Delete the sentence and try again.")
+      }
+      var bad = false
+      var lit = e.find("[name='lit']")
+      lit.each(function(){
+            if(!bad){
+                  console.log("======new lit")
+                  var e = $(this)
+                  while(!e.hasClass("fol")){
+                        console.log(e)
+                        var type = e.attr("name")
+                        switch(type){
+                              case "lit":
+                                    break;
+                              case "conj":
+                                    if(e.children().length!=2){
+                                          reject(type,e)
+                                          bad = true
+                                          break
+                                    }
+                                    break;
+                              case "disj":
+                                    if(e.children().length!=2){
+                                          reject(type,e)
+                                          bad = true
+                                          break
+                                    }
+                                    break;
+                              case "neg":
+                                    if(e.children().length!=1){
+                                          reject(type,e)
+                                          bad = true
+                                          break
+                                    }
+                                    break;
+                        }
+                        if (bad){
+                              break
+                        }
+                        e=e.parent()
+                  }
+            }
+      })
+      if(bad){return false}else{return true}
+}
 
 //////////////////////End functions for turning fol string to html
 
@@ -349,6 +559,7 @@ function myMsg(){
 ///////////////////////functions for logical operations
 function setupOperations(el,type){
       addOperation("addDoubleNegation",el)
+      addOperation("disjIntro",el)
       if(type=="conj"||type=="disj"){
             ttype = toggleType(type)
             addOperation("commutation",el)
@@ -428,8 +639,9 @@ function infer(e){
       supporting.push(l1)
       if(citeData.b){
             cited=cited.add(citeData.b)
-            var l2 = lineNum(citeData.a)
+            var l2 = lineNum(citeData.b)
             cite.append(","+lineNum(citeData.b))
+            hideEdit(l2)
             supporting.push(l2)
       }
       console.log(supporting)
@@ -661,6 +873,41 @@ var ops = {
       conjIntro2: function(e1,e2){
             $(".temp").removeClass("temp")
             $("#temp").append("<span class='fol'><span class='temp' name='conj'></span></span>")
+            var e = $(".temp")
+            $(".temp").removeClass("temp")
+            e.append(e1)
+            e.append(e2)
+            return e
+      },
+      disjIntro: function(e){
+            function disjIntroCallback(target){
+                  var s  = $(target).closest(".fol").clone()
+                  console.log(s)
+                  $("#temp").append(s)
+                  var e2 = s.find("#"+target.id)
+                  if(lineNum(e2)){citeData.b = e2}
+                  messageOff()
+                  e=ops.disjIntro2(e,e2)
+                  infer(e)
+            }
+            $("#message").append("<div>Type the sentence you wish to disjoint to sentence"+lineNum(e)+" below, or selected a sentence or subsentence on the left.</div>")
+            $("#message").append("<input id='disjIntroInput' type='text'></input><input type='button' value='enter' id='disjIntroEnter'></input>")
+            $("#message #disjIntroEnter").on("click",function(){
+                  var s = $("#disjIntroInput").val()
+                  $(".temp").removeClass("temp")
+                  $("#temp").append("<span class='temp fol'></span>")
+                  var t = $(".temp")[0]
+                  $(".temp").removeClass("temp")                  
+                  folStringToHtml(s,t)
+                  disjIntroCallback($(t).children()[0])
+            })
+            var s  = $("#temp").find(".fol")
+            el  = s.find("#"+e[0].id)
+            messageOn($(".fol").children(), disjIntroCallback)
+      },
+      disjIntro2: function(e1,e2){
+            $(".temp").removeClass("temp")
+            $("#temp").append("<span class='fol'><span class='temp' name='disj'></span></span>")
             var e = $(".temp")
             $(".temp").removeClass("temp")
             e.append(e1)
