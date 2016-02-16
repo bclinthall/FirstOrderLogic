@@ -48,7 +48,7 @@ body{
     color:#777;
     font-style:italic;
 }
-#hideHelp{
+.hideHelp{
 	color:black;
 	font-style:normal;
 }
@@ -66,7 +66,7 @@ p{
     margin-top: .5em;
     margin-bottom: .75em;
 }
-#help{
+.help{
 	display: none;
 }
 /*input[type='submit']{
@@ -149,7 +149,7 @@ div.sp.dead .cell:only-child{
     font-size:medium;
 }
 
-#opSelect,#opSelectLabel,#temp,#displayCancel,#htmlTextarea{
+#opSelect,#opSelectLabel,#temp,#displayCancel,.htmlTextarea{
     display:none;
 }
 .operations .operation{

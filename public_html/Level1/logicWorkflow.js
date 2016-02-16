@@ -323,11 +323,11 @@ function infer(e) {
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $("#done").hide()
-    $("#done").off()
+    $(".done").hide()
+    $(".done").off()
     //$(".spButton").hide()                         //varies by level
-    $("#cancelAdd").hide()
-    $("#cancelAdd").off()
+    $(".cancelAdd").hide()
+    $(".cancelAdd").off()
     levelStates.L1.awaitingE1()
 }
 

@@ -15,13 +15,13 @@
             <div id='header'>
                 <form method='post' action="../mailProof.php" onSubmit="return confirmSubmit()">
                     name:<input type='text' id='studentName' name='studentName'>
-                    <input id='showHelp' type='button' value="Show Help" onClick="showHelp()">
-                    <textarea id='htmlTextarea' name='htmlTextarea'></textarea><br>
+                    <input class='showHelp' type='button' value="Show Help" onClick="showHelp()">
+                    <textarea class='htmlTextarea' name='htmlTextarea'></textarea><br>
                     <input type='submit' value ="Submit Proof">
                 </form>
             </div>
-            <div id='help'>
-                <input id='hideHelp' type='button' value="Hide Help" onClick="hideHelp()">
+            <div class='help'>
+                <input class='hideHelp' type='button' value="Hide Help" onClick="hideHelp()">
                 <p class='instructions general'>1. Begin by entering some premises, and then a conclusion.</p>
                 <p class='instructions general'>2. Then, hold the shift key and move your mouse over your sentences and subsentences. The rules you may use on those sentences will appear to the right.</p>
                 <p class='instructions general'>3. Click the rule, and follow further instructions.</p>
@@ -37,8 +37,8 @@
                 <div class="column" id="attribution"></div>
             </div>
             <input type="text" id="formula" class="formula">
-            <input type="button" id='done' value='Done'">
-            <input type="button" id='cancelAdd' value='Cancel'">
+            <input type="button" class='done' value='Done'">
+            <input type="button" class='cancelAdd' value='Cancel'">
             <br>
             <input type="button" id="addPremise" value="Add Premise" onClick="addPremise()">
             <input type="button" id="addConclusion" value="Add Conclusion" onClick="addConclusion()">

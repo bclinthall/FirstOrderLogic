@@ -50,19 +50,19 @@ function confirmSubmit(){
     var proofHtml = $("#proof").html()
     //console.log(proofHtml)
     proofHtml = escape(proofHtml)
-    $("#htmlTextarea").show()
-    $("#htmlTextarea").val(proofHtml)
+    $(".htmlTextarea").show()
+    $(".htmlTextarea").val(proofHtml)
     var r = confirm("Submit your proof to Clint now?")
     return r
 }
 
 function showHelp(){
-    $("#help").show()
-    $("#showHelp").hide()
+    $(".help").show()
+    $(".showHelp").hide()
 }
 function hideHelp(){
-    $("#help").hide()
-    $("#showHelp").show()
+    $(".help").hide()
+    $(".showHelp").show()
 }
 
 function test() {
@@ -80,8 +80,8 @@ function test() {
 }
 
 function bodyLoaded() {
-    $("#help").hide()
-    $("#formula,#done,#cancelAdd,#addLine,.spButton,#deleteLast,#editLine").hide()
+    $(".help").hide()
+    $("#formula,.done,.cancelAdd,#addLine,.spButton,#deleteLast,#editLine").hide()
     n=0
     $("#formula").text("")
     activeSp = $("#folTable")
@@ -437,10 +437,10 @@ function addPremise(){
     $("#formula").show();$("#formula").focus()
     $("#formula").on('keydown',formulaPremiseKeydown)
     $("#formula").on('input',formulaPremiseOrLineInput)
-    $("#done").show()
-    $("#done").on('click',premiseDone)
-    $("#cancelAdd").show()
-    $("#cancelAdd").on('click',premiseCancel)
+    $(".done").show()
+    $(".done").on('click',premiseDone)
+    $(".cancelAdd").show()
+    $(".cancelAdd").on('click',premiseCancel)
     n++
     $("#folTable").append("<div class='line l" + n + " cell fol'><span id='s" + n + "x' class='x subs'></span></div>")
     $("#lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
@@ -457,10 +457,10 @@ function premiseDone(){
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
-        $("#done").hide()
-        $("#done").off()
-        $("#cancelAdd").hide()
-        $("#cancelAdd").off()
+        $(".done").hide()
+        $(".done").off()
+        $(".cancelAdd").hide()
+        $(".cancelAdd").off()
         var div = $('#s' + n + 'x')
         div.text("")
         div = folStringToHtml(s, div)
@@ -475,10 +475,10 @@ function premiseCancel(){
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $("#done").hide()
-    $("#done").off()
-    $("#cancelAdd").hide()
-    $("#cancelAdd").off()
+    $(".done").hide()
+    $(".done").off()
+    $(".cancelAdd").hide()
+    $(".cancelAdd").off()
 }
 function formulaPremiseKeydown(event){
     if (event.keyCode == 13) {
@@ -494,10 +494,10 @@ function addConclusion(){
     $("#formula").show();$("#formula").focus()
     $("#formula").on('keydown',formulaConclusionKeydown)
     $("#formula").on('input',formulaConclusionInput)
-    $("#done").show()
-    $("#done").on('click',conclusionDone)
-    $("#cancelAdd").show()
-    $("#cancelAdd").on('click',conclusionCancel)
+    $(".done").show()
+    $(".done").on('click',conclusionDone)
+    $(".cancelAdd").show()
+    $(".cancelAdd").on('click',conclusionCancel)
     $(".l"+n).find(".attribution").append("<div id='conclusion' class='line l" + n + " cell fol'><span class='x subs'></span></div>")
     $("#conclusion").addClass("working")
     added.push($("#conclusion"))
@@ -511,10 +511,10 @@ function conclusionDone(){
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
-        $("#done").hide()
-        $("#done").off()
-        $("#cancelAdd").hide()
-        $("#cancelAdd").off()
+        $(".done").hide()
+        $(".done").off()
+        $(".cancelAdd").hide()
+        $(".cancelAdd").off()
         var div = $('#conclusion .x')
         div.text("")
         div = folStringToHtml(s, div)
@@ -529,10 +529,10 @@ function conclusionCancel(){
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $("#done").hide()
-    $("#done").off()
-    $("#cancelAdd").hide()
-    $("#cancelAdd").off()
+    $(".done").hide()
+    $(".done").off()
+    $(".cancelAdd").hide()
+    $(".cancelAdd").off()
 }
 function formulaConclusionKeydown(event){
     if (event.keyCode == 13) {
@@ -549,11 +549,11 @@ function addLine(){                                           //Varies by level
     $("#formula").show();$("#formula").focus()          
     $("#formula").on('keydown',formulaLineKeydown)  
     $("#formula").on('input',formulaPremiseOrLineInput)
-    $("#done").show()
-    $("#done").on('click',lineDone)                 
+    $(".done").show()
+    $(".done").on('click',lineDone)                 
     $(".spButton").show()
-    $("#cancelAdd").show()
-    $("#cancelAdd").on('click',lineCancel)
+    $(".cancelAdd").show()
+    $(".cancelAdd").on('click',lineCancel)
     n++
     activeSp.append("<div class='line l" + n + " cell fol'><span id='s" + n + "x' class='x subs'></span></div>")
     $("#lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
@@ -570,11 +570,11 @@ function lineDone(){
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
-        $("#done").hide()
-        $("#done").off()
+        $(".done").hide()
+        $(".done").off()
         $(".spButton").show()
-        $("#cancelAdd").hide()
-        $("#cancelAdd").off()
+        $(".cancelAdd").hide()
+        $(".cancelAdd").off()
         var div = $('#s' + n + 'x')
         div.text("")
         div = folStringToHtml(s, div)
@@ -588,11 +588,11 @@ function lineCancel(){
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $("#done").hide()
-    $("#done").off()
+    $(".done").hide()
+    $(".done").off()
     $(".spButton").show()
-    $("#cancelAdd").hide()
-    $("#cancelAdd").off()
+    $(".cancelAdd").hide()
+    $(".cancelAdd").off()
 }
 function formulaLineKeydown(event){
     if (event.keyCode == 13) {
@@ -630,8 +630,8 @@ function editLine(){
     //add edit instructions.
     $(".instructions.special").text("Click a sentence to edit it.  Only sentences that have not been used to support other sentences are available for editing.")
     $("#addPremise,#addConclusion,#addLine,#deleteLast,#editLine").hide()
-    $("#cancelAdd").show()
-    $("#cancelAdd").on('click',editCancel)
+    $(".cancelAdd").show()
+    $(".cancelAdd").on('click',editCancel)
     //add a mouseover listener to highlight elements available for editing.
     var eligible = $(".x")
     for (var i = 0;i<supporting.length;i++){
@@ -659,8 +659,8 @@ function editLine2(event){
     $("#formula").val($(this).text())
     $("#formula").show();$("#formula").focus()
     $("#formula").on('keydown',{'elem':$(this)},formulaEditKeydown)
-    $("#done").show()
-    $("#done").on('click',{'elem':$(this)},editDone)
+    $(".done").show()
+    $(".done").on('click',{'elem':$(this)},editDone)
 }
 function editDone(event){
     var s = $("#formula").val()
@@ -674,10 +674,10 @@ function editDone(event){
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
-        $("#done").hide()
-        $("#done").off()
-        $("#cancelAdd").hide()
-        $("#cancelAdd").off()
+        $(".done").hide()
+        $(".done").off()
+        $(".cancelAdd").hide()
+        $(".cancelAdd").off()
         div.text("")
         div = folStringToHtml(s, div)
     }  
@@ -693,10 +693,10 @@ function editCancel(event){
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $("#done").hide()
-    $("#done").off()
-    $("#cancelAdd").hide()
-    $("#cancelAdd").off()
+    $(".done").hide()
+    $(".done").off()
+    $(".cancelAdd").hide()
+    $(".cancelAdd").off()
     var eligible = $(".x")    
     eligible.off()
     $(".toEdit").removeClass('toEdit')
@@ -724,8 +724,8 @@ function newSubProof(){
     $("#formula").on('keydown',formulaLineKeydown)  
     $("#formula").on('input',formulaPremiseOrLineInput)
     $("#formula").focus()
-    $("#done").show()
-    $("#done").on('click',lineDone)                             //end varies by level
+    $(".done").show()
+    $(".done").on('click',lineDone)                             //end varies by level
     $(".spButton").hide()
 }
 function endSp(){
