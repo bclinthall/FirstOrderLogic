@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rule Help</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="help.css">
+    </head>
+    <body>
+        <h1>Rule Help</h1>
+        <p>Each operator has an introduction rule and an elimation rule, and so does the contradiction symbol.</p>
+        <h2>Conjunction Elimination (simplification)</h2>
+        <p>From a conjunction, you may infer either of its conjuncts.</p>
+            <div class="folTable fol">
+                <div class="column" id="lineNo">
+                    <div class=cell>1.</div>
+                    <div class=cell>2.</div>
+                </div>
+                <div class="column" id="folTable">
+                    <div class=cell>A&B</div>
+                    <div class=cell>A</div>
+                </div>
+                    
+                <div class="column" id="attribution">
+                    <div class=cell></div>
+                    <div class=cell>conjElim 1</div>
+                </div>
+        </div>
+        <h2>Conjunction Introduction (conjunction)</h2>
+        <p>From any two sentences, you may infer the conjunction of them.</p>
+        <div class='fol'>
+                <div class="column" id="lineNo">
+                    <div class=cell>1.</div>
+                    <div class=cell>2.</div>
+                    <div class=cell>3.</div>
+                </div>
+                <div class="column" id="folTable">
+                    <div class=cell>A</div>
+                    <div class=cell>B</div>
+                    <div class=cell>A&B</div>
+                </div>
+                <div class="column" id="attribution">
+                    <div class=cell></div>
+                    <div class=cell></div>
+                    <div class=cell>conjIntro 1,2</div>
+                </div>
+        </div>
+        <h2>Disjunction Elimination (proof by cases)</h2>
+        <p>When you have a disjunction, a subproof that proves some sentence from the first disjunct, and a subproof that proves the same sentence from the second disjunct, you may infer that sentence.</p>
+        <div class='fol'>
+            <div id="lineNo" class="column">
+                <div class="line l1 cell">
+                    1.
+                </div>
+                <div class="line l2 cell">
+                    2.
+                </div>
+                <div class="line l3 cell">
+                    3.
+                </div>
+                <div class="line l4 cell">
+                    4.
+                </div>
+                <div class="line l5 cell">
+                    5.
+                </div>
+                <div class="line l5 cell">
+                    6.
+                </div>
+                <div class="line l5 cell">
+                    7.
+                </div>
+                <div class="line l5 cell">
+                    8.
+                </div>
+            </div>
+            <div id="folTable" class="column">
+                <div class="line l1 cell fol">
+                    A|B
+                </div>
+                <div id="spId1" class="sp closed">
+                    <div class="line l2 cell fol">
+                        <span class="x" name="lit" id="s2x">A</span>
+                    </div>
+                    <div class="line l3 cell fol">
+                        --other stuff--
+                    </div>
+                    <div class="line l3 cell fol">
+                        C
+                    </div>
+                </div>
+                <div id="spId2" class="sp closed">
+                    <div class="line l4 cell fol">
+                        <span class="x" name="lit" id="s4x">B</span>
+                    </div>
+                    <div class="line l5 cell fol">
+                        --other stuff--
+                    </div>
+                    <div class="line l3 cell fol">
+                        C
+                    </div>
+                </div>
+                <div class="line l1 cell fol">
+                    C
+                </div>
+            </div>
+            <div id="attribution" class="column">
+                <div class="line l1 cell">
+                    <span class="attribution">
+                    <div class="line l1 cell fol">
+                    </div>
+                    </span>
+                </div>
+                <div class="line l2 cell">
+                    <span class="attribution"></span>
+                </div>
+                <div class="line l3 cell">
+                    <span class="attribution"></span>
+                </div>
+                <div class="line l4 cell">
+                    <span class="attribution"></span>
+                </div>
+                <div class="line l5 cell">
+                    <span class="attribution"></span>
+                </div>
+                <div class="line l5 cell">
+                    <span class="attribution"></span>
+                </div>
+                <div class="line l5 cell">
+                    <span class="attribution"></span>
+                </div>
+                <div class="line l5 cell">
+                    <span class="attribution">disjElim 1, 2-3, 5-7</span>
+                </div>
+            </div>
+        </div>
+        <h2>Disjunction Introduction</h2>
+        <p>You may take a sentence and disjoin it to any sentence you like.</p>
+                <div class="folTable fol">
+                    <div class="column" id="lineNo">
+                        <div class=cell>1.</div>
+                        <div class=cell>2.</div>
+                    </div>
+                    <div class="column" id="folTable">
+                        <div class=cell>A</div>
+                        <div class=cell>A|B</div>
+                    </div>
+                        
+                    <div class="column" id="attribution">
+                        <div class=cell></div>
+                        <div class=cell>disjIntro 1</div>
+                    </div>
+                </div>
+     </body>
+</html>
+        
+      

@@ -15,6 +15,7 @@ var levelStates = {
             levelStates.opts.msgTemp         (false)    
         },
         awaitingE1: function(){
+            levelStates.opts.display         (false)
             levelStates.opts.display         (true)
             levelStates.opts.dispInstructions(true)
             levelStates.opts.mmE1L1          (true)
@@ -87,8 +88,8 @@ var levelStates = {
         awaitingCite: function(){
             $("#displayCancel").hide()
             $("#opSelect,#opSelectLabel").hide()
-            $("#folTable").off("mousemove", seekingE1L34)
-            $("#folTable").off("click", e1PickedL34)
+            $(".subs,.sp.closed").off("mousemove", seekingE1L34)
+            $(".subs,.sp.closed").off("click", e1PickedL34)
             $("#dispInstructions").text("")
             citeData.rule = null
             citeData.a = null
@@ -145,7 +146,7 @@ levelStates.opts = {
             $("#display").hide()
             $("#dispInstructions").text("")
             $("#display * .sentInfo").text("")
-            $(".equi .introElim").html("")
+            $(".equi,.introElim").html("")
         }
     },
     dispInstructions: function(b){
@@ -155,18 +156,16 @@ levelStates.opts = {
     },
     mmE1L1: function(b){
         if(b){
-            $("#folTable").off("mousemove", seekingE1L1)
-            $("#folTable").on("mousemove", ".subs", seekingE1L1)
-            $("#folTable").on("mouseenter",",closed",seekingE1spL1)
+            $("*").off("mousemove", seekingE1L1)
+            $(".subs,.sp.closed").on("mousemove", seekingE1L1)
         } else {
-            $("#folTable").off("mousemove", seekingE1L1)
-            $("#folTable").off("mouseenter",seekingE1spL1)
+            $("*").off("mousemove", seekingE1L1)
         }
     },
     mmE1L24: function(b){
         if(!b){
-            $("#folTable").off("mousemove", seekingE1L24)
-            $(".fol").find("subs").off("click", e1PickedL24)
+            $("*").off("mousemove", seekingE1L24)
+            $("*").off("click", e1PickedL24)
             
         }
     },
@@ -218,9 +217,11 @@ levelStates.opts = {
     },
     mmE2: function(b){
         if(!b){
-            $("#folTable").off("mousemove", seekingE2L14)
+            $("*").off("mousemove",seekingE2L14)
+            $("*").off("mousemove",disjElimSeekingSp1L14)
             $(".E2Resp").removeClass("E2Resp")
-            $(".fol").find(".subs").off("click",e2L14Click)
+            $("*").off("click",e2L14Click)
+            $("*").off("click",disjElimSp1L14Click)
         }
     },
     mmE2class: function(b){
@@ -232,7 +233,7 @@ levelStates.opts = {
         if(!b){
             $("#msgTemp").html("<span id='sx0' class = 'x subs'></span>")
         }
-    }      
+    },
 }
 
 /*

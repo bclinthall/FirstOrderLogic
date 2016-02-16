@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sentence Help</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="help.css">
+    </head>
+    <body>
+        <h1>Sentence Help</h1>
+        <ol>
+            <li>The most basic sort of sentence is a <b>literal</b>.
+                <p>A literal is a single capital letter that represents a sentence.</p>
+                <p>You might, for example, use E to symbolize "John bought eggs".</p>
+                <p>Literals are simple sentences.</p>
+            </li>
+            <li>Complex sentences are sentences that have other sentences as parts.
+                <p>Complex sentences are formed attaching operators to sentences</p>
+            </li>
+            <li><b>Conjunction:</b> The conjunction operator is symbolized by the <span class="fol">&</span> symbol.
+                <p> If <span class="fol"><i>p</i></span> is a sentence (simple or complex) and <span class="fol"><i>q</i></span> is a sentence (simple or complex)
+                then <span class="fol"><i>p</i>&<i>q</i></span> is a sentence.</p>
+                <p><span class="fol"><i>p</i>&<i>q</i></span> means <span class="fol"><i>p</i></span> and <span class="fol"><i>q</i></span>.</p>
+            </li>
+            <li><b>Disjunction:</b> The disjunction operator is symbolized by the <span class="fol">|</span> symbol.
+                <p> If <span class="fol"><i>p</i></span> is a sentence (simple or complex) and <span class="fol"><i>q</i></span> is a sentence (simple or complex)
+                then <span class="fol"><i>p</i>|<i>q</i></span> is a sentence.</p>
+                <p><span class="fol"><i>p</i>|<i>q</i></span> means <span class="fol"><i>p</i></span> or <span class="fol"><i>q</i></span>.</p>
+            </li>
+            <li><b>Conditional:</b> The disjunction operator is symbolized by the <span class="fol">></span> symbol.
+                <p> If <span class="fol"><i>p</i></span> is a sentence (simple or complex) and <span class="fol"><i>q</i></span> is a sentence (simple or complex)
+                then <span class="fol"><i>p</i>><i>q</i></span> is a sentence.</p>
+                <p><span class="fol"><i>p</i>><i>q</i></span> means if <span class="fol"><i>p</i></span> then <span class="fol"><i>q</i></span>.</p>
+            </li>
+            <li><b>Negation:</b> The negation operator is symbolized by the <span class="fol">~</span> symbol.
+                <p> If <span class="fol"><i>p</i></span> is a sentence (simple or complex)
+                then <span class="fol">~<i>q</i></span> is a sentence.</p>
+                <p><span class="fol">~<i>q</i></span> means it is not the case that <span class="fol"><i>q</i></span>.</p>
+            </li>
+            <li>For our purposes it is also helpful to have one other symbol. Our <b>contradiction</b> symbol will be <span class="fol">*</span>.
+                <p>Like a literal, the contradiction symbol is a simple sentence.  It may serve as any part of any complex sentence, just like a literal.</p>
+            </li>
+            <li><b>Parentheses</b>
+                <p>A conjunction, disjunction, or conditional may be enclosed in parentheses.  When it is a subsentence, it must be enclosed in parentheses.  This is the only proper use of parentheses.</p>
+                <p>So, these are grammatical senteneces:  <span class="fol">A&B, (A&B), A&(B|C)</span></p>
+                <p>These are not grammatical sentences:  <span class="fol">(A), (~A), (A)&B, A&B&C, A|B&C</span></p>
+            </li>
+        </ol>
+        <p>These are the rules for forming grammatical sentences.  Here are some examples of ungrammatical sentences:  <span class="fol">B&, |A, B&&C, A~B, ~AB, ></span></p>
+    </body>
+</html>
+        

@@ -1,16 +1,32 @@
+li{
+    font-size: larger;
+}
+p{
+    font-style:normal;
+    font-size: medium;
+    margin-top: .5em;
+    margin-bottom: .75em;
+}
+.fol{
+    font-family:monospace!important;
+}
+
+
+
+
+
 div.column{
 	display: inline-block;
-	margin-left: 5px
+	margin-left: 5px;
+    vertical-align: top;
 }
 div.sp{
 	border-left: 2px solid purple;
 	padding-left: 4px;
 }
-
-
-
 div.cell{
 padding-bottom: 6px;
+height:1em;
 }
 
 div.sp{
@@ -32,4 +48,9 @@ div.sp.closed{
 
 div.sp.closed .cell:last-child{
 	padding-bottom: 0px;
+}
+div.sp.closed .cell:only-child{
+	padding-bottom: 0px;
+    border-bottom:0px;
+    margin-bottom: 0px;
 }

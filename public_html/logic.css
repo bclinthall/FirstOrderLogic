@@ -1,37 +1,134 @@
 /*span{border: 1px solid blue}
 div{border: 1px solid green}*/
-.sp div{
-    width: 5px
+body{
+	margin:0;
+	padding:10px;
 }
-.sp div{
-    display: inline-block;
-    position: relative;
+.mainRight{
+	position:absolute;
+	top:0;
+	right:0;
+	width:200px;
+	height:100%;
+}
+@media screen{
+	body>div.mainRight{
+		position:fixed;
+	}
+}
+* html body{
+	overflow:hidden;
+ } 
+.mainLeft{
+	position: absolute;
+	height:100%;
+	overflow:auto;
+	left: 0px;
+	right:220px;
+}
+#display{
+    border-left: 2px solid #0F0;
+    background-color:#DFD;
+    padding: 10px;
+}
+#display div{
+    margin: 12px
+}
+#messageBox{
+    border-left: 2px solid #0AF;
+    background-color:#ADF;
+    padding: 10px;
+    display:none;
+}
+#message div{
+    margin: 12px;
+    max-height:100%;
+}
+.instructions{
+    color:#777;
+    font-style:italic;
+}
+#hideHelp{
+	color:black;
+	font-style:normal;
+}
+#showHelp{
+	position: fixed;
+	bottom: 5px;
+	right: 10px;
+	z-index: 1000;
 }
 
-.sp * div{
-    display: inline-block;
-    position: absolute;
-    left: 0px;
-    width: 2px;
+p{
+    margin-top: .5em;
+    margin-bottom: .75em;
 }
-.spT{
-    top: -1.75em;
-    background-color: purple;
-    height: 2em;
+#help{
+	display: none;
 }
-.spM{
-    top:-.85em;
-    background-color:purple;
-    height: 1.2em;
+
+div.column{
+	display: inline-block;
+	margin-left: 5px;
+    vertical-align: top;
 }
+div.sp{
+	border-left: 2px solid purple;
+	padding-left: 4px;
+}
+div.cell{
+padding-bottom: 6px;
+height:1em;
+}
+
+div.sp{
+	border-top: 1px dotted purple;
+	margin-top: -1px;
+
+}
+div.sp .cell:first-child{
+	padding-bottom:0px;
+	border-bottom:1px dashed grey;
+	margin-bottom:5px;
+}
+
+div.sp.closed{
+	border-bottom: 1px dotted purple;
+	margin-bottom: 5px;
+	
+}
+
+div.sp.closed .cell:last-child{
+	padding-bottom: 0px;
+}
+div.sp.closed .cell:only-child{
+	padding-bottom: 0px;
+    border-bottom:0px;
+    margin-bottom: 0px;
+}
+div.sp.dead{
+	border-bottom: 1px dotted purple;
+	margin-bottom: 5px;
+	
+}
+
+div.sp.dead .cell:last-child{
+	padding-bottom: 0px;
+}
+div.sp.dead .cell:only-child{
+	padding-bottom: 0px;
+    border-bottom:0px;
+    margin-bottom: 0px;
+}
+
+
 #conclusion:before{
-    content: "therefore, "
+    content: "/ therefore, "
 }
-#conclusion{
-    border-left: 3px double black;
+
+#attribution{
     margin-left: 10px;
 }
-
 
 
 #opSelect,#opSelectLabel,#temp,#displayCancel{
@@ -42,9 +139,10 @@ div{border: 1px solid green}*/
     line-height:100%;
     padding-left:2px;
 }
-#folTable{
+.cell{
     font-family:monospace;
     font-size:medium;
+    height: 1em;
 }
 .formula{
     letter-spacing:2px;
@@ -71,34 +169,7 @@ div{border: 1px solid green}*/
 }
 
 
-#display{
-    border: 2px solid red;
-    position: fixed;
-    top: 20px;
-    left: 66%;
-    background-color:white;
-    padding: 10px;
-}
-#display div{
-    margin: 12px
-}
-#messageBox{
-    border: 2px solid green;
-    position: fixed;
-    top: 20px;
-    left: 66%;
-    background-color:white;
-    padding: 10px;
-    display:none;
-}
-#message div{
-    margin: 12px;
-    max-height:100%;
-}
-.instructions{
-    color:#777;
-    font-style:italic;
-}
+
 
 #commutation,#association,#removeDblNeg{
     display:none;
@@ -112,26 +183,25 @@ div{border: 1px solid green}*/
 
 /*Subsentence highlighting*/
 .toEdit{
-    background-color: #DDAAFF
+    background-color: purple;
+    color: white;
 }
 .E1Resp{
-    background-color:#e6ffe6!important;
-    color:black!important;
+    background-color:#0F0!important;
+    color:white!important;
+	border-color:
 }
 .E2Resp{
-    background-color:#e6e6ff!important;
-    color:black!important;
+    background-color:#0AF!important;
+    color:white!important;
 }
-.subProofHighlight{
-    background-color: #0FF;
-}
+
 .error{
-    background-color:#fff6f6!important;
-    color:black!important;    
+    background-color:red!important;
+    color:#fff6f6!important;    
 }
 .cited{
-    border:1px solid yellow!
-    important;background-color:#ffffe0!important;
+    important;background-color:yellow!important;
     color:black!important;
     
 }

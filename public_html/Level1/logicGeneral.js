@@ -11,8 +11,17 @@ I need a validator function that puts things in standard form.
 */
 
 var spId = 0
-var liveSps = []
+activeSp = null
 var premise = true
+
+function showHelp(){
+    $("#help").show()
+    $("#showHelp").hide()
+}
+function hideHelp(){
+    $("#help").hide()
+    $("#showHelp").show()
+}
 
 function test() {
     document.getElementById("formula").value = "(A|B)>(A&D)"
@@ -29,9 +38,11 @@ function test() {
 }
 
 function bodyLoaded() {
+    $("#help").hide()
     $("#formula,#done,#cancelAdd,#addLine,.spButton,#deleteLast,#editLine").hide()
     n=0
     $("#formula").text("")
+    activeSp = $("#folTable")
 }
 
 function folStringToHtml(s, div) {
@@ -309,12 +320,14 @@ function addIds(e, n) {
         //console.log(a)
         //console.log(n+"a")
         a.attr("id", n + "a")
+        a.addClass("subs")
         addIds(a, n + "a")
     }
     if (b.length > 0) {
         //console.log(b)
         //console.log(n+"b")
         b.attr("id", n + "b")
+        b.addClass("subs")
         addIds(b, n + "b")
     }
 }
@@ -331,9 +344,16 @@ function setDisplay(e) {  //sends element info to .sentInfo div's.
     var txt = $(e).text()
     var type = $(e).attr("name")
     var subsentId = e.id
-    $(".subsent").text(txt)
-    $(".subsentType").text(type)
-    $(".subsentId").text(e.id)
+    if($(e).hasClass("sp")){
+        lineNums = lineNum($(e).children().first().find(".x"))+"-"+lineNum($(e).children().last().find(".x"))
+        $(".subsent").text(lineNums)
+        $(".subsentType").text("Subproof")
+        $(".subsentId").text(e.id)
+    }else{
+        $(".subsent").text(txt)
+        $(".subsentType").text(type)
+        $(".subsentId").text(e.id)
+    }
 }
 function displayCancel(){
     switch(level) {
@@ -375,7 +395,9 @@ function addPremise(){
     $("#cancelAdd").show()
     $("#cancelAdd").on('click',premiseCancel)
     n++
-    $("#folTable").append("<tr class='line l" + n + "'><td class='lineNo'>" + n + ".</td><td class = 'fol'><span id='s" + n + "x' class='x subs'></span></td><td class='attribution'></td></tr>")
+    $("#folTable").append("<div class='line l" + n + " cell fol'><span id='s" + n + "x' class='x subs'></span></div>")
+    $("#lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
+    $("#attribution").append("<div class='line l" + n + " cell'><span class='attribution'></span></div>")
     var div = $(".l"+n)
     div.find(".x").addClass("working")
     added.push(div)
@@ -429,7 +451,7 @@ function addConclusion(){
     $("#done").on('click',conclusionDone)
     $("#cancelAdd").show()
     $("#cancelAdd").on('click',conclusionCancel)
-    $(".l"+n).find(".attribution").append("<span id='conclusion' class='fol'><span class='x subs'></span></span></td></tr>")
+    $(".l"+n).find(".attribution").append("<div id='conclusion' class='line l" + n + " cell fol'><span class='x subs'></span></div>")
     $("#conclusion").addClass("working")
     added.push($("#conclusion"))
 }
@@ -437,7 +459,7 @@ function conclusionDone(){
     $(".working").removeClass("working")
     var s = $("#formula").val()
     if (s) {
-        $("#addLine,#deleteLast,#editLine").show()
+        $(".spButton,#deleteLast,#editLine").show()
         premise=false
         $("#formula").hide()
         $("#formula").off()
@@ -474,23 +496,21 @@ function formulaConclusionInput(){
         $("#conclusion .x").text($("#formula").val())
 }
 //Add line stuff
-function addLine(){
+function addLine(){                                           //Varies by level
     levelStates.L1.awaitingE1()
     $("#addLine,#deleteLast,#editLine").hide()
-    //$("#formula").show();$("#formula").focus()                            //Varies by level
-    //$("#formula").on('keydown',formulaLineKeydown)  
-    //$("#formula").on('input',formulaPremiseOrLineInput)
-    //$("#done").show()
-    //$("#done").on('click',lineDone)                 
+    $("#formula").show();$("#formula").focus()          
+    $("#formula").on('keydown',formulaLineKeydown)  
+    $("#formula").on('input',formulaPremiseOrLineInput)
+    $("#done").show()
+    $("#done").on('click',lineDone)                 
     $(".spButton").show()
     $("#cancelAdd").show()
     $("#cancelAdd").on('click',lineCancel)
     n++
-    $("#folTable").append("<tr class='line l" + n + "'><td class='lineNo'>" + n + ".</td><td class = 'fol'><span class='sp'></span><span id='s" + n + "x' class='x subs'></span></td><td class='attribution'></td></tr>")
-    for(var i=0;i<liveSps.length;i++){
-        $(".l"+n+" .fol").addClass("spId"+liveSps[i])
-        $(".l"+n+" .fol .sp").append("<div class='l"+n+"sp"+liveSps[i]+"'><div class='spT'></div><div class='spM'></div></div>")
-    }
+    activeSp.append("<div class='line l" + n + " cell fol'><span id='s" + n + "x' class='x subs'></span></div>")
+    $("#lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
+    $("#attribution").append("<div class='line l" + n + " cell'><span class='attribution'></span></div>")
     $(".l"+n).find(".x").addClass("working")
     added.push($(".l"+n))
 }
@@ -499,13 +519,13 @@ function lineDone(){
     var s = $("#formula").val()
     if (s) {
         levelStates.L1.awaitingE1()
-        $("#addLine,#deleteLast,#editLine").show() 
+        $(".spButton,#deleteLast,#editLine").show()  //varies by level
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
         $("#done").hide()
         $("#done").off()
-        $(".spButton").hide()
+        $(".spButton").show()
         $("#cancelAdd").hide()
         $("#cancelAdd").off()
         var div = $('#s' + n + 'x')
@@ -515,28 +535,16 @@ function lineDone(){
     
 }
 function lineCancel(){
-    $(".l"+n).remove()
-    added.pop()
-//update liveSp
-    var prev = $(".l"+(n-1)).find(".fol")
-    var prevClass = prev.attr("class")
-    prevClass=prevClass.split(" ")
-    for(var i = 1;i<prevClass.length;i++){
-        liveSps=[]
-        liveSps.push(prevClass[i])
-        console.log(liveSps)
-    }
-    n--
-    $("#addLine,#deleteLast,#editLine").show() 
+    deleteLast()
+    $(".spButton,#deleteLast,#editLine").show()   //varies by level
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
     $("#done").hide()
     $("#done").off()
-    $(".spButton").hide()
+    $(".spButton").show()
     $("#cancelAdd").hide()
     $("#cancelAdd").off()
-    levelStates.L1.awaitingE1()
 }
 function formulaLineKeydown(event){
     if (event.keyCode == 13) {
@@ -548,27 +556,28 @@ function formulaLineKeydown(event){
 function deleteLast(){
     console.log(added)
     var last = added.pop()
-    if(premise==false){
-        var prev = $(".l"+(n-1)).find(".fol")
-        var prevClass = prev.attr("class")
-        prevClass=prevClass.split(" ")
-        for(var i = 1;i<prevClass.length;i++){
-            liveSps=[]
-            liveSps.push(prevClass[i])
-            console.log(liveSps)
-        }
-    }
-    if(last[0].id=="conclusion"){
+
+    if(last.hasClass("closed")){
+        last.removeClass("closed")
+        activeSp = last
+    }else if(last.hasClass("sp")){
+        n--
+        activeSp = last.parent()
+        var l = added.pop()
+        l.remove()
+        last.remove()
+        levelStates.L1.awaitingE1()
+    } else if(last[0].id=="conclusion"){
         premise=true
         $("#addLine").hide()
         $("#addPremise,#addConclusion").show()
         levelStates.L1.premises()
+        last.remove()
     }else{
         n--
         levelStates.L1.awaitingE1()
+        last.remove()
     }
-    
-    last.remove()
 }
 function editLine(){
     //add edit instructions.
@@ -654,34 +663,43 @@ function formulaEditKeydown(event){
 }
 
 
-//////////////////////////////////////////////Old crap
-
+/////////Subproof stuff
+var activeSp = null
 function newSubProof(){
     spId++
-    liveSps.push(spId)
     var lNum = n
     var thisSp = spId
-    $(".l"+lNum+" .fol").addClass("spId"+spId)
-    $(".l"+lNum+" .fol .sp").append("<div class='l"+lNum+"sp"+spId+"'><div class='spT'></div><div class='spM'></div></div>")
-    $(".l"+lNum+"sp"+thisSp+" .spT").hide()
+    activeSp.append("<div class='sp' id='spId"+spId+"'></div>")
+    activeSp = $("#spId"+spId)
+    addLine()
+    added.push(activeSp)
     $("#formula").show();$("#formula").focus()                   //varies by level
     $("#formula").on('keydown',formulaLineKeydown)  
     $("#formula").on('input',formulaPremiseOrLineInput)
     $("#formula").focus()
     $("#done").show()
     $("#done").on('click',lineDone)                             //end varies by level
-    $("#newSubProof").hide()
-    $("#edSp").show()
+    $(".spButton").hide()
+    levelStates.L1.awaitingE1()
 }
 function endSp(){
-    var lNum = n
-    var thisSp = liveSps.pop()
-    $(".spId"+thisSp).find(".subs").removeClass('subs')
-    $(".spId"+thisSp).removeClass('closed')
-    $(".l"+lNum+"sp"+thisSp).remove()
-    $("#formula").focus()
-    $("#endSp").hide()
-    $("#newSubProof").show()
+    if(activeSp.hasClass("sp")){
+        var lNum = n
+        activeSp.find(".subs").removeClass('subs')
+        activeSp.find(".sp").addClass('dead')
+        activeSp.find(".sp").removeClass('closed')
+        activeSp.addClass('closed')
+        added.push(activeSp)
+        activeSp = activeSp.parent()
+        $("#formula").focus()
+        $("#endSp").hide()
+        $("#newSubProof").show()
+    }else{
+        alert("Error: No subproof is active.")
+    }
+    levelStates.L1.awaitingE1()
 }
-//we need an array of closed subproofs 
-
+////////Cancel Buttons
+function msgCancel(){
+    levelStates.L1.awaitingE1()
+}

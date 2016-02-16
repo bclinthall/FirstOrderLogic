@@ -23,7 +23,8 @@ function ruleSelectedL24(title,opLevel) {  //
     citeData.rule = title
     citeData.a = null
     citeData.b = null
-    $("#folTable").on("mousemove", ".subs", {'title': title,'opLevel':opLevel}, seekingE1L24)
+    $(".subs,.sp.closed").on("mousemove", {'title': title,'opLevel':opLevel}, seekingE1L24)
+    $(".subs,.sp.closed").on("click", {'title': title,'opLevel':opLevel}, e1PickedL24)
 }
 
 //L1 awaiting E1 stuff
@@ -35,10 +36,8 @@ function seekingE1L1(event) { //fires on mousemove over .subs.  Turned on by lev
     if (event.shiftKey == 1) {
         var t = this
         if (t != oldE1Resp) {
+            $(".E1Resp").removeClass("E1Resp")
             $(t).addClass('E1Resp')
-            if (oldE1Resp) {
-                $(oldE1Resp).removeClass('E1Resp')
-            }
             oldE1Resp = t
             setDisplay(t)
             setupOperationsL1(t)
@@ -47,49 +46,33 @@ function seekingE1L1(event) { //fires on mousemove over .subs.  Turned on by lev
     event.stopPropagation()
 }
 
-function seekingE1spL1(event){ //fires on mouse enter over td.closed. Turned on by levelState.
-    if (event.shiftKey == 1) {
-        $(".subProofHighlight").removeClass("subProofHighlight")
-        var cl = $(this).attr("class").split(" ")
-        var sp = cl.pop()
-        if (sp!='fol'){
-            $("."+sp).addClass("subProofHighlight")
-            setupOperationsSpL1($("."+sp))
+function setupOperationsL1(el) {  //called by seekingE1L1.  
+    $(".operations.equi").html("")
+    $(".operations.introElim").html("")
+    if($(el).hasClass("subs")){
+        for (i in test1) {
+            if (test1[i]($(el))) {
+                addOperationL1(i, $(el))
+            }
+        }
+    } else if($(el).hasClass("sp")){
+        for (i in test1sp){
+            if(test1sp[i]($(el))){
+                addOperationL1(i,$(el))
+            }
         }
     }
 }
 
-function setupOperationsL1(el) {  //called by seekingE1L1.  
-    $(".operations.equi").html("")
-    $(".operations.introElim").html("")
-    for (i in test1) {
-        if (test1[i]($(el))) {
-            addOperationL1(i, $(el))
-        }
-    }
-}
-function setupOperationsSpL1($sp){ //called by seekingE1spL1
-    $(".operations.equi").html("")
-    $(".operations.introElim").html("")
-    for (i in test1sp){
-        if(test1sp[i]($sp)){
-            addOperationL1(i,$sp)
-        }
-    }
-}
-var test1sp = {
-    condElim: function($sp){
-        return true 
-    },
-    negIntro: function($sp){
-        var lastSent = $sp.last().find(".x").text()
-        return lastSent=="*"
-    }
-}
 function addOperationL1(title, e) {
     var opType = ruleType[title]
-    $(".operations" + "." + opType).append("<div class='operation " + title + "'>" + title + "</div>")
-    $(".operation." + title).on("click", {'title': title,'e': e}, opClickedL1)
+    if(opType=="equi"){
+    //    $(".operations" + "." + opType).append("<div class='operation " + title + "'>" + title + "</div>")
+    //    $(".operation." + title).on("click", {'title': title,'e': e}, opClickedL1)        
+    }else{
+        $(".operations" + "." + opType).append("<div class='operation " + title + "'>" + longTitle[title] + "</div>")
+        $(".operation." + title).on("click", {'title': title,'e': e}, opClickedL1)
+    }
 }
 function opClickedL1(event) { //Called when an op button is clicked, level one.  Assigned by addOperationL1.
     var title = event.data.title
@@ -108,9 +91,7 @@ function seekingE1L24(event) {   //fires on mousemove.  setup by
         $(t).addClass('E1Resp')
         if (oldE1Resp) {
             $(oldE1Resp).removeClass('E1Resp')
-            $("#folTable").off("click", e1PickedL24)
         }
-        $("#folTable").on("click", ".subs", {'title': title,'opLevel':opLevel}, e1PickedL24)
         oldE1Resp = t
         setDisplay(t)
     }
@@ -125,8 +106,8 @@ function e1PickedL24(event) {
     if (test1[title](e)) {
         citeData.a = e
         e.off("click", e1PickedL24)
-        $("#folTable").off("mousemove", seekingE1L24)
-        $("#folTable").off("click", e1PickedL24)
+        $("*").off("mousemove", seekingE1L24)
+        $("*").off("click", e1PickedL24)
         processE1L14(title,e,opLevel)
     } else {
         alert("That sentence or subsentence doesn't work.  Try again.")
@@ -140,37 +121,92 @@ function processE1L14(title, e, opLevel) { //Called by opClickL1 or e1PickedL2
     citeData.rule = title
     citeData.a = e
     citeData.b = null
-    if (test2[title]) { //check to see if another sentence is needed.
-        console.log(test2msg[title])
-        seekingE2setupL14(test2msg[title],e,opLevel,title)
+    if(title=="disjElim"){ //disjElim is a special case.
+        disjElimSeekingSp1SetUpL14(e,opLevel,title)
+    } else if (test2[title]){
+    //check to see if another sentence is needed.
+       seekingE2setupL14(e,opLevel,title)
     } else {
-        e = ops[title](e);
-        if (e) {
-            finish(e,opLevel,title)
-        }
+       e = ops[title](e);
+       if (e) {
+           finish(e,opLevel,title)
+       }
     }
 }
 
 
 //L1-L4 awaiting E2 stuff
 function awaitingE2L14ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo(){;}
-function seekingE2setupL14(msg,e,opLevel,title)  {
-    console.log(e)
-    console.log(title)
-    levelStates["L"+level]["awaitingE2"]()
-    $("#message").prepend(msg)
-    $("#message").prepend("<div class='instructions'>To select an element, role your mouse over it to highlight it, and then click it.</div>")
+
+//disj Elim sp1 stuff
+    function disjElimSeekingSp1SetUpL14(e,opLevel,title){  //called by processE1L14 when title==disjElim
+        levelStates["L"+opLevel]["awaitingE2"]()
+        $("#message").prepend("<div>Select the first subproof to use with disjElim.</div>")
+        $("#message").prepend("<div class='instructions'>To select an element, role your mouse over it to highlight it, and then click it.</div>")
+        $(".subs,.sp.closed").on("mousemove", {'e': e,'opLevel':opLevel, 'title':title}, disjElimSeekingSp1L14)
+        $(".subs,.sp.closed").on("click",{'e': e,'opLevel':opLevel, 'title':title}, disjElimSp1L14Click) 
+    }
+
+    function disjElimSeekingSp1L14(event){
+        var e = event.data.e
+        var opLevel = event.data.opLevel
+        var title=event.data.title
+        var t = this
+        if (t != oldE2Resp) {
+            $(t).addClass("E2Resp")
+            if (oldE2Resp) {
+                $(oldE2Resp).removeClass("E2Resp")
+            }
+            oldE2Resp = t
+            setDisplay(t)
+        }
+        event.stopPropagation()
+    
+    }
+    function disjElimSp1L14Click(event){
+        event.stopPropagation()
+        $("#message").html("")
+        var e = event.data.e
+        var title = event.data.title
+        var opLevel = event.data.opLevel
+        var sp1 = $(this)
+        var a = {}
+        a.e=e
+        a.sp1=sp1
+        if (e.children(".a").text()==wrap(sp1.children().first().find(".x")).text()) {
+            $("*").off("click", disjElimSp1L14Click)
+            $("*").off("mousemove",disjElimSeekingSp1L14)
+            citeData.a = a
+            seekingE2setupL14(a,opLevel,title)
+        } else {
+            alert("That subproof doesn't work. You need a subproof whose first line is the same as the first disjunct of your disjunction.  Try again.")
+        }
+    }
+//end disj Elim sp1 stuff
+
+
+function seekingE2setupL14(e,opLevel,title)  {
+
+    levelStates["L"+opLevel]["awaitingE2"]()
+    $("#message").prepend(test2msg[title])
     if ($("#msgRespEnter").length > 0) {
+        if(title=="disjIntro"){
+            $("#msgRespInput").val(e.text())
+        }
         $("#msgRespEnter").on("click", {'e': e,'opLevel':opLevel,'title':title}, e2L14Click) //add a listener to the e2responseL14 button (if one was added in msg).
-        $("#msgRespInput").on("keydown", function (event) { //add a listener to click #msgRespEnter when the inter key is pressed in #msgRespEnter (if #msgRespEnter and #msgRespEnter were added in msg)
+        $("#msgRespInput").on("keydown", function (event) { //add a listener to click #msgRespEnter when the enter key is pressed in #msgRespEnter (if #msgRespEnter and #msgRespEnter were added in msg)
             if (event.keyCode == 13) {
                 $("#msgRespEnter").click()
             }
         })
     } else {
-        $("#folTable").on("mousemove", ".subs", {'e': e,'opLevel':opLevel, 'title':title}, seekingE2L14)
+        $("#message").prepend("<div class='instructions'>To select an element, role your mouse over it to highlight it, and then click it.</div>")
+        $(".subs,.sp.closed").on("mousemove",{'e': e,'opLevel':opLevel, 'title':title}, seekingE2L14)
+        $(".subs,.sp.closed").on("click",{'e': e,'opLevel':opLevel,'title':title}, e2L14Click)
+        
     }
 }
+
 
 var oldE2Resp = null
 var seekingE2L14 = function (event) {  //called on mouseover when seeking e2.  Setup by seekingE2setupL14.
@@ -182,16 +218,16 @@ var seekingE2L14 = function (event) {  //called on mouseover when seeking e2.  S
         $(t).addClass("E2Resp")
         if (oldE2Resp) {
             $(oldE2Resp).removeClass("E2Resp")
-            $(oldE2Resp).off("click", e2L14Click)
         }
-        $(t).on("click", {'e': e,'opLevel':opLevel,'title':title}, e2L14Click)
         oldE2Resp = t
         setDisplay(t)
     }
     event.stopPropagation()
 }
 
+
 function e2L14Click (event){
+    event.stopPropagation()
     var e = event.data.e
     var title = event.data.title
     var opLevel = event.data.opLevel
@@ -218,17 +254,28 @@ function e2L14Click (event){
         }
     } else {
         if (test2[title](e, e2)) {
+            $("*").off("mousemove")
+            $("*").off("click")
             citeData.b = e2
             e = ops[title](e, e2);
             if (e) {
                 finish(e,opLevel,title)
             }
         } else {
-            alert("that elem doens't work.")
+            alert(e2Alert[title])
         }
     }
 }
+var e2Alert = {
+    conjIntro: "A subsentence will not work. \nOne way rules only work on whole sentences and subproofs.  \sIn this case, a subproof won't work either.  Make sure you're not trying to cite something in a closed subproof.\nTry again.",
+    conjElim: "You must select one of your conjunction's two conjuncts.  \nAnything deeper in the sentence or in another sentence will not work.\nTry again.",
+    condElim: "That sentence or subsentence doesn't work. \nOne way rules only work on whole sentences.  \nYou need a whole sentence that is the same as the antecedent of the conditional in green.  \nA subproof won't work either.  Make sure you're not trying to cite something in a closed subproof.\nTry again.",
+    contIntro: "That sentence or subsentence doesn't work. \nOne way rules only work on whole sentences.  \nYou need a whole sentence that is the opposite of the sentence in green (P and ~P are opposites).\nA subproof won't work either.  Make sure you're not trying to cite something in a closed subproof.  \nTry again.",
+    disjIntro: "Your sentence must be a disjunction, and one of its disjuncts must be the same as the sentence in green.\nTry again.",
+    contElim: "Any well formed sentence will work. \nIf your sentence is well formed, but you're still getting this message, let me know.",
+    disjElim: "You need to select a subproof, \n(1) whose first line is the same as second disjunct of the disjunction you've selected and \n(2) whose last line is the same as the last line of the first subproof you've selected.  Try again."
 
+}
 //E's found stuff
 
 function foundEsL12ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo(){;}
@@ -257,34 +304,30 @@ function finish(e,opLevel,title){
 }
 
 function infer(e) {
+    n++
+    activeSp.append("<div class='line l" + n + " cell fol'><span id='s" + n + "x' class='x subs'></span></div>")
+    $("#lineNo").append("<div class='line l" + n + " cell'>"+n+".</div>")
+    $("#attribution").append("<div class='line l" + n + " cell'><span class='attribution'></span></div>")
+    $(".l"+n).find(".x").addClass("working")
     var newSentId = "s" + n + "x"
     var nl = $("#"+newSentId)
-    if(nl.text()!=""){
-        n++
-        $("#folTable").append("<tr class='line l" + n + "'><td class='lineNo'>" + n + ".</td><td class = 'fol'><span class='sp'></span><span id='s" + n + "x' class='x subs'></span></td><td class='attribution'></td></tr>")
-        for(var i=0;i<liveSps.length;i++){
-            $(".l"+n+" .fol").addClass("spId"+liveSps[i])
-            $(".l"+n+" .fol .sp").append("<div class='l"+n+"sp"+liveSps[i]+"'><div class='spT'></div><div class='spM'></div></div>")
-        }
-        newSentId = "s" + n + "x"
-        nl = $("#"+newSentId)
-    }
+    added.push($(".l"+n))
     doCitation(e, n)
     var s = e.parents('.fol').find(".x")
     s.attr('id', newSentId)
+    s.addClass("subs")
     addIds(s, newSentId)
     nl.replaceWith(s)
-    $("#addLine,#deleteLast,#editLine").show() 
+    $(".spButton,#deleteLast,#editLine").show()     //varies by level
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
     $("#done").hide()
     $("#done").off()
-    $(".spButton").hide()
+    //$(".spButton").hide()                         //varies by level
     $("#cancelAdd").hide()
     $("#cancelAdd").off()
     levelStates.L1.awaitingE1()
-
 }
 
 function foundEsL34ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo(){;}
@@ -317,24 +360,32 @@ function foundEsL14ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 function doCitation(e, line) { //called from finishL34 or from Infer (L1 and L2).
     var cite = $(".l" + line + " .attribution")
     //take care of citation stuff for citeData.a
-    var cited = citeData.a
-    if(citeData.a.length==1){
+
+    if(citeData.a.e){ //we've been dealing with a disjElim.  Handle accordingly.
+        var disj = citeData.a.e
+        var sp1 = citeData.a.sp1
+        var cited = disj
+        cited = cited.add(sp1)
+        var l1 = lineNum(disj)+","+lineNum(sp1.children().first().find(".x"))+"-"+lineNum(sp1.children().last().find(".x"))        
+    }else if(citeData.a.hasClass("sp")){
+        var cited = citeData.a
+        l1 = lineNum(citeData.a.children().first().find(".x"))+"-"+lineNum(citeData.a.children().last().find(".x"))        
+    }else{
+        var cited = citeData.a
         var l1 = lineNum(citeData.a)
         supporting.push(l1)
-    } else{
-        l1 = lineNum(citeData.a.first())+"-"+lineNume(citeData.a.last())
     }
     cite.append(citeData.rule + " " + l1)
     if (citeData.b) { //take care of citation stuff for citeData.b
         cited = cited.add(citeData.b)
-        if(citeData.b.length==1){
+        if(citeData.b.hasClass("sp")){
+            l2 = lineNum(citeData.b.children().first().find(".x"))+"-"+lineNum(citeData.b.children().last().find(".x"))
+        }else{
             var l2 = lineNum(citeData.b)
-            supporting.push(l2)
-        } else{
-            l2 = lineNum(citeData.b.first())+"-"+lineNume(citeData.b.last())
+            supporting.push(l2)   
         }
         if (l2 != "0") {
-            cite.append("," + lineNum(citeData.b))
+            cite.append("," + l2)
         }
     }
     cite.data({
@@ -349,4 +400,14 @@ function doCitation(e, line) { //called from finishL34 or from Infer (L1 and L2)
         cited.removeClass("cited")
     })
 }
+//Need to fix citation function to account for subproof inferences
+//need to fix delete line behavior: needs to delete subproof divs.
+//we need to fix conjElim
+//Need to fix cancel buttons for display and messageBox
+//Need to test delete line and edit line buttons
 
+/*Listeners: click: .subs,.sp.closed,#msgRespEnter
+                Pick
+            mousemove: .subs,.sp.closed
+                seekingE1L1, seekingE2L14,disjElimSeekingSp1L14
+*/

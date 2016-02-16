@@ -31,6 +31,9 @@ function operate(type, a, b) {
 function negate(a) {
     a.removeClass("b x")
     a.addClass('a')
+    var a1 = wrap(a)
+    a.replaceWith(a1)
+    a=a1
     var e = $(document.createElement("span"))
     e.attr('name', "neg")
     e.addClass("subs")
@@ -113,12 +116,12 @@ var ops = {
         var eClass = sClass(e)
         e = equivalenceRule(e)
         var type = e.attr("name")
-        e = negate(e)
-        e = negate(e)
-        e.removeClass("a b x")
-        e.addClass(eClass)
-        //e.replaceWith(r)
-        return e
+        r = negate(e)
+        r = negate(r)
+        r.removeClass("a b x")
+        r.addClass(eClass)
+        e.replaceWith(r)
+        return r
     },
     deMorganOut: function (e) {
         var eClass = sClass(e)
@@ -246,8 +249,8 @@ var ops = {
         e.replaceWith(r)
         return r
     },
-    conjElim: function (e) {
-        r = e.children(".a").clone()
+    conjElim: function (e1,e2) {
+        var r = e2.clone()
         r.removeClass("a b")
         r.addClass("x")
         $("#temp").append(r)
@@ -278,16 +281,9 @@ var ops = {
         return r
     },
     disjIntro: function (e1, e2) {
-        e1 = wrap(e1)
-        e2 = wrap(e2)
-        e1.removeClass("a b x")
-        e2.removeClass("a b x")
-        e1.addClass('a')
-        e2.addClass('b')
-        r = operate("disj", e1, e2)
-        r.addClass('x')
-        $("#temp").append(r)
-        return r
+        e2.addClass('x')
+        $("#temp").append(e2)
+        return e2
     },
     contElim: function (e1, e2) {
         r = e2.clone()
@@ -297,29 +293,33 @@ var ops = {
         return r
     },
     condIntro: function($sp){
+        $sp=$sp.children()
         var a = $sp.first().children(".x").clone()
-        var b= $sp.eq(-2).children(".x").clone()
+        var b= $sp.last().children(".x").clone()
         r = operate("cond",a,b)
         r.addClass("x")
         $("#temp").append(r)
         return r
     },
     negIntro: function($sp){
+        $sp=$sp.children()
         var a = $sp.first().children(".x").clone()
         r = negate(a)
         r.addClass("x")
         $("#temp").append(r)
         return r
     },
-    disjElim: function(e,sp1,sp2){
-        
+    disjElim: function(a,sp2){
+        var sp2Last = sp2.children().last().find(".x")
+        var r = sp2Last.clone()
+        $("#temp").append(r)
+        return r
     }
 }
 var ruleType = {
     commutation: "equi",
     association: "equi",
     addDoubleNegation: "equi",
-    removeDblNegation: "equi",
     deMorganOut: "equi",
     deMorganIn: "equi",
     distributionIn: "equi",
@@ -336,6 +336,30 @@ var ruleType = {
     contElim: "introElim",
     contIntro: "introElim",
     negIntro: "introElim",
+    removeDblNegation: "introElim",
+}
+var longTitle = {
+    commutation: "commutation",
+    association: "association",
+    addDoubleNegation: "addDoubleNegation",
+    removeDblNegation: "removeDblNegation (negElim)",
+    deMorganOut: "deMorganOut",
+    deMorganIn: "deMorganIn",
+    distributionIn: "distributionIn",
+    distributionOut: "distributionOut",
+    contraposition: "contraposition",
+    disjToCond: "disjToCond",
+    condToDisj: "condToDisj",
+    condElim: "condElim (modus ponens)",
+    condIntro: "condIntro (conditional proof)",
+    conjElim: "conjElim (simplification)",
+    conjIntro: "conjIntro (conjunction)",
+    disjElim: "disjElim (proof by cases)",
+    disjIntro: "disjIntro (addition)",
+    contElim: "contElim",
+    contIntro: "contIntro",
+    negIntro: "negIntro (reductio ad absurdum)",
+    
 }
 var test1 = {
     commutation: function (e) {
@@ -416,17 +440,36 @@ var test1 = {
     contElim: function (e) {
         return e.attr("name") == "cont"
     },
+    disjElim: function(e){
+        return e.hasClass("x")&&e.attr("name")=="disj"
+    }
+}
+var test1sp = {
+    condIntro: function($sp){
+        return true 
+    },
+    negIntro: function($sp){
+        var lastSent = $sp.children().last().find(".x").text()
+        return lastSent=="*"
+    }
 }
 var test2msg = {
     conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
+    conjElim: "<div>Select the subsentence that you wish to infer from the conjunction in green.  Either of its conjuncts will do.",
     condElim: "<div>Select the sentence to use with the green conditional for a condElim (Modus Ponens)</div>",
     contIntro: "<div>Select the sentence to use with the green sentence to introduce *.</div",
-    disjIntro: "<div>Which sentence do you want to disjoin to the green sentence?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+    disjIntro: "<div>What sentence do you want to infer from the sentence in green?  Type the sentence below.  It must be a disjunction, and the sentence in green must be one of its disjuncts.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
     contElim: "<div>What sentence do you want to infer from the * in green?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+    disjElim: "<div>Select the second subproof to use with for disjElim (proof by cases)."
 }
 var test2 = {
     conjIntro: function (e1, e2) {
         return e2.hasClass("x")
+    },
+    conjElim: function(e1,e2){
+        var a = e1.children(".a")
+        var b= e1.children(".b")
+        return e2[0].id==a[0].id || e2[0].id==b[0].id
     },
     condElim: function (e1, e2) {
         e2 = wrap(e2)
@@ -449,7 +492,8 @@ var test2 = {
     },
     disjIntro: function (e1, e2) {
         if (e2) {
-            return true
+            var disjunct = wrap(e1).text()
+            return e2.children(".a").text()==disjunct||e2.children(".b").text()==disjunct
         } else {
             return false
         }
@@ -460,6 +504,16 @@ var test2 = {
         } else {
             return false
         }
+    },
+    disjElim: function(a,sp2){
+        var e = a.e
+        var sp1 = a.sp1
+        var sp1Last = sp1.children().last().find(".x").text()
+        var secondDisjunct = e.children(".b").text()
+        var sp2First = sp2.children().first().find(".x")
+        sp2First = wrap(sp2First).text()
+        var sp2Last = sp2.children().last().find(".x").text()
+        return secondDisjunct==sp2First&&sp1Last==sp2Last
     }
 }
 

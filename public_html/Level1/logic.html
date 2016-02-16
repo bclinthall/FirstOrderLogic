@@ -11,56 +11,69 @@
         <link rel="stylesheet" href="../logic.css">
     </head>
     <body onload="bodyLoaded()">
-        <div>
-            <p class='instructions general'></p>
+        <div class="mainLeft">
+            <input id='showHelp' type='button' value="Show Help" onClick="showHelp()">
+            <div id='help'>
+                <input id='hideHelp' type='button' value="Hide Help" onClick="hideHelp()">
+                <p class='instructions general'>1. Begin by entering some premises, and then a conclusion.</p>
+                <p class='instructions general'>2. Then, hold the shift key and move your mouse over your sentences and subsentences. The rules you may use on those sentences will appear to the right.</p>
+                <p class='instructions general'>3. Click the rule, and follow further instructions.</p>
+                <p class='instructions general'><a href="../sentenceHelp.html">Help</a> for writing sentences.</p>
+                <p class='instructions general'><a href="../ruleHelp.html">Help</a> with the rules.</p>
+            </div>
             <p class='instructions special'></p>
-        </div>
-        <div id="readout"></div>
-        <div id="level"></div>
-        <table id="folTable"></table>
-        <input type="text" id="formula" class="formula">
-        <input type="button" id='done' value='Done'">
-        <input type="button" id='cancelAdd' value='Cancel'">
-        <br>
-        <input type="button" id="addPremise" value="Add Premise" onClick="addPremise()">
-        <input type="button" id="addConclusion" value="Add Conclusion" onClick="addConclusion()">
-        <input type="button" id="addLine" value="Add Line" onClick="addLine()">
-        <br>
-        <input type="button" id="newSubProof" class="spButton" value="newSubProof" onClick="newSubProof()">
-        <input type="button" id="endSp" class="spButton" value="End SubProof" onClick="endSp()">
-        <br>
-        <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
-        <input type="button" id='editLine' value='Edit Line' onClick="editLine()">
-        <div id="temp" class="fol"></div>
-        
-        
-        <div id="display">
-            <div id="dispInstructions" class="instructions"></div>
-            <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
-            <div class="operations easy">
-                <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation',1)">commutation</div>
-                <div class="operation" id="association" onclick="ruleSelectedL2('association',1)">association</div>
-                <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation',1)">removeDblNegation</div>
-            </div>
+            <div id="readout"></div>
+            <div id="level"></div>
             <div>
-                <span class="sentInfo subsent"></span><br/>
-                <span class="sentInfo subsentType"></span><br/>
-                <span class="sentInfo subsentId"></span>
+                <div class="column" id="lineNo"></div>
+                <div class="column" id="folTable"></div>
+                <div class="column" id="attribution"></div>
             </div>
-            <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
-            <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
+            <input type="text" id="formula" class="formula">
+            <input type="button" id='done' value='Done'">
+            <input type="button" id='cancelAdd' value='Cancel'">
+            <br>
+            <input type="button" id="addPremise" value="Add Premise" onClick="addPremise()">
+            <input type="button" id="addConclusion" value="Add Conclusion" onClick="addConclusion()">
+            <input type="button" id="addLine" value="Add Line" onClick="addLine()">
+            <br>
+            <input type="button" id="newSubProof" class="spButton" value="newSubProof" onClick="newSubProof()">
+            <input type="button" id="endSp" class="spButton" value="End SubProof" onClick="endSp()">
+            <br>
+            <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
+            <input type="button" id='editLine' value='Edit Line' onClick="editLine()">
+            <div id="temp" class="fol"></div>
         </div>
-        <div id="messageBox">
-            <div id="message"></div>
-            <div id="msgTemp" class="fol">
-                <span id="sx0" class = "x subs"></span>
+        
+        <div>
+            <div id="display" class="mainRight">
+                <div id="dispInstructions" class="instructions"></div>
+                <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
+                <div class="operations easy">
+                    <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation',1)">commutation</div>
+                    <div class="operation" id="association" onclick="ruleSelectedL2('association',1)">association</div>
+                    <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation',1)">removeDblNegation</div>
+                </div>
+                <div>
+                    <span class="sentInfo subsent"></span><br/>
+                    <span class="sentInfo subsentType"></span><br/>
+                    <span class="sentInfo subsentId"></span>
+                </div>
+                <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
+                <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
             </div>
-            <div>
-                <span class="sentInfo subsent"></span><br/>
-                <span class="sentInfo subsentType"></span><br/>
-                <span class="sentInfo subsentId"></span>
+            <div id="messageBox" class="mainRight">
+                <div id="message"></div>
+                <div id="msgTemp" class="fol">
+                    <span id="sx0" class = "x subs"></span>
+                </div>
+                <div>
+                    <span class="sentInfo subsent"></span><br/>
+                    <span class="sentInfo subsentType"></span><br/>
+                    <span class="sentInfo subsentId"></span>
+                </div>
+                <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
             </div>
-            <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
         </div>
     </body>
 </html>    
