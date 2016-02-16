@@ -14,83 +14,7 @@ var spId = 0
 activeSp = null
 var premise = true
 
-function setCookie(c_name,value,exdays){
-    var exdate=new Date();
-    exdate.setDate(exdate.getDate() + exdays);
-    var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
-    document.cookie=c_name + "=" + c_value;
-}
-function getCookie(c_name)
-{
-var i,x,y,ARRcookies=document.cookie.split(";");
-for (i=0;i<ARRcookies.length;i++)
-{
-  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
-  x=x.replace(/^\s+|\s+$/g,"");
-  if (x==c_name)
-    {
-    return unescape(y);
-    }
-  }
-}
-function checkCookie(){
-var username=getCookie("username");
-    if (username!=null && username!=""){
-        $("#studentName").val(username);
-    }else{
-        username=prompt("Please enter your name:","");
-        if (username!=null && username!="")    {
-            setCookie("username",username,365);
-            $("#studentName").val(username);
-        }
-    }
-}
-function confirmSubmit(){
-    var proofHtml = $("#proof").html()
-    //console.log(proofHtml)
-    proofHtml = escape(proofHtml)
-    $(".htmlTextarea").show()
-    $(".htmlTextarea").val(proofHtml)
-    var r = confirm("Submit your proof to Clint now?")
-    return r
-}
 
-function showHelp(){
-    $(".help").show()
-    $(".showHelp").hide()
-}
-function hideHelp(){
-    $(".help").hide()
-    $(".showHelp").show()
-}
-
-function test() {
-    document.getElementById("formula").value = "(A|B)>(A&D)"
-    $(".fol").on("mouseenter",function(event){
-        var cl = $(this).attr("class").split(" ")
-        var sp = cl[cl.length-1]
-        if (sp!='fol'){
-            $("."+sp).addClass("subProofHighlight")
-        }
-    })
-    $('.fol').on('mouseleave',function(event){
-        $('.fol').removeClass("subProofHighlight")
-    })
-}
-
-function bodyLoaded() {
-    $(".help").hide()
-    $("#formula,.done,.cancelAdd,#addLine,.spButton,#deleteLast,#editLine").hide()
-    n=0
-    $("#formula").text("")
-    activeSp = $("#folTable")
-    checkCookie()
-    $("#studentName").on("input",function(){
-        setCookie("username",$("#studentName").val(),365);
-        //console.log($("#studentName").val())
-    })
-}
 
 function folStringToHtml(s, div) {
     //s is the string, div is the .x span where it will go.
@@ -194,12 +118,6 @@ function newFixLiterals(s) {
         for (var i = 0; i < m.length; i++) {
             s = s.replace(m[i], "<span name='lit' class='subs'>" + fromChar(m[i]) + "</span>")
         }
-        m = s.match(/[0-9]+/g)
-        if (m) {
-            for (var i = 0; i < m.length; i++) {
-                s = s.replace(m[i], toChar(m[i]))
-            }
-        }
     }
     return s
 }
@@ -210,12 +128,7 @@ function fixCont(s) {
         for (var i = 0; i < m.length; i++) {
             s = s.replace(m[i], "<span name='cont' class='subs'>" + fromChar(m[i]) + "</span>")
         }
-        m = s.match(/[0-9]+/g)
-        if (m) {
-            for (var i = 0; i < m.length; i++) {
-                s = s.replace(m[i], toChar(m[i]))
-            }
-        }
+
     }
     return s
 }
@@ -226,17 +139,17 @@ function fixOperators(s) {
         for (var i = 0; i < m.length; i++) {
             s = s.replace(m[i], "<span class='oper'>" + fromChar(m[i]) + "</span>")
         }
-        m = s.match(/[0-9]+/g)
-        if (m) {
-            for (var i = 0; i < m.length; i++) {
-                s = s.replace(m[i], toChar(m[i]))
-            }
-        }
     }
     return s
 }
 
 function restoreSymbols(s) {
+    m = s.match(/[0-9]+/g)
+    if (m) {
+        for (var i = 0; i < m.length; i++) {
+            s = s.replace(m[i], toChar(m[i]))
+        }
+    }
     s = s.replace(/\%/g, ">")
     s = s.replace(/\@/g, "<span class='neg'>~</span>")
     return s
@@ -247,8 +160,12 @@ function verifyAndName(e) {
     var bad = false
     var lit = e.find("[name='lit'],[name='cont']")
 
-    function reject(e, msg) {
-            e.addClass("error")
+    function reject(e, msg, err) {
+            if(err){
+                err.addClass("error")
+            }else{
+                e.addClass("error")
+            }
             if (msg) {
                 alert(msg)
             } else {
@@ -257,6 +174,10 @@ function verifyAndName(e) {
         }
 
     function x(cs, ary) {
+        //cs is the children of an element.
+        //Ary is an array on the classes the children should have, in order.
+        //function x checks to make sure that there are the right number of children
+            //and that they have the right classes.
         if (cs.length != ary.length) {
             return false
         }
@@ -268,31 +189,29 @@ function verifyAndName(e) {
         return true
     }
 
-    function y(e, type) {
-        //console.log(e.text()+", "+type)
-    }
-
     function z(e, name, ccObj) {
+        //takes the element, the name (type) of sentence,
+        //and an object that tells the program which children are a and b subsentences.
+        //Assigns the name, and a and b classes.
         var cs = e.children()
         e.attr('name', name)
         for (var i in ccObj) {
             cs.eq(i).addClass(ccObj[i])
         }
     }
-    for (var i = 0; i < lit.length; i++) {
-        //console.log("======new lit")
-        e = lit.eq(i)
-        while (!(e.hasClass("fol"))) {
+    for (var i = 0; i < lit.length; i++) {  //We'll cycle through the literals, and for each literal cycle through its parents.
+        e = lit.eq(i)//e is the relevant literal
+        while (!(e.hasClass("fol"))) {  //Cycle through the parents till you get to the top.
             var cs = e.children()
-            //There are five good subsentence forms: p|q (whole sentence only), p, (p),~p,(p|q),
+            //There are five good subsentence forms: p@q (whole sentence only), p, *, ~p,(p@q),
             //If it has one of those forms, check the parent.
-            if (cs.length == 0 && (e.attr('name') == 'lit' || e.attr('name') == 'cont')) {
-                y(e, 'lit');
+            if (cs.length == 0 && (e.attr('name') == 'lit' || e.attr('name') == 'cont')) {  //If its an only child and a lit or a cont, continue up.
                 e = e.parent();
                 continue
             }
             if (x(cs, ['subs'])) {
-                y(e, 'oneSubsentence');
+                //Some operations will wrap a sentence in a frivolous element.
+                //This checks for and corrects the problem.
                 if (e.hasClass("x")) {
                     cs.addClass("x")
                 }
@@ -302,21 +221,19 @@ function verifyAndName(e) {
                 e = e.parent();
                 continue
             }
-            if (x(cs, ['lparen', 'subs', 'rparen'])) {
+            if (x(cs, ['lparen', 'subs', 'rparen'])) {  //check for useless parenths.
                 y(e, 'uselessParens');
                 reject(e, "Useless Parentheses Found.  Delete the sentence and try again.")
                 break;
             }
-            if (x(cs, ['neg', 'subs'])) {
-                y(e, 'neg');
+            if (x(cs, ['neg', 'subs'])) {  //check for grammatical neg.
                 z(e, 'neg', {
                     1: 'a'
                 });
                 e = e.parent();
                 continue
             }
-            if (x(cs, ['lparen', 'subs', 'oper', 'subs', 'rparen'])) {
-                y(e, 'oper');
+            if (x(cs, ['lparen', 'subs', 'oper', 'subs', 'rparen'])) {  //check for grammatical &, |, or >
                 var op = cs.eq(2).text();
                 var typeObj = {
                     "&": "conj",
@@ -330,7 +247,7 @@ function verifyAndName(e) {
                 e, e = e.parent();
                 continue
             }
-            if (e.hasClass('x') && x(cs, ['subs', 'oper', 'subs'])) {
+            if (e.hasClass('x') && x(cs, ['subs', 'oper', 'subs'])) {  //check for grammatical whole sentence &, |, or > w/o parenths.
                 y(e, 'topOper');
                 var op = cs.eq(1).text();
                 var typeObj = {
@@ -345,7 +262,24 @@ function verifyAndName(e) {
                 e = e.parent();
                 continue
             }
+            //All the grammatical possibilities have been covered.
+            //Check for what's ungrammatical to taylor message.
             bad = true
+            var c = e.children(".oper")
+            if (c.length() > 1){
+                reject(e, "Ungrammatical Sentence.  Multiple operators in one subsentence.  Delete Sentence and try again.", e.children(".oper")) 
+            }
+            var lp =e.children(".lparen")
+            var rp =e.children(".rparen")
+            if (lp!=rp){
+                reject(e, "Ungrammatical Sentence.  Unbalanced Parentheses.  Delete Sentence and try again.", e.children(".lparen,.rparen"))
+            }
+            if(e.children("[name='lit']")).next("[name='lit']").length()>0){
+                
+            }
+        
+            
+            
             reject(e)
             break
         }
@@ -364,15 +298,15 @@ function addIds(e, n) {
     var a = e.children('.a')
     var b = e.children('.b')
     if (a.length > 0) {
-        //console.log(a)
-        //console.log(n+"a")
+        ////console.log(a)
+        ////console.log(n+"a")
         a.attr("id", n + "a")
         a.addClass("subs")
         addIds(a, n + "a")
     }
     if (b.length > 0) {
-        //console.log(b)
-        //console.log(n+"b")
+        ////console.log(b)
+        ////console.log(n+"b")
         b.attr("id", n + "b")
         b.addClass("subs")
         addIds(b, n + "b")
@@ -395,11 +329,11 @@ function setDisplay(e) {  //sends element info to .sentInfo div's.
         lineNums = lineNum($(e).children().first().find(".x"))+"-"+lineNum($(e).children().last().find(".x"))
         $(".subsent").text(lineNums)
         $(".subsentType").text("Subproof")
-        $(".subsentId").text(e.id)
+        //$(".subsentId").text(e.id)
     }else{
         $(".subsent").text(txt)
         $(".subsentType").text(type)
-        $(".subsentId").text(e.id)
+        //$(".subsentId").text(e.id)
     }
 }
 function displayCancel(){
@@ -708,8 +642,8 @@ function editCancel(event){
     $(".toEdit").removeClass('toEdit')
 }
 function formulaEditKeydown(event){
-    //console.log("edit keydown")
-    //console.log(event.keyCode)
+    ////console.log("edit keydown")
+    ////console.log(event.keyCode)
     if (event.keyCode == 13) {
         editDone(event)
     }

@@ -1,0 +1,89 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="logic.css">
+        <script type="text/javascript" src="jquery-1.7.2.min.js"></script>    
+        <script type="text/javascript">
+            function bodyLoad(){
+                $(document).on("input",".asgnInput",function(){$(this).addClass("altered")})
+            }
+            function selChange(){
+                var sel = document.getElementById("selBox")
+                var selText = sel.options[sel.selectedIndex].textContent
+                var pw = document.getElementById("pwInput").value
+                if(selText=="For Clint Only"){
+                    checkHW(pw)
+                }else if (selText!=""){
+                    showSubmitted("homework",selText,pw)
+                }
+            }
+
+            function checkHW(pw){
+                $.ajax({
+                        type: "POST",
+                        url: "checkHW.php",
+                        data:{
+                            pass:pw
+                        },
+                        error: function (data){
+                            alert("Proof request did not work.  Try again.");
+                        },
+                        success: function (data){
+                            $("#submitted").html(data);
+                        }
+              
+                })
+            }
+            function showSubmitted(name,myAsgn,pw){
+                    $.ajax({
+                        type: "POST",
+                        url: "showSubmitted.php",
+                        data:{
+                            studentName:name,
+                            asgn:myAsgn,
+                            password:pw
+                        },
+                        error: function (data){
+                            alert("Proof request did not work.  Try again.");
+                        },
+                        success: function (data){
+                            $("#submitted").html(data);
+                        }
+                })
+            }
+            function updateAsgn(id){
+                $.ajax({
+                    type:"POST",
+                    url: "updateAsgn.php",
+                    data:{
+                        proofID: id,
+                        asgn: $("#asgn"+id).val(),
+                        prb: $("#prb"+id).val()
+                    },
+                    success: function (data){
+                        //console.log(data)
+                        $("#asgn"+id+",#prb"+id).removeClass("altered")
+                        alert("Thank you for updating assignment/problem information.")
+                    }
+                })
+            }
+        </script>
+    </head>
+    <body onload="bodyLoad()">
+        <div id="SeeProofsControls">
+            <input type='button' value='See Problems worked in Class' onClick='showSubmitted("Class")'>
+            <br><br><br>
+            <select id="selBox">
+                <option></option>
+                <option>For Clint Only</option>
+                <option>06-07</option>
+                <option>06-11</option>
+                <option>06-12</option>
+                <option>06-14</option>
+                <option>07-03</option>
+            </select>
+            <label for="pwInput">password: </label><input id="pwInput" type="password"><input type=button value="go" onClick="selChange()">
+            <br><br><br>
+        </div>
+        <div id="submitted"></div>
+    </body>
+</html>

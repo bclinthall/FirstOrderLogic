@@ -89,6 +89,222 @@ function wrap(e) {
     }
     return e
 }
+
+function toggleType(type) {
+    if (type == "conj") {
+        return "disj"
+    }
+    if (type == "disj") {
+        return "conj"
+    }
+}
+
+
+
+var ruleType = {
+    commutation: "equi",
+    association: "equi",
+    addDoubleNegation: "equi",
+    removeDblNegation: "equi",
+    deMorganOut: "equi",
+    deMorganIn: "equi",
+    distributionIn: "equi",
+    distributionOut: "equi",
+    contraposition: "equi",
+    disjToCond: "equi",
+    condToDisj: "equi",
+    condElim: "introElim",
+    condIntro: "introElim",
+    conjElim: "introElim",
+    conjIntro: "introElim",
+    disjElim: "introElim",
+    disjIntro: "introElim",
+    contElim: "introElim",
+    contIntro: "introElim",
+    negIntro: "introElim",
+    reiteration: "introElim"
+}
+var longTitle = {
+    commutation: "commutation",
+    association: "association",
+    addDoubleNegation: "addDoubleNegation",
+    removeDblNegation: "removeDblNegation (negElim)",
+    deMorganOut: "deMorganOut",
+    deMorganIn: "deMorganIn",
+    distributionIn: "distributionIn",
+    distributionOut: "distributionOut",
+    contraposition: "contraposition",
+    disjToCond: "disjToCond",
+    condToDisj: "condToDisj",
+    condElim: "condElim (modus ponens)",
+    condIntro: "condIntro (conditional proof)",
+    conjElim: "conjElim (simplification)",
+    conjIntro: "conjIntro (conjunction)",
+    disjElim: "disjElim (proof by cases)",
+    disjIntro: "disjIntro (addition)",
+    contElim: "contElim",
+    contIntro: "contIntro",
+    negIntro: "negIntro (reductio ad absurdum)",
+    reiteration: "reiteration"
+}
+var test1 = {
+    commutation: function (e) {
+        var test = {
+            "disj": true,
+            "conj": true
+        }
+        return test[e.attr("name")]
+    },
+    association: function (e) {
+        var type = e.attr("name")
+        var test = {
+            "disj": true,
+            "conj": true
+        }
+        return test[type] && (e.children(".a").attr("name") == type || e.children(".b").attr("name") == type)
+    },
+    addDoubleNegation: function (e) {
+        return true
+    },
+    removeDblNegation: function (e) {
+        return e.attr('name') == "neg" && e.children(".a").attr('name') == "neg"
+    },
+    deMorganOut: function (e) {
+        var test = {
+            "disj": true,
+            "conj": true
+        }
+        return (test[e.attr("name")])
+    },
+    deMorganIn: function (e) {
+        var test = {
+            "disj": true,
+            "conj": true
+        }
+        return e.attr('name') == "neg" && test[e.children(".a").attr("name")]
+    },
+    distributionIn: function (e) {
+        var test = {
+            "disj": true,
+            "conj": true
+        }
+        var type = e.attr("name")
+        return test[type] && (e.children(".a").attr("name") == tt[type] || e.children(".b").attr("name") == tt[type])
+    },
+    distributionOut: function (e) {
+        var test = {
+            "disj": true,
+            "conj": true
+        }
+        var type = e.attr("name")
+        return test[type] && (e.children(".a").attr("name") == tt[type] && e.children(".b").attr("name") == tt[type])
+    },
+    contraposition: function (e) {
+        return e.attr("name") == "cond"
+    },
+    disjToCond: function (e) {
+        return e.attr("name") == "disj"
+    },
+    condToDisj: function (e) {
+        return e.attr("name") == "cond"
+    },
+    conjElim: function (e) {
+        return e.attr("name") == "conj"&&e.hasClass("x")
+    },
+    conjIntro: function (e) {
+        return e.hasClass("x")
+    },
+    condElim: function (e) {
+        return e.hasClass("x") && e.attr("name") == "cond"
+    },
+    contIntro: function (e) {
+        return e.hasClass("x")
+    },
+    disjIntro: function (e) {
+        return e.hasClass("x")
+    },
+    contElim: function (e) {
+        return e.attr("name") == "cont"
+    },
+    disjElim: function(e){
+        return e.hasClass("x")&&e.attr("name")=="disj"
+    },
+    reiteration: function(e){
+        return e.hasClass("x")
+    }
+}
+var test1sp = {
+    condIntro: function($sp){
+        return true 
+    },
+    negIntro: function($sp){
+        var lastSent = $sp.children().last().find(".x").text()
+        return lastSent=="*"
+    }
+}
+var test2msg = {
+    conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
+    conjElim: "<div>Select the subsentence that you wish to infer from the conjunction in green.  Either of its conjuncts will do.",
+    condElim: "<div>Select the sentence to use with the green conditional for a condElim (Modus Ponens)</div>",
+    contIntro: "<div>Select the sentence to use with the green sentence to introduce *.</div",
+    disjIntro: "<div>What sentence do you want to infer from the sentence in green?  Type the sentence below.  It must be a disjunction, and the sentence in green must be one of its disjuncts.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+    contElim: "<div>What sentence do you want to infer from the * in green?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+    disjElim: "<div>Select the second subproof to use with for disjElim (proof by cases)."
+}
+var test2 = {
+    conjIntro: function (e1, e2) {
+        return e2.hasClass("x")
+    },
+    conjElim: function(e1,e2){
+        var a = e1.children(".a")
+        var b= e1.children(".b")
+        return e2[0].id==a[0].id || e2[0].id==b[0].id
+    },
+    condElim: function (e1, e2) {
+        e2 = wrap(e2)
+        return e2.hasClass('x') && (e2.text() == e1.children('.a').text())
+    },
+    contIntro: function (e1, e2) {
+        e1 = wrap(e1)
+        e2 = wrap(e2)
+        if (e2.hasClass("x")) {
+            if (e1.attr('name') == "neg") {
+                return e1.children(".a").text() == e2.text()
+            } else if (e2.attr('name') == "neg") {
+                return e1.text() == e2.children(".a").text()
+            } else {
+                return false
+            }
+        } else {
+            return false
+        }
+    },
+    disjIntro: function (e1, e2) {
+        if (e2) {
+            var disjunct = wrap(e1).text()
+            return e2.children(".a").text()==disjunct||e2.children(".b").text()==disjunct
+        } else {
+            return false
+        }
+    },
+    contElim: function (e1, e2) {
+        if (e2) {
+            return true
+        } else {
+            return false
+        }
+    },
+    disjElim: function(a,sp2){
+        var e = a.e
+        var sp1 = a.sp1
+        var sp1Last = wrap(sp1.children().last().find(".x")).text()
+        var secondDisjunct = e.children(".b").text()
+        var sp2First = sp2.children().first().find(".x")
+        sp2First = wrap(sp2First).text()
+        var sp2Last = wrap(sp2.children().last().find(".x")).text()
+        return secondDisjunct==sp2First&&sp1Last==sp2Last
+    }
+}
 var ops = {
     commutation: function (e) {
         var eClass = sClass(e)
@@ -174,7 +390,7 @@ var ops = {
         e.replaceWith(r)
         return r
     },
-    distributeIn: function (e) {
+    distributionIn: function (e) {
         var eClass = sClass(e)
         e = equivalenceRule(e)
         var type = e.attr("name")
@@ -198,7 +414,7 @@ var ops = {
         e.replaceWith(h)
         return h
     },
-    distributeOut: function (e) {
+    distributionOut: function (e) {
         var eClass = sClass(e)
         e = equivalenceRule(e)
         var type = e.attr("name")
@@ -314,231 +530,16 @@ var ops = {
         var r = sp2Last.clone()
         $("#temp").append(r)
         return r
-    }
-}
-var ruleType = {
-    commutation: "equi",
-    association: "equi",
-    addDoubleNegation: "equi",
-    deMorganOut: "equi",
-    deMorganIn: "equi",
-    distributionIn: "equi",
-    distributionOut: "equi",
-    contraposition: "equi",
-    disjToCond: "equi",
-    condToDisj: "equi",
-    condElim: "introElim",
-    condIntro: "introElim",
-    conjElim: "introElim",
-    conjIntro: "introElim",
-    disjElim: "introElim",
-    disjIntro: "introElim",
-    contElim: "introElim",
-    contIntro: "introElim",
-    negIntro: "introElim",
-    removeDblNegation: "introElim",
-}
-var longTitle = {
-    commutation: "commutation",
-    association: "association",
-    addDoubleNegation: "addDoubleNegation",
-    removeDblNegation: "removeDblNegation (negElim)",
-    deMorganOut: "deMorganOut",
-    deMorganIn: "deMorganIn",
-    distributionIn: "distributionIn",
-    distributionOut: "distributionOut",
-    contraposition: "contraposition",
-    disjToCond: "disjToCond",
-    condToDisj: "condToDisj",
-    condElim: "condElim (modus ponens)",
-    condIntro: "condIntro (conditional proof)",
-    conjElim: "conjElim (simplification)",
-    conjIntro: "conjIntro (conjunction)",
-    disjElim: "disjElim (proof by cases)",
-    disjIntro: "disjIntro (addition)",
-    contElim: "contElim",
-    contIntro: "contIntro",
-    negIntro: "negIntro (reductio ad absurdum)",
-    
-}
-var test1 = {
-    commutation: function (e) {
-        var test = {
-            "disj": true,
-            "conj": true
-        }
-        return test[e.attr("name")]
     },
-    association: function (e) {
-        var type = e.attr("name")
-        var test = {
-            "disj": true,
-            "conj": true
-        }
-        return test[type] && (e.children(".a").attr("name") == type || e.children(".b").attr("name") == type)
-    },
-    addDoubleNegation: function (e) {
-        return true
-    },
-    removeDblNegation: function (e) {
-        return e.attr('name') == "neg" && e.children(".a").attr('name') == "neg"
-    },
-    deMorganOut: function (e) {
-        var test = {
-            "disj": true,
-            "conj": true
-        }
-        return (test[e.attr("name")])
-    },
-    deMorganIn: function (e) {
-        var test = {
-            "disj": true,
-            "conj": true
-        }
-        return e.attr('name') == "neg" && test[e.children(".a").attr("name")]
-    },
-    distributionIn: function (e) {
-        var test = {
-            "disj": true,
-            "conj": true
-        }
-        var type = e.attr("name")
-        return test[type] && (e.children(".a").attr("name") == tt[type] || e.children(".b").attr("name") == tt[type])
-    },
-    distributionOut: function (e) {
-        var test = {
-            "disj": true,
-            "conj": true
-        }
-        var type = e.attr("name")
-        return test[type] && (e.children(".a").attr("name") == tt[type] && e.children(".b").attr("name") == tt[type])
-    },
-    contraposition: function (e) {
-        return e.attr("name") == "cond"
-    },
-    disjToCond: function (e) {
-        return e.attr("name") == "disj"
-    },
-    condToDisj: function (e) {
-        return e.attr("name") == "cond"
-    },
-    conjElim: function (e) {
-        return e.attr("name") == "conj"&&e.hasClass("x")
-    },
-    conjIntro: function (e) {
-        return e.hasClass("x")
-    },
-    condElim: function (e) {
-        return e.hasClass("x") && e.attr("name") == "cond"
-    },
-    contIntro: function (e) {
-        return e.hasClass("x")
-    },
-    disjIntro: function (e) {
-        return e.hasClass("x")
-    },
-    contElim: function (e) {
-        return e.attr("name") == "cont"
-    },
-    disjElim: function(e){
-        return e.hasClass("x")&&e.attr("name")=="disj"
-    }
-}
-var test1sp = {
-    condIntro: function($sp){
-        return true 
-    },
-    negIntro: function($sp){
-        var lastSent = $sp.children().last().find(".x").text()
-        return lastSent=="*"
-    }
-}
-var test2msg = {
-    conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
-    conjElim: "<div>Select the subsentence that you wish to infer from the conjunction in green.  Either of its conjuncts will do.",
-    condElim: "<div>Select the sentence to use with the green conditional for a condElim (Modus Ponens)</div>",
-    contIntro: "<div>Select the sentence to use with the green sentence to introduce *.</div",
-    disjIntro: "<div>What sentence do you want to infer from the sentence in green?  Type the sentence below.  It must be a disjunction, and the sentence in green must be one of its disjuncts.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
-    contElim: "<div>What sentence do you want to infer from the * in green?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
-    disjElim: "<div>Select the second subproof to use with for disjElim (proof by cases)."
-}
-var test2 = {
-    conjIntro: function (e1, e2) {
-        return e2.hasClass("x")
-    },
-    conjElim: function(e1,e2){
-        var a = e1.children(".a")
-        var b= e1.children(".b")
-        return e2[0].id==a[0].id || e2[0].id==b[0].id
-    },
-    condElim: function (e1, e2) {
-        e2 = wrap(e2)
-        return e2.hasClass('x') && (e2.text() == e1.children('.a').text())
-    },
-    contIntro: function (e1, e2) {
-        e1 = wrap(e1)
-        e2 = wrap(e2)
-        if (e2.hasClass("x")) {
-            if (e1.attr('name') == "neg") {
-                return e1.children(".a").text() == e2.text()
-            } else if (e2.attr('name') == "neg") {
-                return e1.text() == e2.children(".a").text()
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    },
-    disjIntro: function (e1, e2) {
-        if (e2) {
-            var disjunct = wrap(e1).text()
-            return e2.children(".a").text()==disjunct||e2.children(".b").text()==disjunct
-        } else {
-            return false
-        }
-    },
-    contElim: function (e1, e2) {
-        if (e2) {
-            return true
-        } else {
-            return false
-        }
-    },
-    disjElim: function(a,sp2){
-        var e = a.e
-        var sp1 = a.sp1
-        var sp1Last = sp1.children().last().find(".x").text()
-        var secondDisjunct = e.children(".b").text()
-        var sp2First = sp2.children().first().find(".x")
-        sp2First = wrap(sp2First).text()
-        var sp2Last = sp2.children().last().find(".x").text()
-        return secondDisjunct==sp2First&&sp1Last==sp2Last
+    reiteration: function(e){
+        var r = e.clone()
+        $("#temp").append(r)
+        return r
     }
 }
 
 
 
-function eOrig(e) {
-    var orig = null
-    e.each(function () {
-        if (orig) {
-            orig = orig.add($("#folTable").find("#" + this.id))
-        } else {
-            orig = $("#folTable").find("#" + this.id)
-        }
-    })
-    return orig
-}
-
-function toggleType(type) {
-    if (type == "conj") {
-        return "disj"
-    }
-    if (type == "disj") {
-        return "conj"
-    }
-}
 ///////////////////////end functions for logical operations
 var n = 2
 

@@ -67,8 +67,8 @@ function setupOperationsL1(el) {  //called by seekingE1L1.
 function addOperationL1(title, e) {
     var opType = ruleType[title]
     if(opType=="equi"){
-    //    $(".operations" + "." + opType).append("<div class='operation " + title + "'>" + title + "</div>")
-    //    $(".operation." + title).on("click", {'title': title,'e': e}, opClickedL1)        
+        $(".operations" + "." + opType).append("<div class='operation " + title + "'>" + title + "</div>")
+        $(".operation." + title).on("click", {'title': title,'e': e}, opClickedL1)        
     }else{
         $(".operations" + "." + opType).append("<div class='operation " + title + "'>" + longTitle[title] + "</div>")
         $(".operation." + title).on("click", {'title': title,'e': e}, opClickedL1)
@@ -100,7 +100,7 @@ function seekingE1L24(event) {   //fires on mousemove.  setup by
 
 function e1PickedL24(event) {
     var e = $(this)
-    //console.log(e)
+    ////console.log(e)
     var title = event.data.title
     var opLevel = event.data.opLevel
     if (test1[title](e)) {
@@ -329,6 +329,13 @@ function infer(e) {
     $(".cancelAdd").hide()
     $(".cancelAdd").off()
     levelStates.L1.awaitingE1()
+    if(console.log){
+        console.log(wrap(s).text())
+        console.log(wrap($("#conclusion")).text())
+    }
+    if(s.parents('.sp').length==0&&wrap(s).text()==wrap($("#conclusion .x")).text()){
+        alert("Congratulation! You proved the conclusion!")
+    }
 }
 
 function foundEsL34ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo(){;}
@@ -352,7 +359,7 @@ function finishL34(e, title) {
     $("#commutation,#association,#removeDblNeg").show()
     $(".sentInfo").text("")
     var cite = $(".l" + citeForLine + " .attribution")
-    //console.log(cite.data())
+    ////console.log(cite.data())
 }
 
 

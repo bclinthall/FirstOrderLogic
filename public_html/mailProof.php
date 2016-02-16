@@ -84,7 +84,6 @@
     $html = '<div class="nameTime"><span class="name">'.$name.'</span><br><span class="date">'.$date.'</span><br><span class="time">'.$time.'</span></div>'.$proof;
 
     
-    $from = "bch@bch24.site90.com";
     
 $con = mysql_connect($mysql_host,$mysql_user,$mysql_password);
 if (!$con)

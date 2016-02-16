@@ -183,8 +183,6 @@
         <div>
             <h2>Conditional Introduction (conditional proof)</h2>
             <p>When you have a subproof that proves <span class='fol'><i>q</i></span> from the assumption that <span class='fol'><i>p</i></span>, you may infer <span class='fol'><i>q</i>><i>p</i></span>.</p>
-            
-            
             <div class="folTable fol">
                 <div class="column">
                     <div class="line l1 cell">1.</div>
@@ -206,6 +204,122 @@
                     <div class="line l4 cell"><span class="attribution"></span></div>
                     <div class="line l5 cell"><span class="attribution">condIntro 1-3</span></div></div>
             </div>
+        </div>
+                <div>
+            <h2>Negation Elimination (Double Negation)</h2>
+                        <div class="folTable fol">
+                <div class="column" id="lineNo">
+                    <div class=cell>1.</div>
+                    <div class=cell>2.</div>
+                </div>
+                <div class="column" id="folTable">
+                    <div class=cell>~~A</div>
+                    <div class=cell>A</div>
+                </div>
+                    
+                <div class="column" id="attribution">
+                    <div class=cell></div>
+                    <div class=cell>negElim 1</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2>Negation Introduction (reductio ad absurdum)</h2>
+            <div class="folTable fol">
+                <div class="column">
+                    <div class="line l1 cell">1.</div>
+                    <div class="line l2 cell">2.</div>
+                    <div class="line l3 cell">3.</div>
+                    <div class="line l4 cell">4.</div>
+                </div>
+                <div class="column">
+                    <div id="spId1" class="sp closed">
+                        <div class="line l3 cell fol"><span class="x" name="lit" id="s3x">A</span></div>
+                        <div><span>--other stuff--</span></div>
+                        <div class="line l4 cell fol"><span class="x" name="lit" id="s4x">*</span></div>
+                    </div>
+                    <div class="line l5 cell fol">~A</div>
+                </div>
+                <div class="column">
+                    <div class="line l3 cell"><span class="attribution"></span></div>
+                    <div class="line l4 cell"><span class="attribution"></span></div>
+                    <div class="line l4 cell"><span class="attribution"></span></div>
+                    <div class="line l5 cell"><span class="attribution">negIntro 1-3</span></div></div>
+            </div>
+        </div>
+        <h2>Contradiction Elimination (Anything goes in a crazy world)</h2>
+            <p>From the contradiction symbol, you may infer anything you like.</p>
+            <div class="folTable fol">
+                <div class="column" id="lineNo">
+                    <div class=cell>1.</div>
+                    <div class=cell>2.</div>
+                </div>
+                <div class="column" id="folTable">
+                    <div class=cell>*</div>
+                    <div class=cell>A</div>
+                </div>
+                    
+                <div class="column" id="attribution">
+                    <div class=cell></div>
+                    <div class=cell>contElim 1</div>
+                </div>
+
+            </div>
+        </div>
+        <h2>Contradiction Introduction</h2>
+            <p>From a sentence and its negation, you may infer the contradiction symbol.</p>
+            <div class="folTable fol">
+                <div class="column" id="lineNo">
+                    <div class=cell>1.</div>
+                    <div class=cell>2.</div>
+                    <div class=cell>3.</div>
+                </div>
+                <div class="column" id="folTable">
+                    <div class=cell>A</div>
+                    <div class=cell>~A</div>
+                    <div class=cell>*</div>
+                </div>
+                    
+                <div class="column" id="attribution">
+                    <div class=cell></div>
+                    <div class=cell></div>
+                    <div class=cell>contIntro 1</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h1>Equivalences</h1>
+            <div>
+                <h2>Commutation</h2>
+                <ul>
+                    <li class="fol">A&B &equiv; B&A</li>
+                    <li class="fol">A|B &equiv; B|A</li>
+                </ul>
+                <h2>Association</h2>
+                <ul>
+                    <li class="fol">A&(B&C) &equiv; (A&B)&C</li>
+                    <li class="fol">A|(B|C) &equiv; (A|B)|C</li>
+                </ul>
+                <h2>De Morgan's</h2>
+                <ul>
+                    <li class="fol">~(A&B) &equiv; ~A|~B</li>
+                    <li class="fol">~(A|B) &equiv; ~A&~B</li>
+                </ul>
+                <h2>Distribution</h2>
+                <ul>
+                    <li class="fol">A&(B|C) &equiv; (A&B)|(A&C)</li>
+                    <li class="fol">A|(B&C) &equiv; (A|B)&(A|C)</li>
+                </ul>
+                <h2>Contraposition</h2>
+                <ul>
+                    <li class="fol">A>B &equiv; ~B>~A</li>
+                </ul>
+                <h2>Conditional to Disjunction and Disjunction to Conditional</h2>
+                <ul>
+                    <li class="fol">A>B &equiv; B|~A</li>
+                </ul>
+            </div>
+        </div>
      </body>
 </html>
         

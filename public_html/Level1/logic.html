@@ -12,14 +12,6 @@
     </head>
     <body onload="bodyLoaded()">
         <div class="mainLeft">
-            <div id='header'>
-                <form method='post' action="../mailProof.php" onSubmit="return confirmSubmit()">
-                    name:<input type='text' id='studentName' name='studentName'>
-                    <input class='showHelp' type='button' value="Show Help" onClick="showHelp()">
-                    <textarea class='htmlTextarea' name='htmlTextarea'></textarea><br>
-                    <input type='submit' value ="Submit Proof">
-                </form>
-            </div>
             <div class='help'>
                 <input class='hideHelp' type='button' value="Hide Help" onClick="hideHelp()">
                 <p class='instructions general'>1. Begin by entering some premises, and then a conclusion.  Use <span class='fol'>&</span> for conjunction, <span class='fol'>|</span> for disjunction, <span class='fol'>></span> for conditional, <span class='fol'>~</span> for negation, and <span class='fol'>*</span> for the contradiction symbol.</p>
@@ -50,11 +42,22 @@
             <input type="button" id='deleteLast' value='Delete Last' onClick="deleteLast()">
             <input type="button" id='editLine' value='Edit Line' onClick="editLine()">
             <div id="temp" class="fol"></div>
-            
+            <div class="fol htmlify"></div>
+            <div id="submitted"></div>
         </div>
         
         <div>
             <div id="display" class="mainRight">
+                <div id='header'>
+                    <form method='post' action="../proofSubmitted.php" onSubmit="return confirmSubmit()">
+                        name:<input type='text' id='studentName' name='studentName'>
+                        <input class='showHelp' type='button' value="Help" onClick="showHelp()">
+                        <textarea class='htmlTextarea' name='htmlTextarea'></textarea>
+                        <input type='submit' value ="Submit Proof">
+                        
+                        <input type ="button" value = "Show Submitted" onClick="showSubmitted()">
+                    </form>
+                </div>
                 <div id="dispInstructions" class="instructions"></div>
                 <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
                 <div class="operations easy">
@@ -67,7 +70,7 @@
                     <span class="sentInfo subsentType"></span><br/>
                     <span class="sentInfo subsentId"></span>
                 </div>
-                <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
+                <div class="operations equi"></div><div class="operations introElim"></div>
                 <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
             </div>
             <div id="messageBox" class="mainRight">

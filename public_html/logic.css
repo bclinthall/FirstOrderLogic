@@ -73,10 +73,16 @@ p{
 .help{
 	display: none;
 }
-/*input[type='submit']{
-	display:none;
-}*/
-
+.asgnInfo{
+	font-size: medium;
+	line-height: normal;
+	background-color: #f3f3f3;
+	border: solid 1px #a1a1a1;
+	padding: 10px;
+}
+.asgnInfo .altered{
+	background-color: #FDD;
+}
 
 /*For displaying Proofs*/
 div.column{
@@ -89,6 +95,10 @@ div.cell{
 	height:1em;
     font-family:monospace;
     font-size:24px;
+}
+div.equi,div.introElim{
+	border: 1px dotted black;
+	padding: 5px;
 }
 #folTable{
     margin-bottom:12px;
