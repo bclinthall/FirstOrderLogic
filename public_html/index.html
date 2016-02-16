@@ -1,16 +1,36 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Propositional Logic</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="logic.css">
+        <style>
+            .levelNo{
+                white-space: nowrap;
+            }
+        </style>
     </head>
     <body>
-        <div>TODO write content</div>
+        <div class="mainLeft">
+
+            <div>Choose a level</div>
+            <table>
+                <tr>
+                    <td class='levelNo'><a href="logicL1.html">Level 1</a></td>
+                    <td class="levelDesc">Select a sentence or subsentence, then choose from the rules that can apply to it.  The inference is drawn for you.</td>
+                </tr>
+                <tr>
+                    <td class='levelNo'><a href="logicL2.html">Level 2</a></td>
+                    <td class="levelDesc">Select rule, then choose a sentence or subsentence to apply it to.  The inference is drawn for you.</td>
+                </tr>
+                <tr>
+                    <td class='levelNo'><a href="logicL3.html">Level 3</a></td>
+                    <td class="levelDesc">Type a sentence, and then justify it by selecting a rule and sentences or subsentences.  Errors are pointed out immediately.</td>
+                </tr>
+            </table>
+        </div>
+        <div id="display1" class="mainRight">
+
+        </div>
     </body>
-</html>
+</html>    
