@@ -334,9 +334,10 @@ function foundEsL34ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 function finishL34(e, title) {
     var line = n
     var yourAnswer = wrap($("#s" + line + "x")).text()
-    theAnswer = wrap(e).text()
-    console.log(yourAnswer)
-    console.log(theAnswer)
+    var theAnswer = wrap(e).text()
+    if(quantRule[title]){
+        theAnswer = checkQuantInf[title](wrap($("#s" + line + "x")),wrap(citeData.a))
+    }
     if ((yourAnswer != theAnswer) && level == 3) {
         if (citeData.b) {
             alert("Line " + line + " does not follow from lines " + lineNum(citeData.a) + " and " + lineNum(citeData.b) + " by " + title + ".")

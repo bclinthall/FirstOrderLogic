@@ -23,13 +23,19 @@ function folStringToHtml(s, div) {
     if (illegalCharacters(s, div)) {
         return
     }
-    s = newFixNegations(s, 0)
+    //s = newFixNegations(s, 0)
+    s = toGreek(s)
+    s = fixLiterals(s)
+    s = fixIndivs(s)
+    s = fixPredicates(s)
+    s = wrapQuantifiers(s)
+    s = wrapNegations(s)
     s = newFixParens(s)
-    s = newFixLiterals(s)
     s = fixCont(s)
     s = fixOperators(s)
     s = restoreSymbols(s)
     div.append(s)
+    fixNegAndQuant(div)
     if (div = verifyAndName(div)) {
         addIds(div, id)
     }
@@ -39,13 +45,12 @@ function folStringToHtml(s, div) {
 function folStand(s) {
     s = s.replace(/\s/g, "")
     s = s.replace(/>/g, "%")
-    s = s.toUpperCase()
     return s
 }
 
 function illegalCharacters(s, div) {
     s = s.replace(/[0-9]/g, "#")
-    var m = s.match(/[^A-Z\~\&\%\|\(\)\*]/g)
+    var m = s.match(/[^A-Za-z\~\&\%\|\(\)\*\u2200\u2203]/g)
     if (m) {
         for (var i = 0; i < m.length; i++) {
             s = s.replace(m[i], "<span class='error'>" + fromChar(m[i]) + "</span>")
@@ -64,50 +69,6 @@ function illegalCharacters(s, div) {
     return false
 }
 
-function newFixNegations(s, i) {
-    if (s[i] == "~") { //see what comes after the negation
-        //If it's another negation, keep looking (let the loop playthrough).
-        //If you come to a literal, wrap it, and look for the next ~
-        //If you come to a (, look for its mate, and wrap the
-        //    whole thing.Then look for the next ~.
-        if (s[i + 1]) {
-            for (var j = i + 1; j < s.length; j++) {
-                if(s[j]=="~"){  //if you hit another negation, look to next character.
-                    continue;
-                }
-                if(/[\|\&\>\)]/.test(s[j])){
-                    //We shouldn't hit a |, &, >, or ) before a literal or (.
-                    //If we do, leave things alone.
-                    break;
-                }
-                if (/[A-Z\*]/.test(s[j])) { //we've hit a literal.  Wrap it and seek next ~
-                    s = s.slice(0, i) + "<span name='neg' class='subs'>@" + s.slice(i + 1, j + 1) + "</span>" + s.slice(j + 1);
-                    break;
-                }
-                if (s[j] == "(") { //we've hit a parenth.  Look for it's mate.
-                    var d = -1
-                    for (var k = j + 1; k < s.length; k++) {
-                        if (s[k] == "(") {
-                            d--
-                        }
-                        if (s[k] == ")") {
-                            d++
-                        }
-                        if (d == "0") { //we've fount the mate.  Wrap it and seek next ~
-                            s = s.slice(0, i) + "<span name='neg' class='subs'>@" + s.slice(i + 1, k + 1) + "</span>" + s.slice(k + 1);
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    if (s[i + 1]) {
-        s = newFixNegations(s, i + 1)
-    }
-    return s
-}
 
 function newFixParens(s) {
     s = s.replace(/\(/g, "<span class='subs'><span class='lparen'>(</span>")
@@ -117,27 +78,68 @@ function newFixParens(s) {
 var toChar = String.fromCharCode
 
 function fromChar(str) {
-    return str.charCodeAt()
+    return str.charCodeAt(0)
 }
-
-function newFixLiterals(s) {
-    var m = s.match(/[A-Z]/g)
-    if (m) {
-        for (var i = 0; i < m.length; i++) {
-            s = s.replace(m[i], "<span name='lit' class='subs'>" + fromChar(m[i]) + "</span>")
+function grkChar(str){
+    return toChar(fromChar(str)+848)
+}
+function latinChar(str){
+    toChar(fromChar(str)-848)
+}
+function toGreek(s){
+    var m = s.match(/[A-Za-z]/g)
+    if(m){
+        for (var i=0;i<m.length;i++){
+            s = s.replace(m[i],grkChar(m[i]))
         }
     }
     return s
 }
 
-function fixCont(s) {
-    m = s.match(/\*/g)
+function fixLiterals(s){
+    var m = s.match(/[\u0391-\u03AA][\u03b1-\u03CA]*/g)
+    if(m){
+        for (var i=0;i<m.length;i++){
+            s = s.replace(m[i],"<span name='lit' class='subs'>"+m[i]+"</span>")
+        }
+    }
+    return s
+}
+
+function fixPredicates(s) {
+    var m = s.match(/[\u0391-\u03AA]/g)
     if (m) {
         for (var i = 0; i < m.length; i++) {
-            s = s.replace(m[i], "<span name='cont' class='subs'>" + fromChar(m[i]) + "</span>")
+            s = s.replace(m[i], "<span name='pred'>" + (fromChar(m[i])-848) + "</span>")
         }
-
     }
+    return s
+}
+
+
+function wrapQuantifiers(s){
+    s = s.replace(/[\u2200]/g,"<span class='quantr univQuantr'>"+fromChar("\u2200")+"</span>")
+    s = s.replace(/[\u2203]/g,"<span class='quantr exisQuantr'>"+fromChar("\u2203")+"</span>")
+    return s
+}
+
+function fixIndivs(s) {
+    var m = s.match(/[\u03b1-\u03CA]/g)
+    if (m) {
+        for (var i = 0; i < m.length; i++) {
+            s = s.replace(m[i], "<span class='indiv'>" + (fromChar(m[i])-848) + "</span>")
+        }
+    }
+    return s
+}
+
+function wrapNegations(s) {
+    s = s.replace(/\~/g,"<span class='neg'>"+fromChar("~")+"</span>")
+    return s
+}
+
+function fixCont(s) {
+    s = s.replace(/\*/g,"<span name='cont' class='subs'>"+fromChar("*")+"</span>")
     return s
 }
 
@@ -159,10 +161,35 @@ function restoreSymbols(s) {
         }
     }
     s = s.replace(/\%/g, ">")
-    s = s.replace(/\~/g, "@")
-    s = s.replace(/\@/g, "<span class='neg'>~</span>")
     return s
 }
+
+function fixNegAndQuant(e) {
+    var id = e.attr('id')
+    var lit = e.find("[name='lit'],[name='cont']")
+
+    for (var i = 0; i < lit.length; i++) {  //We'll cycle through the literals, and for each literal cycle through its parents.
+        e = lit.eq(i)//e is the relevant literal
+        while (!(e.hasClass("fol"))) {  //Cycle through the parents till you get to the top.
+            var p = e.prev()
+            var pp = p.prev()
+            if (p.hasClass("neg")){
+                var subs = document.createElement("span")
+                $(subs).addClass("subs")
+                p.before(subs)
+                $(subs).append(p, e)
+            }else if (p.hasClass("indiv") && pp.hasClass("quantr")){
+                var subs = document.createElement("span")
+                $(subs).addClass("subs")
+                p.before(subs)
+                $(subs).append(pp, p, e)                
+            }
+            e = e.parent()    
+        }
+    }
+}
+
+
 
 function verifyAndName(e) {
     var id = e.attr('id')
@@ -203,7 +230,7 @@ function verifyAndName(e) {
         //and an object that tells the program which children are a and b subsentences.
         //Assigns the name, and a and b classes.
         var cs = e.children()
-        e.attr('name', name)
+        if(name){e.attr('name', name)}
         for (var i in ccObj) {
             cs.eq(i).addClass(ccObj[i])
         }
@@ -215,14 +242,14 @@ function verifyAndName(e) {
         e = lit.eq(i)//e is the relevant literal
         while (!(e.hasClass("fol"))) {  //Cycle through the parents till you get to the top.
             var cs = e.children()
-            //There are five good subsentence forms: p@q (whole sentence only), p, *, ~p,(p@q),
+            //There are six good subsentence forms: p|q (whole sentence only), p, *, ~p,(p|q),@ x p
             //If it has one of those forms, check the parent.
-            if (cs.length == 0 && (e.attr('name') == 'lit' || e.attr('name') == 'cont')) {  //If its an only child and a lit or a cont, continue up.
+            if (e.attr('name') == 'lit' || e.attr('name') == 'cont') {  //If its a lit or a cont, continue up.
                 e = e.parent();
                 continue
             }
             if (x(cs, ['subs'])) {
-                //Some operations will wrap a sentence in a frivolous element.
+                //Some operations may wrap a sentence in a frivolous element.
                 //This checks for and corrects the problem.
                 if (e.hasClass("x")) {
                     cs.addClass("x")
@@ -241,6 +268,18 @@ function verifyAndName(e) {
                 z(e, 'neg', {
                     1: 'a'
                 });
+                e = e.parent();
+                continue
+            }
+            if(x(cs, ['quantr','indiv','subs'])) { //check for grammatical quantifications
+                var quantr = cs.eq(0).text()
+                var typeObj = {
+                    "\u2200": "univQuantn",
+                    "\u2203": "exisQuantn"
+                }
+                z(e, typeObj[quantr], {
+                    2: 'a'
+                }),
                 e = e.parent();
                 continue
             }
@@ -272,6 +311,7 @@ function verifyAndName(e) {
                 e = e.parent();
                 continue
             }
+            
             //All the grammatical possibilities have been covered.
             //Check for what's ungrammatical to taylor message.
             bad = true
@@ -303,6 +343,8 @@ function verifyAndName(e) {
         return $("#" + id)
     }
 }
+
+
 
 function addIds(e, n) {
     var a = e.children('.a')

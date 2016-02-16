@@ -15,6 +15,17 @@ function bodyLoaded() {
         ////console.log($("#studentName").val())
     })
     setLevel()
+    
+    document.addEventListener("input",function(e){
+        var inp = e.target
+        var val = inp.value
+        if(val.indexOf("}")>-1||(val.indexOf("@")>-1)){
+            val = val.replace("}","\u2203")
+            val = val.replace("@","\u2200")
+        }
+        inp.value = val
+    })
+
 }
 
 //general functions
@@ -29,7 +40,7 @@ function listenersOff(){
 function initialUi(){
         listenersOff()
         $("#addPremise,#addConclusion,#editLine").show()
-        $("#formula,.done,.cancelAdd,.spButton,#addLine").hide()
+        $("#formula,.done,.cancelAdd,.spButton,.addConst,#addLine").hide()
         $("#formula").val("")
         $("#addPremise").focus()
         if(added[0]){
@@ -38,6 +49,7 @@ function initialUi(){
             $(".changeLast").hide()
         }
         $("#dispInstructions").text("Click 'add premise' or 'add conclusion'.")
+        $("#addPremise").focus()
 }
 
 function addLine(){
@@ -174,6 +186,7 @@ function citeUiReset(){
     $(".Sp1Resp").removeClass("Sp1Resp")
     $("*").off("click",e2L14Click)
     $("*").off("click",disjElimSp1L14Click)
+    $(".addConst").hide()
     oldE2Resp = null
 }
 
@@ -259,7 +272,7 @@ function addLineUi(){
     listenersOff()
     citeUiReset()
     $("#dispInstructions").text("Type the sentence to add for the next line and press 'done' or 'enter'.").hide().fadeIn("slow")
-    $("#addPremise,#addConclusion,.changeLast,#editLine").hide()
+    $("#addPremise,#addConclusion,.addConst,.changeLast,#editLine").hide()
     $("#formula").show();
     $("#formula").val("");
     $("#formula").focus()
@@ -309,6 +322,7 @@ function addSpPremiseUi(){
     $(".done").on('click',spPremiseDone)
     $(".cancelAdd").show()
     $(".cancelAdd").on('click',spPremiseCancel)
+    $(".addConst").show()
 }
 function spPremiseCancel(){
     var last = added.pop()
@@ -329,6 +343,29 @@ function spPremiseDone(event){
         div = folStringToHtml(s, div)
         readyForStep()
     }   
+}
+function spPremiseDoneArbConst(event){
+    event.stopPropagation()
+    var s = $("#formula").val()
+    $(".working").removeClass("working")
+    var div = $('#s' + n + 'x')
+    div.text("")
+    if (s) {
+        div = folStringToHtml(s, div)
+    }
+    readyForStep()
+}
+function addArbConst(){
+    var arbConst = prompt("Please enter an arbitrary constant (one not used elsewhere in your proof).","a")
+    if (name != null){
+        if(/^[a-z]$/.test(arbConst)){
+            $("div.l"+n+".cell.fol").prepend("<span class='arbConst'>"+arbConst+"<span>")
+            $(".done").off()
+            $(".done").on('click',spPremiseDoneArbConst)
+        }else{
+            alert("Your constant must be a single lowercase letter.")
+        }
+    }
 }
 function endSp(){
     if(activeSp.hasClass("sp")){
@@ -394,7 +431,6 @@ function deleteLast(){
         premise=true
         $("#addLine,.spButton").hide()
         $("#addPremise,#addConclusion").show()
-        levelStates.L1.premises()
         last.remove()
         initialUi()
     }else{
@@ -421,7 +457,7 @@ var displayCancelL = [
     },
     function(){     //level 3
         var last = added.pop()
-        var sent = $("#s"+n+"x").text()
+        var lastTxt = $("#s"+n+"x").text()
         n--
         last.remove()
         readyForStep()

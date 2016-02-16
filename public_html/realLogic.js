@@ -122,7 +122,11 @@ var ruleType = {
     contElim: "introElim",
     contIntro: "introElim",
     negIntro: "introElim",
-    reiteration: "introElim"
+    reiteration: "introElim",
+    exisIntro: "introElim",
+    exisElim: "introElim",
+    univIntro: "introElim",
+    univElim: "introElim",
 }
 var longTitle = {
     commutation: "commutation",
@@ -145,7 +149,11 @@ var longTitle = {
     contElim: "contElim",
     contIntro: "contIntro",
     negIntro: "negIntro (reductio ad absurdum)",
-    reiteration: "reiteration"
+    reiteration: "reiteration",
+    exisIntro: "exisIntro (existential generalization)",
+    exisElim: "exisElim (existential instantiation)",
+    univIntro: "univIntro (universal generalization)",
+    univElim: "univElim (universal instantiation)"
 }
 var test1 = {
     commutation: function (e) {
@@ -238,10 +246,27 @@ var test1 = {
     negIntro: function($sp){
         var lastSent = $sp.children().last().find(".x").text()
         return $sp.hasClass("sp") && $sp.hasClass("closed") && !$sp.hasClass("dead") && lastSent=="*"
-    }
-
+    },
+    exisIntro: function(e){
+        return e.hasClass("subs") && e.hasClass("x")
+    },
+    exisElim: function(e){
+        return e.hasClass("subs") && e.hasClass("x")&&e.attr("name")=="exisQuantn"
+    },
+    univIntro: function($sp){
+        return $sp.hasClass("sp") && $sp.hasClass("closed") && !$sp.hasClass("dead") && $sp.children().first().find(".arbConst").length>0
+    },
+    univElim: function(e){
+        return e.hasClass("subs") && e.hasClass("x") && e.attr("name") == "univQuantn"
+    },
+        
 }
-
+/*
+    exisIntro: ,
+    exisElim: ,
+    univIntro: ,
+    univElim: ,
+*/    
 var test2msg = {
     conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
     conjElim: "<div>Select the subsentence that you wish to infer from the conjunction in green.  Either of its conjuncts will do.",
@@ -249,7 +274,8 @@ var test2msg = {
     contIntro: "<div>Select the sentence to use with the green sentence to introduce *.</div",
     disjIntro: "<div>What sentence do you want to infer from the sentence in green?  Type the sentence below.  It must be a disjunction, and the sentence in green must be one of its disjuncts.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
     contElim: "<div>What sentence do you want to infer from the * in green?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
-    disjElim: "<div>Select the second subproof to use with for disjElim (proof by cases)."
+    disjElim: "<div>Select the second subproof to use with for disjElim (proof by cases).",
+    exisElim: "<div>Select the subproof to use with exisElim.</div>"
 }
 var test2 = {
     conjIntro: function (e1, e2) {
@@ -303,6 +329,29 @@ var test2 = {
         sp2First = wrap(sp2First).text()
         var sp2Last = wrap(sp2.children().last().find(".x")).text()
         return secondDisjunct==sp2First&&sp1Last==sp2Last
+    },
+    exisElim: function(e1,$sp){
+        if($sp.hasClass("sp") && $sp.hasClass("closed") && !$sp.hasClass("dead") && $sp.children().first().find(".arbConst").length>0){
+            var good = true
+            var arbConst = $sp.children().first().find(".arbConst").text()
+            $(".indiv").each(function(index,element){
+                element = $(element)
+                if(element.text() == arbConst){
+                    if(!element.parents().is($sp)){
+                        good = false
+                    }
+                }
+            })
+            if (good == false) {return false}
+            var first = $sp.children().first().find(".x").text()
+            var subs = e1.children(".subs").text()
+            var indiv = e1.children(".indiv").text()
+            var re = RegExp(indiv,"g")
+            return subs.replace(re, arbConst) == first
+        }else{
+            return false
+        }
+        //make sure first line of sp is identical to quantified sentence in e1 (replacing bound variable with arbConst).
     }
 }
 var ops = {
@@ -535,11 +584,84 @@ var ops = {
         var r = e.clone()
         $("#temp").append(r)
         return r
+    },
+    exisIntro: function(e){
+        return $("#s"+n+"x")
+    },
+    exisElim: function(e,$sp){
+        var spLast = $sp.children().last().find(".x")
+        r = spLast.clone()
+        $("#temp").append(r)
+        return r
+    },
+    univIntro: function($sp){
+        return $("#s"+n+"x")
+    },
+    univElim: function(e){
+        return $("#s"+n+"x")
+    }
+}
+
+var quantRule = {
+    exisIntro: true,
+    //exisElim: true,
+    univIntro: true,
+    univElim: true
+}
+
+var symbols = ["(",")","*","|","&",">","~"]
+
+var checkQuantInf = {
+    exisIntro: function(yourAnswer, e){
+        var orig = e.text()
+        var subs = yourAnswer.children(".subs").text()
+        var re = subs
+        var variable = yourAnswer.children(".indiv").text()
+        for (var i=0;i<symbols.length;i++){
+            var sRe = new RegExp("\\"+symbols[i],"g")
+            re = re.replace(sRe,"\\"+symbols[i])
+        }
+        re = re.replace(variable,"([\\141-\\172])")
+        var varRegEx = new RegExp(variable,"g")
+        re = re.replace(varRegEx, "\\1")
+        re = "^" + re + "$"
+        re = new RegExp(re)
+        if(re.test(orig)){
+            return yourAnswer.text()
+        }else{
+            return false
+        }
+    },
+    exisElim: function(yourAnswer, e){
+        //be sure constant neither previously used nor used in conclusion
+        var orig = e.text()
+        
+    },
+    univIntro:  function(yourAnswer, e){
+        
+    },
+    univElim:  function(yourAnswer, e){
+        yourAnswer = yourAnswer.text()
+        var subs = e.children(".subs").text()
+        var re = subs
+        var variable = e.children(".indiv").text()
+        for (var i=0;i<symbols.length;i++){
+            var sRe = new RegExp("\\"+symbols[i],"g")
+            re = re.replace(sRe,"\\"+symbols[i])
+        }
+        re = re.replace(variable,"([\\141-\\172])")
+        var varRegEx = new RegExp(variable,"g")
+        re = re.replace(varRegEx, "\\1")
+        re = "^" + re + "$"
+        re = new RegExp(re)
+        if(re.test(yourAnswer)){
+            return yourAnswer
+        }else{
+            return false
+        }
     }
 }
 
 
-
 ///////////////////////end functions for logical operations
-var n = 2
 

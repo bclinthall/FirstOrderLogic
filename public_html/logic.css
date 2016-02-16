@@ -91,7 +91,7 @@ p{
 /*For displaying Proofs*/
 div.column{
 	display: inline-block;
-	margin-left: 5px;
+	margin-left: 3px;
     vertical-align: top;
 }
 div.cell{
@@ -105,6 +105,11 @@ div.equi,div.introElim{
 	padding: 5px;
 }
 
+.arbConst{
+    border: 1px dotted purple;
+    padding: 0px 2px;
+    font-size: .75em;
+}
 
 #opSelect{
     display: none;
@@ -135,9 +140,16 @@ div.equi,div.introElim{
     margin-bottom:12px;
 }
 .x{
-    letter-spacing: 5px;
     line-height:100%;
     padding-left:2px;
+}
+.x.working{
+    letter-spacing: 3px;
+    margin-left: 3px;
+}
+
+span[name='lit'],span[name='cont'],.oper,.lparen,.rparen,.quantr{
+    margin-left: 3px;
 }
 
 div.sp{
@@ -192,10 +204,9 @@ div.cell.conclusion{
 
 
 .formula{
-    letter-spacing:2px;
     font-family:monospace;
     font-size:1.2em;
-	letter-spacing: 5px;
+	letter-spacing: 3px;
 }
 
 .operationsL1,.operationsL24,.operations.easy,#temp,#displayCancel,.htmlTextarea{
