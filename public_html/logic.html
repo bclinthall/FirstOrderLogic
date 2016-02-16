@@ -1,23 +1,49 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <script type="text/javascript" src="logic.js"></script>
-    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-    <link rel="stylesheet" href="logic.css"></link>
-</head>
-<body>
-    <input type="button" value="test" onClick="test()"></input>
-    <div id="readout"></div>
-    <div id="level"></div>
-    <div id="display">
-        <div id="subsent"></div>
-        <div id="subsentType"></div>
-        <div id="subsentId"></div>
-        <div id="operations"></div>
-    </div>
-    <div id="message"></div>
-    <table id="folTable"></table>
-    <input type="button" value="add" onClick="run()"></input>
-    <input type="text" id="formula" onkeydown="return formulaInput(event)"></input>
-    <div id="temp" class="fol"></div>
-</body>
+    <head>
+        <title>Propositional Logic</title>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="logic.js"></script>
+        <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+        <link rel="stylesheet" href="logic.css">
+    </head>
+    <body>
+        <div>
+            <label for='levelSelect'>Level: </label>
+            <select id='levelSelect' onchange='levelChange(event)'>
+                <option>--Select a Level--</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
+        </div>
+        <input type="button" value="test" onClick="test()">
+        <div id="readout"></div>
+        <div id="level"></div>
+        <div id="display">
+            <div>
+                <span class="subsent"></span><br/>
+                <span class="subsentType"></span><br/>
+                <span class="subsentId"></span>
+            </div>
+            <div id="operations"></div>
+        </div>
+        <div id="message">
+            <div id="msgTemp" class="fol">
+                <span id="sx0" class = "x subs"></span>
+            </div>
+            <div>
+                <span class="subsent"></span><br/>
+                <span class="subsentType"></span><br/>
+                <span class="subsentId"></span>
+            </div>
+            <input type="button" value="Cancel" onclick="messageOff()">
+            
+        </div>
+        <table id="folTable"></table>
+        <input type="button" value="add" onClick="run()">
+        <input type="text" id="formula" class="formula" onkeydown="return formulaInput(event)">
+        <div id="temp" class="fol"></div>
+    </body>
 </html>    

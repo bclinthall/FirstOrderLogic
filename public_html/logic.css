@@ -2,7 +2,7 @@
     letter-spacing: 5px;
     font-family:monospace;
 }
-#formula{
+.formula{
     letter-spacing:2px;
     font-family:monospace;
     font-size:medium;
@@ -12,7 +12,7 @@
 }
 .lineNo{
 }
-.operation{
+#operations div{
     border: 1px solid #555555;
     background-color: #DDDDDD;
     padding: 3px 5px;
@@ -40,7 +40,10 @@
     left: 66%;
     background-color:white;
     padding: 10px;
-    opacity: .25;
+    opacity: .5;
+}
+#display div{
+    margin: 12px
 }
 #display:hover{
     opacity: 1!important;
@@ -53,6 +56,9 @@
     background-color:white;
     padding: 10px;
     display:none;
+}
+#message div{
+    margin: 12px
 }
 .instructions{
     color:#777;

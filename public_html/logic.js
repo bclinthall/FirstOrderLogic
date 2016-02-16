@@ -12,7 +12,7 @@ and repeats.
 I need a validator function that puts things in standard form.
 */
 function test(){
-      document.getElementById("formula").value="~~A&~(B|~C)"
+      document.getElementById("formula").value="(A|B)>(A&D)"
 }
 String.prototype.replaceAt=function(index, x) {
       return this.substr(0, index) + x + this.substr(index+x.length);
@@ -20,19 +20,22 @@ String.prototype.replaceAt=function(index, x) {
 
 
 function folStringToHtml(s,div){
-      div=$(div)
+      //s is the string, div is the .x span where it will go.
+      var id = div.attr('id')
       s=folStand(s)
       if(illegalCharacters(s,div)){return}
       s=newFixNegations(s,0)
       s=newFixParens(s)
       s=newFixLiterals(s)
+      s=fixCont(s)
       s=fixOperators(s)
       s=restoreSymbols(s)
-      div.append(s)      
-      //addIds(div,div.id)
-      //addNames(div)
-      verifyAndName(div)
-      
+      div.append(s)     
+      if(div = verifyAndName(div)){
+            addIds(div,id)
+            addListeners(div)
+      }
+      return div
 }
 function folStand(s){
       s = s.replace(/\s/g,"")
@@ -42,7 +45,7 @@ function folStand(s){
 }
 function illegalCharacters(s,div){
       s=s.replace(/[0-9]/g,"#")
-      var m = s.match(/[^A-Z\~\&\%\(\)]/g)
+      var m = s.match(/[^A-Z\~\&\%\|\(\)\*]/g)
       if(m){
             for(var i=0;i<m.length;i++){
                   s=s.replace(m[i],"<span class='error'>"+fromChar(m[i])+"</span>")
@@ -55,7 +58,7 @@ function illegalCharacters(s,div){
             }
             s=s.replace(/\%/g,">")
             div.append(s)
-            alert("Illegal characters found.")
+            alert("Illegal characters found.  Delete the sentence and try again.")
             return true
       }
       return false
@@ -116,6 +119,21 @@ function newFixLiterals(s){
       }
       return s
 }
+function fixCont(s){
+      m = s.match(/\*/g)
+      if(m){
+            for(var i=0;i<m.length;i++){
+                  s=s.replace(m[i],"<span name='cont' class='subs'>"+fromChar(m[i])+"</span>")
+            }
+            m = s.match(/[0-9]+/g)
+            if(m){
+                  for(var i=0;i<m.length;i++){
+                        s=s.replace(m[i],toChar(m[i]))
+                  }
+            }
+      }
+      return s
+}
 function fixOperators(s){
       var m = s.match(/[\&\|\%]/g)
       if(m){
@@ -136,68 +154,18 @@ function restoreSymbols(s){
       s=s.replace(/\@/g,"<span class='neg'>~</span>")
       return s
 }
-function addNames(div){
-      var lit=div.find("[name='lit']")
-      console.log(lit)
-      console.log(div)
-}
-
-/*
-function addNamesOld(html) {  
-  $(html).contents().each(function(){
-    if(this.nodeType==3){
-        var a = this.textContent
-        switch (this.textContent.replace("(","").replace(")","")){
-            case "&":
-                $(this).parent().attr("name","conj")
-                break;
-            case "|":
-                $(this).parent().attr("name","disj")
-                break;
-            case ">":
-                $(this).parent().attr("name","cond")
-                break;
-            default:
-                 if($(this).parent().attr("name")!="neg"&& !$(this).parent().hasClass('.fol')){  //remove senseless paren's
-                        var e = $(this)
-                        var p = e.parent()
-                        var gp = e.parent().parent()
-                        e.detach()
-                        p.remove()
-                        gp.append(e)
-                        
-                  }
-        }
-    }
-    if($(this).contents()){
-        addNames(this)
-    }
-  })
-};
-*/
-function addIds(e,n) {  
-    var a=$(e).children()[0]
-    var b=$(e).children()[1]
-    if($(e).parent().hasClass("fol")){$(e).addClass("x")}
-    if(a) {
-        $(a).attr("id",n+"a")
-        $(a).addClass("a")
-        addIds(a,n+"a")
-    }
-    if(b) {
-        $(b).attr("id",n+"b")
-        $(b).addClass("b")
-        addIds(b,n+"b")
-    }
-}
 
 function verifyAndName(e){
+      var id = e.attr('id')
       var bad = false
-      var lit = e.find("[name='lit']")
-      function reject(e){
-            console.log(e)
+      var lit = e.find("[name='lit'],[name='cont']")
+      function reject(e,msg){
             e.addClass("error")
-            alert("bad subsentence. \n Delete the sentence and try again.")
+            if(msg){
+                  alert(msg)
+            }else{
+                  alert("Bad subsentence. \n Delete the sentence and try again.")
+            }
       }
       function x(cs,ary){
             if (cs.length!=ary.length){return false}
@@ -209,22 +177,54 @@ function verifyAndName(e){
             return true
       }
       function y(e,type){
-            console.log(e.text()+", "+type)
+            //console.log(e.text()+", "+type)
+      }
+      function z(e,name,ccObj){
+            var cs = e.children()
+            e.attr('name',name)
+            for(var i in ccObj){
+                  cs.eq(i).addClass(ccObj[i])
+            }
       }
       for(var i=0;i<lit.length;i++){
-            console.log("======new lit")
+            //console.log("======new lit")
             e = lit.eq(i)
             while(!(e.hasClass("fol"))){
                   var cs = e.children()
-                  var type = ""
                   //There are five good subsentence forms: p|q (whole sentence only), p, (p),~p,(p|q),
                   //If it has one of those forms, check the parent.
-                  if(cs.length==0&&e.attr('name')=='lit'){y(e,'lit');e=e.parent();continue}
-                  if(x(cs,['subs'])){y(e,'one subs');e=e.parent();continue}
-                  if(x(cs,['lparen','subs','rparen'])){y(e,'useless parens');e=e.parent();continue}
-                  if(x(cs,['neg','subs'])){y(e,'neg');e=e.parent();continue}
-                  if(x(cs,['lparen','subs','oper','subs','rparen'])){y(e,'oper');e=e.parent();continue}
-                  if(e.hasClass('x')&&x(cs,['subs','oper','subs'])){y(e,'top oper');e=e.parent();continue}
+                  if(cs.length==0&&(e.attr('name')=='lit'||e.attr('name')=='cont'))               {y(e,'lit');e=e.parent();continue}
+                  if(x(cs,['subs']))                                    {y(e,'oneSubsentence');
+                        if(e.hasClass("x")){cs.addClass("x")}
+                        cs.attr('id',e.attr('id'))
+                        e.replaceWith(cs)
+                        e=cs
+                        e=e.parent();
+                        continue
+                  }
+                  if(x(cs,['lparen','subs','rparen']))                  {y(e,'uselessParens');
+                        reject(e,"Useless Parentheses Found.  Delete the sentence and try again.")
+                        break;
+                  }
+                  if(x(cs,['neg','subs']))                              {y(e,'neg');
+                        z(e,'neg',{1:'a'});
+                        e=e.parent();
+                        continue
+                  }
+                  if(x(cs,['lparen','subs','oper','subs','rparen']))    {y(e,'oper');
+                        var op = cs.eq(2).text();
+                        var typeObj={"&":"conj","|":"disj",">":"cond"};
+                        z(e,typeObj[op],{1:'a',3:'b'})
+                        e,e=e.parent();
+                        continue
+                  }
+                  if(e.hasClass('x')&&x(cs,['subs','oper','subs']))     {y(e,'topOper');
+                        var op = cs.eq(1).text();
+                        var typeObj={"&":"conj","|":"disj",">":"cond"};
+                        z(e,typeObj[op],{0:'a',2:'b'})
+                        e=e.parent();
+                        continue
+                  }
                   bad = true
                   reject(e)
                   break
@@ -236,89 +236,42 @@ function verifyAndName(e){
       if(bad){
             return false
       }else{
-            return true
+            return $("#"+id)
       }
 }
-
-//////////////////////End functions for turning fol string to html
-
-
-////////////////////////Functions for html to json and back
-function htmlToJson(el){
-      var obj = {}
-      var c = $(el).children()
-      if($(el).hasClass("fol")){
-              obj.a = htmlToJson(c[0])
-              if(c[1]){obj.b=htmlToJson(c[1])}
+function addIds(e,n) {  
+      var a=e.children('.a')
+      var b=e.children('.b')
+      if(a.length>0) {
+            //console.log(a)
+            //console.log(n+"a")
+            a.attr("id",n+"a")
+            addIds(a,n+"a")
       }
-      var type = $(el).attr("name")
-      switch (type){
-          case "neg":
-              obj.type = "neg"
-              obj.a = htmlToJson(c[0])
-              break;
-          case "lit":
-              obj.type = "lit"
-              obj.lit = el.textContent
-              break;
-          default:
-              if($(el).attr("name")){obj.type = $(el).attr("name") } else {obj.type=""}
-              var a = c[0]
-              var b = c[1]
-              if(a){
-                  obj.a=htmlToJson(a)
-              }
-              if(b){
-                  obj.b=htmlToJson(b)
-              }
-              break;
+      if(b.length>0) {
+            //console.log(b)
+            //console.log(n+"b")
+            b.attr("id",n+"b")
+            addIds(b,n+"b")
       }
-      return obj
-}
-function jsonToHtml(obj,el,n){
-    var index = n[n.length-1]
-    $(el).attr("id",n)
-    $(el).addClass(index)
-    switch(obj.type){
-        case "neg":
-            $(el).attr("name","neg")
-            $(el).html("~<span></span>")
-            jsonToHtml(obj.a,$(el).children()[0],n+"a")
-            break;
-        case "":
-            $(el).html("<span></span>")
-            jsonToHtml(obj.a,$(el).children()[0],n+"a")
-            break;
-        case "lit":
-            $(el).attr("name","lit")
-            $(el).text(obj.lit)
-            break;
-        default:
-            var t = obj.type
-            $(el).attr("id",n)
-            $(el).attr("name",t)
-            $(el).html("(<span></span>"+sym[t]+"<span></span>)")
-            jsonToHtml(obj.a,$(el).children()[0],n+"a")
-            jsonToHtml(obj.b,$(el).children()[1],n+"b")
-            break;
-    }
 }
 var sym={
     "conj":"&",
     "disj":"|",
     "cond":">"
 }
-////////////////////////end functions for html to json and back
+
+//////////////////////End functions for turning fol string to html
 
 
 ///////////////////////functions for UI management
 function newLine(){
-      $("#folTable").append("<tr class='line l"+n+"'><td class='edit'><td class='lineNo'>"+n+".</td><td class = 'fol'><span id='s"+n+"x' class='x'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>")
-      var el = $("#s"+n+"x")[0]
+      var a = $("#folTable").append("<tr class='line l"+n+"'><td class='edit'><td class='lineNo'>"+n+".</td><td class = 'fol'><span id='s"+n+"x' class='x subs'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>")
+      var e = $('#s'+n+'x')
       addDelete(n)
       if(n>1){removeDelete(n-1)}
       n++
-      return el
+      return e
 }
 function deleteLastLine(){
       n--
@@ -327,11 +280,9 @@ function deleteLastLine(){
       supporting.splice(supporting.indexOf(n),1)
       for(var i = 1;i<=n;i++){
             if(supporting.indexOf(i)==-1){
-                  console.log(i+", "+supporting.indexOf(i))
                   showEdit(i)
             }
       }
-      console.log(supporting)
 }
 function addEdit(m){
       $(".l"+m+" .edit").append("<input type='button' name='d"+m+"x' value='edit' class='editButton' onClick='editLine("+m+")'></input>")
@@ -350,11 +301,13 @@ function removeDelete(m){
 }
 function editLine(m){
       if($(".l"+m+" .editInput").length==0){
-            $(".l"+m+" .editCell").append("new Formula: <input type=text class='editInput' value='"+$("#s"+m+"x").text()+"'></input><input type='button' value='done' class='doneEditing' onClick='doneEditing("+m+")'></input>")
+            $(".l"+m+" .editCell").append("new Formula: <input type=text class='formula' value='"+$("#s"+m+"x").text()+"'></input><input type='button' value='done' class='doneEditing' onClick='doneEditing("+m+")'></input>")
       }
 }
 function doneEditing(m){
-      var f = $("#s"+m+"x")[0]
+      var p = $(".l"+m+" .fol")
+      p.html("<span id='s"+m+"x' class='x subs'></span>")
+      var f = p.children()
       var s = $(".l"+m+" .editInput").val()
       folStringToHtml(s,f)
       $(".l"+m+" .editCell").html("")
@@ -364,9 +317,51 @@ function formulaInput(event){
             run()
       }
 }
+function levelChange(event){
+      console.log("levelChange")
+      console.log(event.target.selectedIndex)
+}
 /////////////////////// end functions for UI management
 
 //////////////////////Functions for mouseMove
+function addListeners(div){
+    var p = div.parent()
+    var subs = p.find('.subs')
+    subs.on("mousemove",mouseOnFunc)
+}
+function messageOn(msg,$elems,func){
+      $("#message").prepend(msg)
+      $("#message").prepend("<div class='instructions'>To select an element, role your mouse over it to highlight it, and then click it.</div>")
+      $("#display").hide()
+      $("#message").show()
+      $(".fol").find('.subs').off("mousemove",mouseOnFunc)
+      $("#msgRespEnter").on("click",{'func':func},msgResponse) //add a listener to the msgResponse button (if one was added in msg).      
+      $elems.addClass("responseOpts")
+      $elems.on("mousemove",{'func':func},seekingResponse)
+}
+function messageOff(){
+      $("#display").show()
+      $("#message").hide()
+      $(".msgTarget").removeClass("msgTarget")
+      $(".fol").find(".subs").on("mousemove",mouseOnFunc)
+      $(".responseOpts").off("mousemove",seekingResponse)
+      $(".responseOpts").removeClass("responseOpts")
+      //reset #message
+      $("#message").html('<div id="msgTemp" class="fol"><span id="sx0" class = "x subs"></span></div><div><span class="subsent"></span><br/><span class="subsentType"></span><br/><span class="subsentId"></span></div><input type="button" value="Cancel" onclick="messageOff()"></input>')
+}
+function setDisplay(e){
+      var txt = $(e).text()
+      var type = $(e).attr("name")
+      var subsentId = e.id
+      $(".subsent").text(txt)
+      $(".subsentType").text(type)
+      $(".subsentId").text(e.id)
+}
+//consider adding a param to setDisplay so that it can be used to output elem info to #message,
+//then move setUpOperations out of setDisplay and into mouseOnFunc.
+//maybe a seeking response 1 and seeking response 2 would be good, so that I can have the e1 highlighted while selecting e2.
+
+
 var mouseOnObj = {
     n: null,
     o:null
@@ -375,177 +370,598 @@ var mouseOnFunc = function(event){
       if(event.shiftKey==1){
             mouseOnObj.n = this
             if(mouseOnObj.n!=mouseOnObj.o){
-                  mouseOnObj.n.classList.add('mouseOn')
-                  if(mouseOnObj.o){mouseOnObj.o.classList.remove('mouseOn')}
+                  $(mouseOnObj.n).addClass('mouseOn')
+                  if(mouseOnObj.o){$(mouseOnObj.o).removeClass('mouseOn')}
                   mouseOnObj.o=mouseOnObj.n
-                  var txt = $(mouseOnObj.n).text()
-                  var type = $(mouseOnObj.n).attr("name")
-                  var subsentId = mouseOnObj.n.id
-                  $("#subsent").text(txt)
-                  $("#subsentType").text(type)
-                  $("#subsentId").text(mouseOnObj.n.id)
-                  $("#operations").html("")
-                  setupOperations(mouseOnObj.n,type)
+                  setDisplay(mouseOnObj.n)                  
+                  setupOperations(mouseOnObj.n)
             }
       }
       event.stopPropagation()
 }
 
-function addListeners(div){
-    subsent = document.getElementById("subsent")
-    subsentType = document.getElementById("subsentType")
-    sentId = document.getElementById("sentId")
-    $(div).find('.subs').on("mousemove",mouseOnFunc)
-}
-function messageOn($elems,func){
-      $("#display").hide()
-      $("#message").show()
-      $("#message").prepend("<div class='instructions'>To select an element, role your mouse over it to highlight it, and then click it.</div>")
-      $(".fol").children().off("mousemove",mouseOnFunc)
-      $elems.on("mousemove",{'func':func},seekingResponse)
-      $elems.addClass("responseOpts")
-}
-function messageOff(){
-      $("#display").show()
-      $("#message").hide()
-      $(".msgTarget").removeClass("msgTarget")
-      $(".fol").children().on("mousemove",mouseOnFunc)
-      $(".responseOpts").off("mousemove",seekingResponse)
-      $(".responseOpts").removeClass("responseOpts")
-      $("#message").html("")
-}
 var oldResp = null
-function seekingResponse(event){
-      var t = event.target
+
+var seekingResponse = function(event){
+      var t = this
       if(t!=oldResp){
             var func = event.data.func
             $(t).addClass("msgTarget")
-            $(t).on("click",{'func':func},msgResponse)
             if(oldResp){
                   $(oldResp).removeClass("msgTarget")
                   $(oldResp).off("click",msgResponse)
             }
+            $(t).on("click",{'func':func},msgResponse)            
             oldResp = t
+            setDisplay(t)
       }
+      event.stopPropagation()
 }
+var mouseOnObj = {
+    n: null,
+    o:null
+}
+
 function msgResponse(event){
-      event.data.func(event.target)
+      event.data.func(this)
       event.stopPropagation()
 }
 function myMsg(){
-      $("#message").append("<div>Select an Element</div>")
-      messageOn(function(elem){console.log(elem)},$(".fol").children())
+      var msg = "<div>Select an Element for my message</div>"
+      messageOn(msg,$(".fol").find('.subs'),function(elem){console.log(elem)})
 }
 
 /////////////////////////End functions for mouseMove
 
 ///////////////////////functions for logical operations
-function setupOperations(el,type){
-      addOperation("addDoubleNegation",el)
-      addOperation("disjIntro",el)
-      if(type=="conj"||type=="disj"){
-            ttype = toggleType(type)
-            addOperation("commutation",el)
-            addOperation("deMorganOut",el)
-            if($(el).children('[name="'+ttype+'"]').length>0){
-                  addOperation("distributeIn",el)
-            }
-            if($(el).children('[name="'+ttype+'"]').length==2){
-                  if($(el).children('.a').children('.a').text()==$(el).children('.b').children('.a').text()){
-                        addOperation("distributeOut",el)
-                  }
-            }
-            if($(el).children('[name="'+type+'"]').length>0){
-                  addOperation("associative",el)
-            }
-      }
-      switch(type){
-            case "conj":
-                  break;
-            case "disj":
-                  
-                  break;
-            case "neg":
-                  if($(el).children().attr("name")=="neg"){
-                        addOperation("removeDoubleNegation",el)
-                  }
-                  if($(el).children().attr("name")=="conj"||$(el).children().attr("name")=="disj"){
-                        addOperation("deMorganIn",el)
-                  }
-                  break;
-      }
-      if($(el).hasClass("x")){
-            addOperation("conjIntro",el)
-            switch(type){
-                  case "conj":
-                        addOperation("conjElim",el)
-                        break;
-                  case "disj":
+
+//commutation: swap elements
+//conjunction: conjoin elements
+//association: there are three elements, conjoint the second two; return it. conjoin the first and the conj, return the big conj.  replace the orig conjunction.
+//distribution: 
+/*
+++for equivalences:
+Clone the whole sentence, and put it in #temp.
+Pass the clone of the selected element to the operation.
+Clone the clone.
+modify the second order clone.  Replace the first order clone with it.
+
+++For one way rules:
+If need be, clone parts of the original sentence(s).  Work with them.  Stick them into a fresh sentence in temp.
+
+on infer, pass the sentence in temp to a new line.
+*/
+/*      Level one:
+            Highlight el 1.
+            Click the rule.
+            (prompt for el 2
+                  Notify if el 2 is inapplicable.)
+            Draw the conclusion.
+            
+      Level two:
+            Click the rule.
+            prompt for el 1
+                  Notify if el 1 is inapplicable
+            (prompt for el 2
+                  Notify if el 1 is inapplicable)
+            Draw the conclusion.
+                  Make all the rules show up when level 2 is selected.
+                  Add an 'onClick' listener for the rules.
+                        for .subs, that function should attach a mouseover listener
+                        and an on click listener.  On click, the element should be validated,
+                        then the function called on the element.
                         
-                        break;
-                  case "neg":
+      Level 3:
+            Type the sentence.
+            Click the rule.
+            prompt for el 1
+                  Notify if el 1 is inapplicable
+            (prompt for el 2
+                  Notify if el 1 is inapplicable)
+            Check whether typed sentence follows.
+      Level 4:
+            Type the sentence.
+            Click the rule.
+            prompt for el 1
+            prompt for el 2
+            
+            Later, check if el1 and el2 are applicable and whether the typed sentence follows.
+                  
+*/
 
-                        break;
-
+function setupOperations(el){                  
+      $("#operations").html("")
+      for(i in test1){
+            if(test1[i]($(el))){
+                  addOperation(i,$(el))
             }
       }
 }
-
-var citeData = new Object()            
-function addOperation(title,el){      
+var citeData = new Object()
+function addOperation(title,e){      
       $("#operations").append("<div class='operation "+title+"'>"+title+"</div>")
       $("#operations ."+title).click(function(){
-            var s  = $(el).parents(".fol").clone()
-            $("#temp").append(s)
-            var e  = s.find("#"+el.id)
-            e = ops[title](e);
             citeData.rule = title
-            citeData.a = $(el)
+            citeData.a = e
             citeData.b = null
-            console.log(citeData)
-            if(e){infer(e)}
+            if(test2[title]){
+                  messageOn(test2msg[title],$(".fol").find('.subs'),function(elem){
+                        //this is the function that will be called when an element is clicked
+                        //in response to the message.
+                        var e2 = $(elem)
+                        if(e2.attr('id')=='msgRespEnter'){
+                              //if the user entered a new sentence and clicked the enter button,
+                              //get the string from text input.
+                              var s = $("#msgRespInput").val()
+                              //turn it to html. call the result e2.
+                              e2=folStringToHtml(s,$("#msgTemp .x"))
+                              if(e2){
+                                    if(test2[title](e,e2)){  
+                                          e = ops[title](e,e2);
+                                          messageOff()
+                                          if(e){infer(e)}
+                                    }else{
+                                          $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
+                                    }
+                              }else{
+                                    $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
+                              }
+                        }else{
+                              if(test2[title](e,e2)){  
+                                    citeData.b=e2
+                                    e = ops[title](e,e2);
+                                    messageOff()
+                                    if(e){infer(e)}
+                              }else{
+                                    alert("that elem doens't work.")
+                              }
+                        }
+                  })
+            }else{
+                  e = ops[title](e);
+                  if(e){infer(e)}
+            }
       })     
 }
-function lineNum(e){
-      return parseInt(e[0].id.split("x")[0].replace("s",""))
-}
-var supporting=[]
 function infer(e){
-      console.log(citeData)
       var nl = newLine()
-      var num = lineNum($(nl))
+      var num = lineNum(nl)
       var cite = $(".l"+num+" .attribution")
+      
+      //take care of citation stuff for citeData.a
       var cited = $(citeData.a)
       var l1 = lineNum(citeData.a)
       cite.append(citeData.rule+" "+lineNum(citeData.a))
       hideEdit(l1)
       supporting.push(l1)
-      if(citeData.b){
+      if(citeData.b){        //take care of citation stuff for citeData.b
             cited=cited.add(citeData.b)
             var l2 = lineNum(citeData.b)
-            cite.append(","+lineNum(citeData.b))
+            if(l2!="0"){cite.append(","+lineNum(citeData.b))}
             hideEdit(l2)
             supporting.push(l2)
       }
-      console.log(supporting)
       cite.data({rule:citeData.rule,a:citeData.a,b:citeData.b})
       cite.on("mouseenter",function(){cited.addClass("cited")})
       cite.on("mouseleave",function(){cited.removeClass("cited")})
+
       var newSentId = "s"+(n-1)+"x"
-      var throughJson = true
-      if(throughJson){
-            console.log(e.parents(".fol"))
-            console.log(e.parents(".fol").children())
-            var s = e.parents(".fol").children()
-            var obj = htmlToJson(s[0])
-            jsonToHtml(obj,nl,newSentId)
-      }else{
-            $(nl).append(s)
-      }
-      addListeners(nl)
+      var s = e.parents('.fol').find(".x")
+      s.attr('id',newSentId)
+      addIds(s,newSentId)
+      nl.replaceWith(s)
+
+      s.parents('.fol').find(".mouseOn").removeClass("mouseOn")
+      addListeners(s)
+
       $("#temp").html("")
+      setDisplay($(".mouseOn")[0])
+      setupOperations($(".mouseOn")[0])
 }
-var ops = {
+
+function equivalenceRule(e){
+      var s = e.parents(".fol").find(".x").clone()
+      $("#temp").append(s)
+      e  = s.parents(".fol").find("#"+e.attr('id'))
+      return e
+}
+function operate(type,a,b){
+      a.removeClass("a b x")
+      b.removeClass("a b x")
+      a.addClass('a')
+      b.addClass('b')
+      var operObj = {"conj":"&","disj":"|","cond":">"}
+      var e = $(document.createElement("span"))
+      e.attr('name',type)
+      e.addClass("subs")
+      e.html("<span class='lparen'>(</span><span class='oper'>"+operObj[type]+"</span><span class='rparen'>)</span>")
+      var oper = e.children(".oper")
+      a.insertBefore(oper)
+      b.insertAfter(oper)
+      return e
+}
+function negate(a){
+      a.removeClass("b x")
+      a.addClass('a')
+      var e = $(document.createElement("span"))
+      e.attr('name',"neg")
+      e.addClass("subs")
+      e.html("<span class='neg'>~</span>")
+      var oper = e.children(".neg")
+      a.clone().insertAfter(oper)
+      a.replaceWith(e)
+      return e
+}
+function toggle(a){
+      if(a.attr('name')=='neg'){
+            var eClass = sClass(a)
+            var r = a.children(".a")
+            a.replaceWith(r)
+            r.removeClass("a b x")
+            r.addClass(eClass)
+      }else{
+            var r = negate(a)
+      }
+      r.addClass(eClass)
+      return r
+}
+function sClass(e){
+      if(e.hasClass("a")){var eClass="a"}
+      if(e.hasClass("b")){var eClass="b"}
+      if(e.hasClass("x")){var eClass="x"}
+      return eClass
+}
+var tt = {'conj':'disj','disj':'conj'}
+function wrap(e){
+      e=e.clone()
+      //if e is conj, disj, or cond w/o parenths, put parenths around it.
+      var biOp={
+            "conj":true,
+            "disj":true,
+            "cond":true
+      }
+      if(biOp[e.attr("name")]&&e.children(".lparen").length==0){
+            e.prepend("<span class='lparen'>(</span>")
+            e.append("<span class='rparen'>)</span>")
+      }
+      return e
+}
+            
+var ops={
+      commutation: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+
+            var a = e.children(".a")
+            var b = e.children(".b")
+            var r = operate(type,b,a)
+
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            e.replaceWith(r)
+            return r
+      },
+      removeDoubleNegation: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+
+            var r = e.children('.a').children('.a')
+
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            e.replaceWith(r)
+            return r
+      },
+      addDoubleNegation: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+
+            e=negate(e)
+            e=negate(e)
+
+            e.removeClass("a b x")
+            e.addClass(eClass)
+            //e.replaceWith(r)
+            return e
+      },
+      deMorganOut: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+
+            var a = e.children(".a")
+            var b = e.children(".b")
+            a = toggle(a)
+            b = toggle(b)
+            var f = operate(tt[type],a,b)
+            
+            e.replaceWith(f)
+            
+            f=toggle(f)
+            f.removeClass("a b x")
+            f.addClass(eClass)
+            return f
+      },
+      deMorganIn: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.children(".a").attr("name")
+
+            var gca = e.children(".a").children(".a")
+            var gcb = e.children(".a").children(".b")
+            gca = toggle(gca)
+            gcb = toggle(gcb)
+            var r = operate(tt[type],gca,gcb)
+            
+            e.replaceWith(r)
+            
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            return r
+      },
+      association: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+            
+            if(e.children(".a").attr("name")==type){
+                  var a = e.children(".a").children(".a")
+                  var b = e.children(".a").children(".b")
+                  var c = e.children('.b')
+                  var r=operate(type,b,c)
+                  r=operate(type,a,r)
+            }else{
+                  var a = e.children('.a')
+                  var b = e.children(".b").children(".a")
+                  var c = e.children(".b").children(".b")
+                  var r=operate(type,a,b)
+                  r=operate(type,r,c)
+            }
+
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            e.replaceWith(r)
+            return r
+      },
+      distributeIn: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+            
+            if(e.children(".a").attr("name")==tt[type]){
+                  var a = e.children(".a").children(".a")
+                  var b = e.children(".a").children(".b")
+                  var c = e.children('.b')
+                  var f=operate(type,a,c)
+                  var g=operate(type,b,c.clone())
+                  var h=operate(tt[type],f,g)
+            }else{
+                  var a = e.children('.a')
+                  var b = e.children(".b").children(".a")
+                  var c = e.children(".b").children(".b")
+                  var f=operate(type,a,b)
+                  var g=operate(type,a.clone(),c)
+                  var h=operate(tt[type],f,g)
+            }
+
+            h.removeClass("a b x")
+            h.addClass(eClass)
+            e.replaceWith(h)
+            return h
+      },
+      distributeOut: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            var type = e.attr("name")
+            
+            var a = e.children('.a').children('.a')
+            var b = e.children('.a').children('.b')
+            var c = e.children('.b').children('.b')
+            
+            var f = operate(type,b,c)
+            var g= operate(tt[type],a,f)
+            
+            g.removeClass("a b x")
+            g.addClass(eClass)
+            e.replaceWith(g)
+            return g
+      },
+      contraposition: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            
+            var a=e.children('.a')
+            var b=e.children('.b')
+            a=toggle(a)
+            b=toggle(b)
+            var r = operate("cond",b,a)
+            
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            e.replaceWith(r)
+            return r
+      },
+      condToDisj: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            
+            var a=e.children('.a')
+            var b=e.children('.b')
+            a=toggle(a)
+            var r = operate("disj",b,a)
+            
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            e.replaceWith(r)
+            return r
+      },
+      disjToCond: function(e){
+            var eClass = sClass(e)
+            e=equivalenceRule(e)
+            
+            var a=e.children('.a')
+            var b=e.children('.b')
+            a=toggle(a)
+            var r = operate("cond",b,a)
+            
+            r.removeClass("a b x")
+            r.addClass(eClass)
+            e.replaceWith(r)
+            return r
+      },
+      conjElim: function(e){
+            r=e.children(".a").clone()
+            r.removeClass("a b")
+            r.addClass("x")
+            $("#temp").append(r)
+            return r
+      },
+      conjIntro: function(e1,e2){
+            e1=wrap(e1)
+            e2=wrap(e2)
+            e1.removeClass("a b x")
+            e2.removeClass("a b x")
+            e1.addClass('a')
+            e2.addClass('b')
+            r=operate("conj",e1,e2)
+            r.addClass('x')
+            $("#temp").append(r)
+            return r
+      },
+      condElim: function(e1,e2){
+            r = e1.children(".b").clone()
+            r.removeClass("a b")
+            r.addClass('x')
+            $("#temp").append(r)
+            return r
+      },
+      contIntro: function(e1,e2){
+            $("#temp").append("<span class='subs x' name='cont'>*</span>")
+            r=$("#temp").children(".x")
+            return r
+      },
+      disjIntro: function(e1,e2){
+            e1=wrap(e1)
+            e2=wrap(e2)
+            e1.removeClass("a b x")
+            e2.removeClass("a b x")
+            e1.addClass('a')
+            e2.addClass('b')
+            r=operate("disj",e1,e2)
+            r.addClass('x')
+            $("#temp").append(r)
+            return r
+      }
+      
+}
+
+var test1 = {
+      commutation: function(e){
+            var test = {"disj":true,"conj":true}
+            return test[e.attr("name")]
+      },
+      association: function(e){
+            var type = e.attr("name")
+            var test = {"disj":true,"conj":true}
+            return test[type]&&(e.children(".a").attr("name")==type||e.children(".b").attr("name")==type)
+      },
+      addDoubleNegation: function(e){
+            return true
+      },
+      removeDoubleNegation: function(e){
+            return e.attr('name')=="neg"&&e.children(".a").attr('name')=="neg"
+      },
+      deMorganOut: function(e){
+            var test = {"disj":true,"conj":true}
+            return(test[e.attr("name")])
+      },
+      deMorganIn: function(e){
+            var test = {"disj":true,"conj":true}
+            return e.attr('name')=="neg"&&test[e.children(".a").attr]
+      },
+      distributionIn: function(e){
+            var test = {"disj":true,"conj":true}
+            var type = e.attr("name")
+            return test[type]&&(e.children(".a").attr("name")==tt[type]||e.children(".b").attr("name")==tt[type])
+      },
+      distributionOut: function(e){
+            var test = {"disj":true,"conj":true}
+            var type = e.attr("name")
+            return test[type]&&(e.children(".a").attr("name")==tt[type]&&e.children(".b").attr("name")==tt[type])
+      },
+      contraposition: function(e){
+            return e.attr("name")=="cond"
+      },
+      disjToCond: function(e){
+            return e.attr("name")=="disj"
+      },
+      condToDisj: function(e){
+            return e.attr("name")=="cond"
+      },
+      conjElim: function(e){
+            return e.attr("name")=="conj"
+      },
+      conjIntro: function(e){
+            return e.hasClass("x")
+      },
+      condElim: function(e){
+            return e.hasClass("x")&&e.attr("name")=="cond"
+      },
+      contIntro: function(e){
+            return e.hasClass("x")
+      },
+      disjIntro: function(e){
+            return e.hasClass("x")
+      }
+}
+var test2msg={
+      conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
+      condElim: "<div>Select the sentence to use with the green conditional for a condElim (Modus Ponens)</div>",
+      contIntro: "<div>Select the sentence to use with the green sentence to introduce *.</div",
+      disjIntro: "<div>Which sentence do you want to disjoin to the green sentence?  Type a new sentence below or selecte a sentence or subsentence on the left.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+}
+var test2={
+      conjIntro: function(e1,e2){
+            return e2.hasClass("x")
+      },
+      condElim: function(e1,e2){
+            e2=wrap(e2)
+            return e2.hasClass('x')&&(e2.text()==e1.children('.a').text())
+      },
+      contIntro: function(e1,e2){
+            e1=wrap(e1)
+            e2=wrap(e2)
+            if(e2.hasClass("x")){
+                  if(e1.attr('name')=="neg"){
+                        return e1.children(".a").text()==e2.text()
+                  } else if(e2.attr('name')=="neg"){
+                        return e1.text()==e2.children(".a").text()
+                  } else {
+                        return false 
+                  }
+            }else{return false}
+      },
+      disjIntro: function(e1,e2){
+            if(e2){return true}else{return false}
+      }
+}
+
+
+function lineNum(e){
+      var id = e[0].id
+      var idSplit = id.split("x")
+      var first = idSplit[0]
+      var num = first.replace("s","")
+      num = parseInt(num)
+      return num
+}
+var supporting=[]
+
+/*
+var ops3 = {
       commutation: function(e){
             e.children(".a").appendTo(e)
             e.children(".b").prependTo(e)
@@ -773,8 +1189,8 @@ var ops = {
                   e=ops.disjIntro2(e,e2)
                   infer(e)
             }
-            $("#message").append("<div>Type the sentence you wish to disjoint to sentence"+lineNum(e)+" below, or selected a sentence or subsentence on the left.</div>")
-            $("#message").append("<input id='disjIntroInput' type='text'></input><input type='button' value='enter' id='disjIntroEnter'></input>")
+            $("#message").append("<div>Which sentence do you want to disjoin to the green sentence?  Type a new sentence below or selecte a sentence or subsentence on the left.</div>")
+            $("#message").append("<input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>")
             $("#message #disjIntroEnter").on("click",function(){
                   var s = $("#disjIntroInput").val()
                   $(".temp").removeClass("temp")
@@ -798,6 +1214,8 @@ var ops = {
             return e
       }
 }
+*/
+
 function eOrig(e){
       var orig = null
       e.each(function(){
@@ -819,9 +1237,8 @@ function toggleType(type){
 
 var n = 1
 function run(){
-      var myHtmlDiv = newLine()
+      var div = newLine()
       addEdit(n-1)
       var s = $("#formula").val()
-      folStringToHtml(s,myHtmlDiv)
-      addListeners(myHtmlDiv)
+      if(s){div = folStringToHtml(s,div)}
 }
