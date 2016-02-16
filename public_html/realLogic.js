@@ -153,7 +153,7 @@ var test1 = {
             "disj": true,
             "conj": true
         }
-        return test[e.attr("name")]
+        return e.hasClass("subs") && test[e.attr("name")] && e.hasClass("subs")
     },
     association: function (e) {
         var type = e.attr("name")
@@ -161,27 +161,27 @@ var test1 = {
             "disj": true,
             "conj": true
         }
-        return test[type] && (e.children(".a").attr("name") == type || e.children(".b").attr("name") == type)
+        return e.hasClass("subs") && (test[type] && (e.children(".a").attr("name") == type || e.children(".b").attr("name") == type))  
     },
     addDoubleNegation: function (e) {
-        return true
+        return e.hasClass("subs")
     },
     removeDblNegation: function (e) {
-        return e.attr('name') == "neg" && e.children(".a").attr('name') == "neg"
+        return e.hasClass("subs") && e.attr('name') == "neg" && e.children(".a").attr('name') == "neg"
     },
     deMorganOut: function (e) {
         var test = {
             "disj": true,
             "conj": true
         }
-        return (test[e.attr("name")])
+        return e.hasClass("subs") &&  test[e.attr("name")]
     },
     deMorganIn: function (e) {
         var test = {
             "disj": true,
             "conj": true
         }
-        return e.attr('name') == "neg" && test[e.children(".a").attr("name")]
+        return e.hasClass("subs") && e.attr('name') == "neg" && test[e.children(".a").attr("name")]
     },
     distributionIn: function (e) {
         var test = {
@@ -189,7 +189,7 @@ var test1 = {
             "conj": true
         }
         var type = e.attr("name")
-        return test[type] && (e.children(".a").attr("name") == tt[type] || e.children(".b").attr("name") == tt[type])
+        return e.hasClass("subs") && test[type] && (e.children(".a").attr("name") == tt[type] || e.children(".b").attr("name") == tt[type])
     },
     distributionOut: function (e) {
         var test = {
@@ -197,51 +197,51 @@ var test1 = {
             "conj": true
         }
         var type = e.attr("name")
-        return test[type] && (e.children(".a").attr("name") == tt[type] && e.children(".b").attr("name") == tt[type])
+        return e.hasClass("subs") && test[type] && (e.children(".a").attr("name") == tt[type] && e.children(".b").attr("name") == tt[type])
     },
     contraposition: function (e) {
-        return e.attr("name") == "cond"
+        return e.hasClass("subs") && e.attr("name") == "cond"
     },
     disjToCond: function (e) {
-        return e.attr("name") == "disj"
+        return e.hasClass("subs") && e.attr("name") == "disj"
     },
     condToDisj: function (e) {
-        return e.attr("name") == "cond"
+        return e.hasClass("subs") && e.attr("name") == "cond"
     },
     conjElim: function (e) {
-        return e.attr("name") == "conj"&&e.hasClass("x")
+        return e.hasClass("subs") && e.attr("name") == "conj"&&e.hasClass("x")
     },
     conjIntro: function (e) {
-        return e.hasClass("x")
+        return e.hasClass("subs") && e.hasClass("x")
     },
     condElim: function (e) {
-        return e.hasClass("x") && e.attr("name") == "cond"
+        return e.hasClass("subs") && e.hasClass("x") && e.attr("name") == "cond"
     },
     contIntro: function (e) {
-        return e.hasClass("x")
+        return e.hasClass("subs") && e.hasClass("x")
     },
     disjIntro: function (e) {
-        return e.hasClass("x")
+        return e.hasClass("subs") && e.hasClass("x")
     },
     contElim: function (e) {
-        return e.attr("name") == "cont"
+        return e.hasClass("subs") && e.attr("name") == "cont"
     },
     disjElim: function(e){
-        return e.hasClass("x")&&e.attr("name")=="disj"
+        return e.hasClass("subs") && e.hasClass("x")&&e.attr("name")=="disj"
     },
     reiteration: function(e){
-        return e.hasClass("x")
-    }
-}
-var test1sp = {
+        return e.hasClass("subs") && e.hasClass("x")
+    },
     condIntro: function($sp){
-        return true 
+        return $sp.hasClass("sp") && $sp.hasClass("closed") && !$sp.hasClass("dead")
     },
     negIntro: function($sp){
         var lastSent = $sp.children().last().find(".x").text()
-        return lastSent=="*"
+        return $sp.hasClass("sp") && $sp.hasClass("closed") && !$sp.hasClass("dead") && lastSent=="*"
     }
+
 }
+
 var test2msg = {
     conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
     conjElim: "<div>Select the subsentence that you wish to infer from the conjunction in green.  Either of its conjuncts will do.",

@@ -1,3 +1,21 @@
+/*each sentence is an object.
+The object name is the sentence string.
+Each object has a 'type' property.  The type of the object is the type of the sentence (negation, conjunction, etc.)
+Each object has a subst property which is the simpler sentence(s) that the object is composed of.
+The type property has methods, corresponding to the various rules that can be applied to a sentence of that type.
+I need a parser function, that first finds the type of the sentence.
+Then finds the subsentences,
+then finds the type of the subsentences,
+and repeats.
+I need a validator function that puts things in standard form.
+*/
+
+var spId = 0
+activeSp = null
+var premise = true
+
+
+
 function folStringToHtml(s, div) {
     //s is the string, div is the .x span where it will go.
     var id = div.attr('id')
@@ -63,7 +81,7 @@ function newFixNegations(s, i) {
                     break;
                 }
                 if (/[A-Z\*]/.test(s[j])) { //we've hit a literal.  Wrap it and seek next ~
-                    s = s.slice(0, i) + "<span data-substype='neg' class='subs'>@" + s.slice(i + 1, j + 1) + "</span>" + s.slice(j + 1);
+                    s = s.slice(0, i) + "<span name='neg' class='subs'>@" + s.slice(i + 1, j + 1) + "</span>" + s.slice(j + 1);
                     break;
                 }
                 if (s[j] == "(") { //we've hit a parenth.  Look for it's mate.
@@ -76,7 +94,7 @@ function newFixNegations(s, i) {
                             d++
                         }
                         if (d == "0") { //we've fount the mate.  Wrap it and seek next ~
-                            s = s.slice(0, i) + "<span data-substype='neg' class='subs'>@" + s.slice(i + 1, k + 1) + "</span>" + s.slice(k + 1);
+                            s = s.slice(0, i) + "<span name='neg' class='subs'>@" + s.slice(i + 1, k + 1) + "</span>" + s.slice(k + 1);
                             break;
                         }
                     }
@@ -106,7 +124,7 @@ function newFixLiterals(s) {
     var m = s.match(/[A-Z]/g)
     if (m) {
         for (var i = 0; i < m.length; i++) {
-            s = s.replace(m[i], "<span data-substype='lit' class='subs'>" + fromChar(m[i]) + "</span>")
+            s = s.replace(m[i], "<span name='lit' class='subs'>" + fromChar(m[i]) + "</span>")
         }
     }
     return s
@@ -116,7 +134,7 @@ function fixCont(s) {
     m = s.match(/\*/g)
     if (m) {
         for (var i = 0; i < m.length; i++) {
-            s = s.replace(m[i], "<span data-substype='cont' class='subs'>" + fromChar(m[i]) + "</span>")
+            s = s.replace(m[i], "<span name='cont' class='subs'>" + fromChar(m[i]) + "</span>")
         }
 
     }
@@ -149,7 +167,7 @@ function restoreSymbols(s) {
 function verifyAndName(e) {
     var id = e.attr('id')
     var bad = false
-    var lit = e.find("[data-substype='lit'],[data-substype='cont']")
+    var lit = e.find("[name='lit'],[name='cont']")
 
     function reject(e, msg, err) {
             if(err){
@@ -180,12 +198,12 @@ function verifyAndName(e) {
         return true
     }
 
-    function z(e, substype, ccObj) {
-        //takes the element, the substype of sentence,
+    function z(e, name, ccObj) {
+        //takes the element, the name (type) of sentence,
         //and an object that tells the program which children are a and b subsentences.
-        //Assigns the substype, and a and b classes.
+        //Assigns the name, and a and b classes.
         var cs = e.children()
-        e.attr('data-substype', substype)
+        e.attr('name', name)
         for (var i in ccObj) {
             cs.eq(i).addClass(ccObj[i])
         }
@@ -199,7 +217,7 @@ function verifyAndName(e) {
             var cs = e.children()
             //There are five good subsentence forms: p@q (whole sentence only), p, *, ~p,(p@q),
             //If it has one of those forms, check the parent.
-            if (cs.length == 0 && (e.attr('data-substype') == 'lit' || e.attr('data-substype') == 'cont')) {  //If its an only child and a lit or a cont, continue up.
+            if (cs.length == 0 && (e.attr('name') == 'lit' || e.attr('name') == 'cont')) {  //If its an only child and a lit or a cont, continue up.
                 e = e.parent();
                 continue
             }
@@ -309,3 +327,4 @@ var sym = {
     "disj": "|",
     "cond": ">"
 }
+//////////////////////End functions for turning fol string to html

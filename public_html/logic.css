@@ -12,7 +12,7 @@ body{
 	width:200px;
 	height:100%;
 	padding: 10px;
-    overflow: scroll;
+    overflow: auto;
 }
 @media screen{
 	body>div.mainRight{
@@ -30,14 +30,17 @@ body{
 	right:220px;
 	padding:10px;
 }
-#display{
+#display1{
     border-left: 2px solid green;
     background-color:#DFD;
 }
-#header,#display2 div{
+#d1header,#d1body{
     margin: 12px
 }
-#messageBox{
+#d1header{
+    opacity: .75;
+}
+#display2{
     border-left: 2px solid #0AF;
     background-color:#ADF;
     padding: 10px;
@@ -50,6 +53,12 @@ body{
 .instructions{
     color:#777;
     font-style:italic;
+}
+#dispInstructions.instructions{
+    color: black;
+    margin: 0px -5px 5px -5px;
+    padding: 5px;
+    border: solid 1px black;
 }
 .hideHelp{
 	color:black;
@@ -95,7 +104,34 @@ div.equi,div.introElim{
 	border: 1px dotted black;
 	padding: 5px;
 }
-.folTable{
+
+
+#opSelect{
+    display: none;
+}
+    .ui-combobox {
+        position: relative;
+        display: inline-block;
+    }
+    .ui-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* adjust styles for IE 6/7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+    .ui-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+        width: 100%;
+    }
+
+
+
+#folTable{
     margin-bottom:12px;
 }
 .x{
@@ -143,10 +179,10 @@ div.cell.conclusion:before{
     content: "/ therefore, "
 }
 div.cell.conclusion{
-	font-size: 1em;
+	font-size:1em;
 	width: 300px;
 }
-[title='attribution']{
+#attribution{
     margin-left: 10px;
 }
 
@@ -162,7 +198,7 @@ div.cell.conclusion{
 	letter-spacing: 5px;
 }
 
-#opSelect,#opSelectLabel,#temp,#displayCancel,.htmlTextarea{
+.operationsL1,.operationsL24,.operations.easy,#temp,#displayCancel,.htmlTextarea{
     display:none;
 }
 .operations .operation{
@@ -179,18 +215,9 @@ div.cell.conclusion{
     vertical-align:top;
 }
 
-
-
-
-#commutation,#association,#removeDblNeg{
-    display:none;
-}
-
 .working{
     color: #AAAAAA
 }
-
-
 
 /*Subsentence highlighting*/
 .toEdit{
@@ -201,7 +228,7 @@ div.cell.conclusion{
     background-color:green!important;
     color:white!important;
 }
-.E2Resp{
+.E2Resp,.Sp1Resp{
     background-color:#0AF!important;
     color:white!important;
 }

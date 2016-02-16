@@ -3,68 +3,18 @@
     <head>
         <title>Propositional Logic</title>
         <meta charset="UTF-8">
-        <script type="text/javascript" src="realLogic.js"></script>
-        <script type="text/javascript" src="logicGeneral.js"></script>
-        <script type="text/javascript" src="logic.js"></script>
-        <script type="text/javascript" src="logicWorkflow.js"></script>
-        <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
         <link rel="stylesheet" href="logic.css">
     </head>
-    <body onload="bodyLoaded()">
-        <div>
-            <label for='levelSelect'>Level: </label>
-            <select id='levelSelect' onchange='levelChange(event)'>
-                <option>--Select a Level--</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-            </select>
+    <body">
+        <div class="mainLeft">
+            <ul>
+                <li><a href="logicL1.html">Level 1</a></li>
+                <li><a href="logicL2.html">Level 2</a></li>
+                <li><a href="logicL3.html">Level 3</a></li>
+            </ul>
         </div>
-        <input type="button" value="test" id="testButton" onClick="test()">
-        <div id="readout"></div>
-        <div id="level"></div>
-        <table id="folTable">
-            <tr class='line l1'><td class='edit'><td class='lineNo'>1.</td><td class = 'fol'><span class='sp'></span><span id='s1x' class='x subs'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>
-        </table>
-        <input type="text" id="formula" class="formula" onkeydown="return formulaKeyDown(event)" oninput="formulaInput(event)">
-        <br>
-        <input type="button" value="Add as Premise" onClick="addPremise()">
-        <input type="button" value="Add as Line" onClick="addLine()">
-        <input type="button" value="Add as Conclusion" onClick="addConc()">
-        <br>
-        <input type="button" value="newSubProof" onClick="newSubProof()">
-        <input type="button" value="End SubProof" onClick="endSp()">
-        <div id="temp" class="fol"></div>
-        
-        
-        <div id="display">
-            <div id="dispInstructions" class="instructions"></div>
-            <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
-            <div class="operations easy">
-                <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation',1)">commutation</div>
-                <div class="operation" id="association" onclick="ruleSelectedL2('association',1)">association</div>
-                <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation',1)">removeDblNegation</div>
-            </div>
-            <div>
-                <span class="sentInfo subsent"></span><br/>
-                <span class="sentInfo subsentType"></span><br/>
-                <span class="sentInfo subsentId"></span>
-            </div>
-            <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
-            <input type="button" id="displayCancel" value="Cancel" onclick="displayCancel()">
-        </div>
-        <div id="messageBox">
-            <div id="message"></div>
-            <div id="msgTemp" class="fol">
-                <span id="sx0" class = "x subs"></span>
-            </div>
-            <div>
-                <span class="sentInfo subsent"></span><br/>
-                <span class="sentInfo subsentType"></span><br/>
-                <span class="sentInfo subsentId"></span>
-            </div>
-            <input type="button" id="msgCancel" value="Cancel" onclick="msgCancel()">
+        <div id="display1" class="mainRight">
+            
         </div>
     </body>
 </html>    
