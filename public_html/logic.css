@@ -3,6 +3,10 @@ div{border: 1px solid green}*/
 body{
 	margin:0;
 	padding:10px;
+	font-size: larger;
+}
+input[type=button]{
+	font-family: monospace;
 }
 .mainRight{
 	position:absolute;
@@ -27,7 +31,7 @@ body{
 	right:220px;
 }
 #display{
-    border-left: 2px solid #0F0;
+    border-left: 2px solid green;
     background-color:#DFD;
     padding: 10px;
 }
@@ -84,7 +88,7 @@ div.cell{
 	padding-bottom: 6px;
 	height:1em;
     font-family:monospace;
-    font-size:medium;
+    font-size:24px;
 }
 #folTable{
     margin-bottom:12px;
@@ -146,10 +150,10 @@ div.sp.dead .cell:only-child{
 .formula{
     letter-spacing:2px;
     font-family:monospace;
-    font-size:medium;
+    font-size:24px;
 }
 
-#opSelect,#opSelectLabel,#temp,#displayCancel,.addAsConc,.htmlTextarea{
+#opSelect,#opSelectLabel,#temp,#displayCancel,.htmlTextarea{
     display:none;
 }
 .operations .operation{
@@ -157,7 +161,7 @@ div.sp.dead .cell:only-child{
     background-color: #DDDDDD;
     padding: 3px 5px;
     margin: 5px 0px!important;
-    font-size: small;
+    font-size: 22px;
 }
 .operations .operation:hover{
     background-color: #EEEEEE;
@@ -185,9 +189,8 @@ div.sp.dead .cell:only-child{
     color: white;
 }
 .E1Resp{
-    background-color:#0F0!important;
+    background-color:green!important;
     color:white!important;
-	border-color:
 }
 .E2Resp{
     background-color:#0AF!important;

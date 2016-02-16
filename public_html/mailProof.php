@@ -5,9 +5,7 @@
     $mysql_user = "a1344409_bch24";
     $mysql_password = "222webhost";
      
-    $to = "bclinthall@gmail.com";
-    $subject = "Student Proof";
-
+  
     $header = '
     <html>
         <head>
@@ -83,14 +81,11 @@
     $date = date("y-m-d");
     $time = date("H:i:s");
     $proof = urldecode($_POST["htmlTextarea"]);
-    $html = '<div class="nameTime"><span class="name">'.$name.'</span><br><span class="date">'.$date.'<span><br><span class="time">'.$time.'</span><br>'.$proof;
-    //$html = str_replace('"','\"',$html);
-    $test = "I said 'hi'";
+    $html = '<div class="nameTime"><span class="name">'.$name.'</span><br><span class="date">'.$date.'</span><br><span class="time">'.$time.'</span></div>'.$proof;
+
     
     $from = "bch@bch24.site90.com";
-    $headers = "From:" . $from;
-    mail($to,$subject,$name." has submitted a proof",$headers);
-
+    
 $con = mysql_connect($mysql_host,$mysql_user,$mysql_password);
 if (!$con)
   {

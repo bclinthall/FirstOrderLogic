@@ -93,6 +93,9 @@ echo $header;
 while($row = mysql_fetch_array($result))
   {
   echo $row['Proof']; 
+  if(strtotime($row['Date'])<strtotime("2012-06-13")){
+    echo "</span></span></div>";
+  }
   echo "<br><br>";
   }
 

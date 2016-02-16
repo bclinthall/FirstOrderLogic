@@ -90,7 +90,6 @@ function bodyLoaded() {
         setCookie("username",$("#studentName").val(),365);
         //console.log($("#studentName").val())
     })
-    addPremise()
 }
 
 function folStringToHtml(s, div) {
@@ -438,9 +437,8 @@ function addPremise(){
     $("#formula").show();$("#formula").focus()
     $("#formula").on('keydown',formulaPremiseKeydown)
     $("#formula").on('input',formulaPremiseOrLineInput)
-    $(".done,.addAsConc").show()
+    $(".done").show()
     $(".done").on('click',premiseDone)
-    $(".done").val("Add as Premise")
     $(".cancelAdd").show()
     $(".cancelAdd").on('click',premiseCancel)
     n++
@@ -459,14 +457,13 @@ function premiseDone(){
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
-        $(".done,.addAsConc").hide()
+        $(".done").hide()
         $(".done").off()
         $(".cancelAdd").hide()
         $(".cancelAdd").off()
         var div = $('#s' + n + 'x')
         div.text("")
         div = folStringToHtml(s, div)
-        addPremise()
     }
     
 }
@@ -478,7 +475,7 @@ function premiseCancel(){
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $(".done,.addAsConc").hide()
+    $(".done").hide()
     $(".done").off()
     $(".cancelAdd").hide()
     $(".cancelAdd").off()
@@ -492,26 +489,12 @@ function formulaPremiseOrLineInput(){
         $(".l"+n).find(".x").text($("#formula").val())
 }
 //add conclusion stuff
-function addAsConc(){
-    var s = $("#formula").val()
-    if (s) {
-        $(".working").removeClass("working")
-        deleteLast()
-        var s = $("#forumla").val()
-        addConclusion()
-        $("#forumla").val(s)
-        conclusionDone()
-    }
-    
-}
-
-
 function addConclusion(){
     $("#addPremise,#addConclusion,#deleteLast,#editLine").hide()
     $("#formula").show();$("#formula").focus()
     $("#formula").on('keydown',formulaConclusionKeydown)
     $("#formula").on('input',formulaConclusionInput)
-    $(".done,.addAsConc").show()
+    $(".done").show()
     $(".done").on('click',conclusionDone)
     $(".cancelAdd").show()
     $(".cancelAdd").on('click',conclusionCancel)
@@ -528,14 +511,14 @@ function conclusionDone(){
         $("#formula").hide()
         $("#formula").off()
         $("#formula").val("")
-        $(".done,.addAsConc").hide()
+        $(".done").hide()
         $(".done").off()
         $(".cancelAdd").hide()
         $(".cancelAdd").off()
         var div = $('#conclusion .x')
         div.text("")
         div = folStringToHtml(s, div)
-        $(".done").val("Done")
+        $("#conclusion").find(".subs").removeClass("subs")
         levelStates.L1.awaitingE1()
             }
     
@@ -547,7 +530,7 @@ function conclusionCancel(){
     $("#formula").hide()
     $("#formula").off()
     $("#formula").val("")
-    $(".done,.addAsConc").hide()
+    $(".done").hide()
     $(".done").off()
     $(".cancelAdd").hide()
     $(".cancelAdd").off()
@@ -624,7 +607,11 @@ function deleteLast(){
 
     if(last.hasClass("closed")){
         last.removeClass("closed")
+        last.find(".x,.a,.b").addClass("subs")
+        last.find(".dead").addClass("closed")
+        last.find(".dead").removeClass("dead")
         activeSp = last
+        levelStates.L1.awaitingE1()
     }else if(last.hasClass("sp")){
         n--
         activeSp = last.parent()
@@ -643,6 +630,7 @@ function deleteLast(){
         levelStates.L1.awaitingE1()
         last.remove()
     }
+    levelStates.L1.awaitingE1()
 }
 function editLine(){
     //add edit instructions.
@@ -687,7 +675,7 @@ function editDone(event){
         if(premise){
             $("#addPremise,#addConclusion,#deleteLast,#editLine").show()
         }else{
-            $("#addLine,#deleteLast,#editLine").show()
+            $("#deleteLast,#editLine,.spButton").show()
         }
         $("#formula").hide()
         $("#formula").off()
