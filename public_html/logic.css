@@ -1,0 +1,16 @@
+.fol{
+    letter-spacing: 3px;
+}
+.mouseOn{
+    border:1px solid #00ff00!
+    important;background-color:#e6ffe6!
+    important;
+    color:black!important;
+}
+#display{
+    border: 2px solid red;
+    position: absolute;
+    top: 20px;
+    left: 300px;
+    background-color:white;
+}
