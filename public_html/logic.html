@@ -7,7 +7,7 @@
         <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
         <link rel="stylesheet" href="logic.css">
     </head>
-    <body>
+    <body onload="bodyLoaded()">
         <div>
             <label for='levelSelect'>Level: </label>
             <select id='levelSelect' onchange='levelChange(event)'>
@@ -18,16 +18,28 @@
                 <option>4</option>
             </select>
         </div>
-        <input type="button" value="test" onClick="test()">
+        <input type="button" value="test" id="testButton" onClick="test()">
         <div id="readout"></div>
         <div id="level"></div>
+        <table id="folTable"></table>
+        <input type="button" value="add" onClick="run()">
+        <input type="text" id="formula" class="formula" onkeydown="return formulaInput(event)">
+        <div id="temp" class="fol"></div>
         <div id="display">
-            <div>
-                <span class="subsent"></span><br/>
-                <span class="subsentType"></span><br/>
-                <span class="subsentId"></span>
+            <div id="dispInstructions" class="instructions"></div>
+            <label for="opSelect" id="opSelectLabel">Select Rule: </label><br/><select id='opSelect'></select>
+            <div class="operations">
+                <div class="operation" id="commutation" onclick="ruleSelectedL2('commutation')">commutation</div>
+                <div class="operation" id="association" onclick="ruleSelectedL2('association')">association</div>
+                <div class="operation" id="removeDblNeg" onclick="ruleSelectedL2('removeDblNegation')">removeDblNegation</div>
             </div>
-            <div id="operations"></div>
+            <div>
+                <span class="sentInfo subsent"></span><br/>
+                <span class="sentInfo subsentType"></span><br/>
+                <span class="sentInfo subsentId"></span>
+            </div>
+            <table><tr ><td class="operations equi"></td><td class="operations introElim"></td></table>
+            <input type="button" id="displayCancel" value="Cancel" onclick="messageOff()">
         </div>
         <div id="message">
             <div id="msgTemp" class="fol">
@@ -38,12 +50,7 @@
                 <span class="subsentType"></span><br/>
                 <span class="subsentId"></span>
             </div>
-            <input type="button" value="Cancel" onclick="messageOff()">
-            
+            <input type="button" id="msgCancel" value="Cancel" onclick="messageOff()">
         </div>
-        <table id="folTable"></table>
-        <input type="button" value="add" onClick="run()">
-        <input type="text" id="formula" class="formula" onkeydown="return formulaInput(event)">
-        <div id="temp" class="fol"></div>
     </body>
 </html>    

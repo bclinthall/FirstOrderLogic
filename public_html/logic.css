@@ -1,3 +1,6 @@
+#opSelect,#opSelectLabel,#temp{
+    display:none;
+}
 .fol{
     letter-spacing: 5px;
     font-family:monospace;
@@ -12,11 +15,18 @@
 }
 .lineNo{
 }
-#operations div{
+.operations .operation{
     border: 1px solid #555555;
     background-color: #DDDDDD;
     padding: 3px 5px;
-    margin: 5px;
+    margin: 5px 0px!important;
+    font-size: small;
+}
+.operations .operation:hover{
+    background-color: #EEEEEE;
+}
+.operations{
+    vertical-align:top;
 }
 .mouseOn{
     border:1px solid #00ff00!
@@ -40,13 +50,9 @@
     left: 66%;
     background-color:white;
     padding: 10px;
-    opacity: .5;
 }
 #display div{
     margin: 12px
-}
-#display:hover{
-    opacity: 1!important;
 }
 #message{
     border: 2px solid green;
@@ -58,7 +64,8 @@
     display:none;
 }
 #message div{
-    margin: 12px
+    margin: 12px;
+    max-height:100%;
 }
 .instructions{
     color:#777;
@@ -69,4 +76,7 @@
     important;background-color:#ffffe0!important;
     color:black!important;
     
+}
+#commutation,#association,#removeDblNeg{
+    display:none;
 }

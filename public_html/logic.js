@@ -18,7 +18,11 @@ String.prototype.replaceAt=function(index, x) {
       return this.substr(0, index) + x + this.substr(index+x.length);
 }
 
-
+function bodyLoaded(){
+      document.getElementById("levelSelect").selectedIndex=0
+      $("input").attr("disabled",true)
+      $("#levelSelect").attr("disabled",false)
+}
 function folStringToHtml(s,div){
       //s is the string, div is the .x span where it will go.
       var id = div.attr('id')
@@ -33,7 +37,6 @@ function folStringToHtml(s,div){
       div.append(s)     
       if(div = verifyAndName(div)){
             addIds(div,id)
-            addListeners(div)
       }
       return div
 }
@@ -266,13 +269,18 @@ var sym={
 
 ///////////////////////functions for UI management
 function newLine(){
-      var a = $("#folTable").append("<tr class='line l"+n+"'><td class='edit'><td class='lineNo'>"+n+".</td><td class = 'fol'><span id='s"+n+"x' class='x subs'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>")
+      var a = $("#folTable").append("<tr class='line l"+n+"'><td class='edit'><td class='lineNo'>"+n+".</td><td class = 'fol live'><span id='s"+n+"x' class='x subs'></span></td><td class='attribution'><td><td class='delete'></td><td class='editCell'></td></tr>")
       var e = $('#s'+n+'x')
+      if(level==3||level==4){
+            $(".l"+n+" .attribution").append("<input type='button' value='cite' id='citeButton"+n+"'>")
+            $("#citeButton"+n).click(enterCitation)
+      }
       addDelete(n)
       if(n>1){removeDelete(n-1)}
       n++
       return e
 }
+
 function deleteLastLine(){
       n--
       $(".l"+(n)).remove()
@@ -317,35 +325,159 @@ function formulaInput(event){
             run()
       }
 }
+var level="0"
 function levelChange(event){
+      $(event.target).attr("disabled",true)
+      $("input").attr("disabled",false)
       console.log("levelChange")
       console.log(event.target.selectedIndex)
+      level = event.target.selectedIndex
+      var test = {1:0,2:1,3:1,4:1}
+      if(test[level]){
+            for(i in ruleType){
+                  opType = ruleType[i]
+                  $("#opSelect").append("<option class='operation'>"+i)
+            }
+            $("#opSelect").change(function(event){
+                  $("#displayCancel").show()
+                  $("#displayCancel").click(displayCancel)
+                  console.log(this.selectedIndex)
+                  var title = $("#opSelect").children("option").eq(this.selectedIndex).text()
+                  if(level==2){
+                        ruleSelectedL2(title)
+                  }else{
+                        ruleSelectedL34(title)
+                  }
+            })
+            
+      }
+      switch (level){
+            case 1:
+                  $("#folTable").off("mousemove",mouseOnFuncL1)
+                  $("#folTable").on("mousemove",".subs",mouseOnFuncL1)
+                  break;
+            case 2:
+                  $("#opSelect,#opSelectLabel").show()
+      }
+}
+function displayCancel(){
+      $("#folTable").off("mousemove",seekingE1L2)
+      $("#folTable").off("click",e1PickedL2)
+      $("#folTable").off("mousemove",seekingE1L34)
+      $("#folTable").off("click",e1PickedL34)
+      $("#dispInstructions").text("")
+      citeData.rule = null
+      citeData.a = null
+      citeData.b = null
+      if(level!=1){$("#commutation,#association,#removeDblNeg").show()}
+}
+function ruleSelectedL2(title){
+      $("#commutation,#association,#removeDblNeg").hide()
+      $("#folTable").off("mousemove",seekingE1L2)
+      $("#folTable").off("click",e1PickedL2)
+      $("#dispInstructions").text("Select the first sentence to use with "+title+".")
+      citeData.rule = title
+      citeData.a = null
+      citeData.b = null
+      $("#folTable").on("mousemove",".subs",{'title':title},seekingE1L2)
+}
+function ruleSelectedL34(title){
+      $("#commutation,#association,#removeDblNeg").hide()
+      $("#folTable").off("mousemove",seekingE1L34)
+      $("#folTable").off("click",e1PickedL34)
+      $("#dispInstructions").text("Select the first sentence to use with "+title+".")
+      citeData.rule = title
+      citeData.a = null
+      citeData.b = null
+      $("#folTable").on("mousemove",".subs",{'title':title},seekingE1L34)
+}
+function seekingE1L2(event){
+      var t = this
+      var title=event.data.title
+      if(t!=oldMouseOn){
+            $(t).addClass('mouseOn')
+            if(oldMouseOn){
+                  $(oldMouseOn).removeClass('mouseOn')
+                  $("#folTable").off("click",e1PickedL2)
+            }
+            $("#folTable").on("click",".subs",{'title':title},e1PickedL2)
+            oldMouseOn=t
+            setDisplay(t)
+      }
+      event.stopPropagation()
+}
+function seekingE1L34(event){
+      var t = this
+      var title=event.data.title
+      if(t!=oldMouseOn){
+            $(t).addClass('mouseOn')
+            if(oldMouseOn){
+                  $(oldMouseOn).removeClass('mouseOn')
+                  $("#folTable").off("click",e1PickedL34)
+            }
+            $("#folTable").on("click",".subs",{'title':title},e1PickedL34)
+            oldMouseOn=t
+            setDisplay(t)
+      }
+      event.stopPropagation()
+}
+function e1PickedL2(event){
+      var e=$(this)
+      console.log(e)
+      var title = event.data.title
+      if(test1[title](e)){
+            citeData.a=e
+            e.off("click",e1Picked)
+            $("#folTable").off("mousemove",seekingE1L2)
+            $("#folTable").off("click",e1PickedL2)            
+            processE1L12(title,e)
+      } else {
+            alert("That sentence or subsentence doesn't work.  Try again.")
+      }
+}
+function e1PickedL34(event){
+      var e=$(this)
+      console.log(e)
+      var title = event.data.title
+      if(test1[title](e)){  
+            citeData.a=e
+            e.off("click",e1Picked)
+            $("#folTable").off("mousemove",seekingE1L34)
+            $("#folTable").off("click",e1PickedL34)            
+            processE1L34(title,e)
+      } else {
+            alert("That sentence or subsentence doesn't work.  Try again.")
+      }
 }
 /////////////////////// end functions for UI management
 
 //////////////////////Functions for mouseMove
-function addListeners(div){
-    var p = div.parent()
-    var subs = p.find('.subs')
-    subs.on("mousemove",mouseOnFunc)
-}
+
 function messageOn(msg,$elems,func){
       $("#message").prepend(msg)
       $("#message").prepend("<div class='instructions'>To select an element, role your mouse over it to highlight it, and then click it.</div>")
       $("#display").hide()
       $("#message").show()
-      $(".fol").find('.subs').off("mousemove",mouseOnFunc)
-      $("#msgRespEnter").on("click",{'func':func},msgResponse) //add a listener to the msgResponse button (if one was added in msg).      
-      $elems.addClass("responseOpts")
-      $elems.on("mousemove",{'func':func},seekingResponse)
+      $("#folTable").off("mousemove",mouseOnFuncL1)
+      if($("#msgRespEnter").length>0){
+            $("#msgRespEnter").on("click",{'func':func},msgResponse) //add a listener to the msgResponse button (if one was added in msg).
+            $("#msgRespInput").on("keydown",function(event){ //add a listener to click #msgRespEnter when the inter key is pressed in #msgRespEnter (if #msgRespEnter and #msgRespEnter were added in msg)
+                  if(event.keyCode == 13){
+                        $("#msgRespEnter").click()
+                  }
+            })
+      }else{
+            $("#folTable").on("mousemove",".subs",{'func':func},seekingResponse)
+      }
 }
 function messageOff(){
       $("#display").show()
       $("#message").hide()
       $(".msgTarget").removeClass("msgTarget")
-      $(".fol").find(".subs").on("mousemove",mouseOnFunc)
-      $(".responseOpts").off("mousemove",seekingResponse)
-      $(".responseOpts").removeClass("responseOpts")
+      if(level==1){
+            $("#folTable").on("mousemove",".subs",mouseOnFuncL1)
+      }
+      $("#folTable").off("mousemove",seekingResponse)
       //reset #message
       $("#message").html('<div id="msgTemp" class="fol"><span id="sx0" class = "x subs"></span></div><div><span class="subsent"></span><br/><span class="subsentType"></span><br/><span class="subsentId"></span></div><input type="button" value="Cancel" onclick="messageOff()"></input>')
 }
@@ -358,30 +490,26 @@ function setDisplay(e){
       $(".subsentId").text(e.id)
 }
 //consider adding a param to setDisplay so that it can be used to output elem info to #message,
-//then move setUpOperations out of setDisplay and into mouseOnFunc.
+//then move setUpOperations out of setDisplay and into mouseOnFuncL1.
 //maybe a seeking response 1 and seeking response 2 would be good, so that I can have the e1 highlighted while selecting e2.
 
+var oldMouseOn
 
-var mouseOnObj = {
-    n: null,
-    o:null
-}
-var mouseOnFunc = function(event){
+function mouseOnFuncL1(event){  //
       if(event.shiftKey==1){
-            mouseOnObj.n = this
-            if(mouseOnObj.n!=mouseOnObj.o){
-                  $(mouseOnObj.n).addClass('mouseOn')
-                  if(mouseOnObj.o){$(mouseOnObj.o).removeClass('mouseOn')}
-                  mouseOnObj.o=mouseOnObj.n
-                  setDisplay(mouseOnObj.n)                  
-                  setupOperations(mouseOnObj.n)
+            var t = this
+            if(t!=oldMouseOn){
+                  $(t).addClass('mouseOn')
+                  if(oldMouseOn){$(oldMouseOn).removeClass('mouseOn')}
+                  oldMouseOn=t
+                  setDisplay(t)                  
+                  setupOperations(t)
             }
       }
       event.stopPropagation()
 }
 
 var oldResp = null
-
 var seekingResponse = function(event){
       var t = this
       if(t!=oldResp){
@@ -415,22 +543,6 @@ function myMsg(){
 
 ///////////////////////functions for logical operations
 
-//commutation: swap elements
-//conjunction: conjoin elements
-//association: there are three elements, conjoint the second two; return it. conjoin the first and the conj, return the big conj.  replace the orig conjunction.
-//distribution: 
-/*
-++for equivalences:
-Clone the whole sentence, and put it in #temp.
-Pass the clone of the selected element to the operation.
-Clone the clone.
-modify the second order clone.  Replace the first order clone with it.
-
-++For one way rules:
-If need be, clone parts of the original sentence(s).  Work with them.  Stick them into a fresh sentence in temp.
-
-on infer, pass the sentence in temp to a new line.
-*/
 /*      Level one:
             Highlight el 1.
             Click the rule.
@@ -466,11 +578,16 @@ on infer, pass the sentence in temp to a new line.
             prompt for el 2
             
             Later, check if el1 and el2 are applicable and whether the typed sentence follows.
+            
+      mouseMove will have to behave differently depending on the level.
+            Level 1: hold shift key to highlight.  (Then click rule button)
+            Levels 2-4: (click rule button).  Then mouseOver to highlight, and click to select.
                   
 */
 
 function setupOperations(el){                  
-      $("#operations").html("")
+      $(".operations.equi").html("")          
+      $(".operations.introElim").html("")
       for(i in test1){
             if(test1[i]($(el))){
                   addOperation(i,$(el))
@@ -478,55 +595,150 @@ function setupOperations(el){
       }
 }
 var citeData = new Object()
+
 function addOperation(title,e){      
-      $("#operations").append("<div class='operation "+title+"'>"+title+"</div>")
-      $("#operations ."+title).click(function(){
-            citeData.rule = title
-            citeData.a = e
-            citeData.b = null
-            if(test2[title]){
-                  messageOn(test2msg[title],$(".fol").find('.subs'),function(elem){
-                        //this is the function that will be called when an element is clicked
-                        //in response to the message.
-                        var e2 = $(elem)
-                        if(e2.attr('id')=='msgRespEnter'){
-                              //if the user entered a new sentence and clicked the enter button,
-                              //get the string from text input.
-                              var s = $("#msgRespInput").val()
-                              //turn it to html. call the result e2.
-                              e2=folStringToHtml(s,$("#msgTemp .x"))
-                              if(e2){
-                                    if(test2[title](e,e2)){  
-                                          e = ops[title](e,e2);
-                                          messageOff()
-                                          if(e){infer(e)}
-                                    }else{
-                                          $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
+      var opType = ruleType[title]
+      $(".operations"+"."+opType).append("<div class='operation "+title+"'>"+title+"</div>")
+      $(".operation."+title).on("click",{'title':title,'e':e},opClickedL1)
+}
+function opClickedL1(event){ //Called when an op button is clicked, level one.  Assigned by addOperation.
+      var title = event.data.title
+      var e = event.data.e
+      processE1L12(title,e)
+}
+
+function processE1L12(title,e,line){  //Called by opClickL1 or e1PickedL2
+      citeData.rule = title
+      citeData.a = e
+      citeData.b = null
+      if(test2[title]){
+            messageOn(test2msg[title],$(".fol").find('.subs'),function(elem){
+                  //this is the function that will be called when an element is clicked
+                  //in response to the message.
+                  var e2 = $(elem)
+                  if(e2.attr('id')=='msgRespEnter'){
+                        //if the user entered a new sentence and clicked the enter button,
+                        //get the string from text input.
+                        var s = $("#msgRespInput").val()
+                        //turn it to html. call the result e2.
+                        e2=folStringToHtml(s,$("#msgTemp .x"))
+                        if(e2){
+                              if(test2[title](e,e2)){  
+                                    e = ops[title](e,e2);
+                                    messageOff()
+                                    if(e){
+                                          infer(e)
                                     }
                               }else{
                                     $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
                               }
                         }else{
+                              $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
+                        }
+                  }else{
+                        if(test2[title](e,e2)){  
+                              citeData.b=e2
+                              e = ops[title](e,e2);
+                              messageOff()
+                              if(e){      
+                                    infer(e)
+                              }
+                        }else{
+                              alert("that elem doens't work.")
+                        }
+                  }
+            })
+      }else{
+            e = ops[title](e);
+            if(e){
+                  infer(e)
+
+            }
+      }
+}
+
+function processE1L34(title,e,line){
+      citeData.rule = title
+      citeData.a = e
+      citeData.b = null
+      if(test2[title]){
+            messageOn(test2msg[title],$(".fol").find('.subs'),function(elem){
+                  //this is the function that will be called when an element is clicked
+                  //in response to the message.
+                  var e2 = $(elem)
+                  if(e2.attr('id')=='msgRespEnter'){
+                        //if the user entered a new sentence and clicked the enter button,
+                        //get the string from text input.
+                        var s = $("#msgRespInput").val()
+                        //turn it to html. call the result e2.
+                        e2=folStringToHtml(s,$("#msgTemp .x"))
+                        if(e2){
                               if(test2[title](e,e2)){  
-                                    citeData.b=e2
                                     e = ops[title](e,e2);
                                     messageOff()
-                                    if(e){infer(e)}
+                                    if(e){
+                                          finishL34(e,title)
+                                    }
                               }else{
-                                    alert("that elem doens't work.")
+                                    $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
                               }
+                        }else{
+                              $("#msgTemp").html('<span id="sx0" class = "x subs"></span>')
                         }
-                  })
-            }else{
-                  e = ops[title](e);
-                  if(e){infer(e)}
+                  }else{
+                        if(test2[title](e,e2)){  
+                              citeData.b=e2
+                              e = ops[title](e,e2);
+                              messageOff()
+                              if(e){
+                                    finishL34(e,title)
+                              }
+                        }else{
+                              alert("that elem doens't work.")
+                        }
+                  }
+            })
+      }else{
+            e = ops[title](e);
+            if(e){
+                  finishL34(e,title)
             }
-      })     
+      }
 }
-function infer(e){
-      var nl = newLine()
-      var num = lineNum(nl)
-      var cite = $(".l"+num+" .attribution")
+
+
+var citeForLine = 0
+function enterCitation(event){  //called when the cite button is clicked. (Levels 3 and 4)
+      var id=this.id
+      citeForLine = id.slice(10)
+      $("#opSelect,#opSelectLabel").show()
+}
+
+function finishL34(e,title){
+      var line = citeForLine
+      var yourAnswer= $(".l"+line+" * .x").text()
+      theAnswer=e.text()
+      if ((yourAnswer!=theAnswer)&&level==3){
+            if(citeData.b){
+                  alert("Line "+line+" does not follow from lines "+lineNum(citeData.a)+" and "+lineNum(citeData.b)+" by "+title+".")
+            }else{
+                  alert("Line "+line+" does not follow from line "+lineNum(citeData.a)+" by "+title+".")
+            }
+            return
+      }
+      doCitation(e, citeForLine)
+      $("#citeButton"+citeForLine).hide()
+      $("#opSelect,#opSelectLabel").hide()
+      $("#dispInstructions").text("")
+      $("#commutation,#association,#removeDblNeg").show()
+      $(".sentInfo").text("")
+      var cite = $(".l"+citeForLine+" .attribution")
+      console.log(cite.data())                              
+}
+
+function doCitation(e,line){  //called after citation data is collected (L3 and L4) or from Infer (L1 and L2).
+      
+      var cite = $(".l"+line+" .attribution")
       
       //take care of citation stuff for citeData.a
       var cited = $(citeData.a)
@@ -544,7 +756,14 @@ function infer(e){
       cite.data({rule:citeData.rule,a:citeData.a,b:citeData.b})
       cite.on("mouseenter",function(){cited.addClass("cited")})
       cite.on("mouseleave",function(){cited.removeClass("cited")})
+}
 
+function infer(e){
+      var nl = newLine()
+      var num = lineNum(nl)
+      
+      doCitation(e,num)
+      
       var newSentId = "s"+(n-1)+"x"
       var s = e.parents('.fol').find(".x")
       s.attr('id',newSentId)
@@ -552,11 +771,17 @@ function infer(e){
       nl.replaceWith(s)
 
       s.parents('.fol').find(".mouseOn").removeClass("mouseOn")
-      addListeners(s)
 
       $("#temp").html("")
-      setDisplay($(".mouseOn")[0])
-      setupOperations($(".mouseOn")[0])
+      if(level==1){
+            setDisplay($(".mouseOn")[0])
+            setupOperations($(".mouseOn")[0])
+      }
+      if(level!=1){
+            $(".mouseOn").removeClass("mouseOn")
+            $("#dispInstructions,.sentInfo").text("")
+            $("#commutation,#association,#removeDblNeg").show()
+      }
 }
 
 function equivalenceRule(e){
@@ -642,7 +867,7 @@ var ops={
             e.replaceWith(r)
             return r
       },
-      removeDoubleNegation: function(e){
+      removeDblNegation: function(e){
             var eClass = sClass(e)
             e=equivalenceRule(e)
             var type = e.attr("name")
@@ -804,7 +1029,7 @@ var ops={
             
             var a=e.children('.a')
             var b=e.children('.b')
-            a=toggle(a)
+            b=toggle(b)
             var r = operate("cond",b,a)
             
             r.removeClass("a b x")
@@ -854,10 +1079,39 @@ var ops={
             r.addClass('x')
             $("#temp").append(r)
             return r
+      },
+      contElim: function(e1,e2){
+            r=e2.clone()
+            r.removeClass("a b")
+            r.addClass("x")
+            $("#temp").append(r)
+            return r
       }
       
 }
-
+var ruleType ={
+      commutation: "equi",
+      association: "equi",
+      addDoubleNegation: "equi",
+      removeDblNegation: "equi",
+      deMorganOut: "equi",
+      deMorganIn: "equi",
+      distributionIn: "equi",
+      distributionOut: "equi",
+      contraposition: "equi",
+      disjToCond: "equi",
+      condToDisj: "equi",
+      
+      condElim: "introElim",
+      condIntro:"introElim",
+      conjElim: "introElim",
+      conjIntro: "introElim",
+      disjElim: "introElim",
+      disjIntro: "introElim",
+      contElim: "introElim",
+      contIntro: "introElim",
+      negIntro: "introElim"
+}
 var test1 = {
       commutation: function(e){
             var test = {"disj":true,"conj":true}
@@ -871,7 +1125,7 @@ var test1 = {
       addDoubleNegation: function(e){
             return true
       },
-      removeDoubleNegation: function(e){
+      removeDblNegation: function(e){
             return e.attr('name')=="neg"&&e.children(".a").attr('name')=="neg"
       },
       deMorganOut: function(e){
@@ -880,7 +1134,7 @@ var test1 = {
       },
       deMorganIn: function(e){
             var test = {"disj":true,"conj":true}
-            return e.attr('name')=="neg"&&test[e.children(".a").attr]
+            return e.attr('name')=="neg"&&test[e.children(".a").attr("name")]
       },
       distributionIn: function(e){
             var test = {"disj":true,"conj":true}
@@ -915,13 +1169,17 @@ var test1 = {
       },
       disjIntro: function(e){
             return e.hasClass("x")
+      },
+      contElim: function(e){
+            return e.attr("name")=="cont"
       }
 }
 var test2msg={
       conjIntro: "<div>Select the sentence to conjoin to the green sentence.</div>",
       condElim: "<div>Select the sentence to use with the green conditional for a condElim (Modus Ponens)</div>",
       contIntro: "<div>Select the sentence to use with the green sentence to introduce *.</div",
-      disjIntro: "<div>Which sentence do you want to disjoin to the green sentence?  Type a new sentence below or selecte a sentence or subsentence on the left.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+      disjIntro: "<div>Which sentence do you want to disjoin to the green sentence?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
+      contElim: "<div>What sentence do you want to infer from the * in green?  Type a sentence below.</div><input id='msgRespInput' type='text'></input><input type='button' value='enter' id='msgRespEnter'></input>",
 }
 var test2={
       conjIntro: function(e1,e2){
@@ -945,6 +1203,9 @@ var test2={
             }else{return false}
       },
       disjIntro: function(e1,e2){
+            if(e2){return true}else{return false}
+      },
+      contElim: function(e1,e2){
             if(e2){return true}else{return false}
       }
 }
@@ -1018,7 +1279,7 @@ var ops3 = {
             e = ops.negate(e)
             return e
       },
-      removeDoubleNegation: function(e){
+      removeDblNegation: function(e){
             var c = e.children('.a')
             c = ops.deNegate(c)
             e = ops.deNegate(e)
@@ -1240,5 +1501,6 @@ function run(){
       var div = newLine()
       addEdit(n-1)
       var s = $("#formula").val()
+      $("#formula").val("")
       if(s){div = folStringToHtml(s,div)}
 }
