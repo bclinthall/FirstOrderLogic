@@ -25,7 +25,39 @@ function bodyLoaded() {
         }
         inp.value = val
     })
-
+    function closeSampleBox() {
+        $(".sampleBox").remove();
+    }
+    function addSampleBox() {
+        if($(".sampleBox").length>0){
+            return;
+        }
+        var sampleBox = $("<div>").addClass("sampleBox").appendTo("body").css({
+            position: "absolute",
+            left: "20px",
+            bottom: "20px",
+            border: "1px solid black",
+            padding: "20px"
+            
+        });
+        
+        $("<div>").html("Here's a problem to try. <br/>Use these as premises:").appendTo(sampleBox);
+        $("<div>").text("A").addClass("cell").appendTo(sampleBox);
+        $("<div>").text("A>B").addClass("cell").appendTo(sampleBox);
+        $("<div>").text("A>C").addClass("cell").appendTo(sampleBox);
+        $("<div>").html("And enter this as your conclusion:").appendTo(sampleBox);
+        $("<div>").text("B&C").addClass("cell").appendTo(sampleBox);
+        $("<div>").html("Or for a harder problem use this conclusion:").appendTo(sampleBox);
+        $("<div>").text("A>(B&C)").addClass("cell").appendTo(sampleBox);
+        $("<div>").html("<b>Don't forget to look at the active help box on the right for instructions using the program.</b>").appendTo(sampleBox);
+        var btnDiv = $("<div>").appendTo(sampleBox);
+        $("<button>").text("Close").appendTo(btnDiv).click(closeSampleBox);
+        
+    }
+    console.log("I'm trying!")
+    var btn = $("<button>").text("Sample Problem").appendTo("#d1header");
+    btn.click(addSampleBox)
+            
 }
 
 //general functions
