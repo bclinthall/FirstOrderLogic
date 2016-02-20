@@ -149,7 +149,8 @@ div.equi,div.introElim{
 }
 
 span[name='lit'],span[name='cont'],.oper,.lparen,.rparen,.quantr{
-    margin-left: 3px;
+    margin-left: 0px;
+    padding: 0px 3px;
 }
 
 div.sp{
