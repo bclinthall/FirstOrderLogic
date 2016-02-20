@@ -54,9 +54,10 @@ function bodyLoaded() {
         $("<button>").text("Close").appendTo(btnDiv).click(closeSampleBox);
         
     }
-    console.log("I'm trying!")
     var btn = $("<button>").text("Sample Problem").appendTo("#d1header");
     btn.click(addSampleBox)
+    addSampleBox();
+    $(".showHelp").click();
             
 }
 
