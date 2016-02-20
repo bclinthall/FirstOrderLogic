@@ -256,3 +256,10 @@ div.cell.conclusion{
 #checkProblems{
 	padding: 10px;
 }
+.help{
+    padding: 20px;
+}
+.help .instructions{
+    color: black;
+    font-style:normal;
+}
