@@ -1,5 +1,5 @@
 
-
+alert('boo')
 
 function equivalenceRule(e) {
     var s = e.parents(".fol").find(".x").clone()
